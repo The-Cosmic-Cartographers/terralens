@@ -1,5 +1,6 @@
 """The index builder turns processed series into the files the API needs."""
 
+import json
 import shutil
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from pipeline.registry import VARIABLES
-from scripts.build_data_index import build
+from scripts.build_data_index import APP_REGIONS, build
 
 ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = ROOT / "data" / "processed"
@@ -28,27 +29,58 @@ def test_every_dataset_id_in_the_registry_is_unique():
     assert len(set(ids)) == len(ids)
 
 
-def test_catalogue_marks_pulled_datasets_ready_and_the_rest_coming_soon(index):
-    """Readiness follows the processed folder, so adding a row cannot break this test.
+def has_all_app_regions(dataset_id):
+    folder = PROCESSED / dataset_id
+    return set(APP_REGIONS) <= {path.stem for path in folder.glob("*.parquet")}
 
-    A dataset is ready when its folder holds at least one series; any other row is
-    coming soon. Asserting a fixed list here made every data PR fail CI for the
-    wrong reason, which is exactly what a contract test should not do.
+
+def test_a_dataset_is_ready_only_when_it_covers_every_app_region(index):
+    """Readiness follows the processed folder and the explicit app regions (D26).
+
+    A dataset with a series for only some of the app regions would leave holes in a
+    static export, so it stays coming soon. Which datasets are ready is not asserted
+    as a fixed list, so adding a row cannot break this test.
     """
     client, _ = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
     assert len(items) == len(VARIABLES)
     for spec in VARIABLES.values():
-        has_series = any((PROCESSED / spec.dataset_id).glob("*.parquet"))
-        assert items[spec.dataset_id] == ("ready" if has_series else "coming_soon"), spec.dataset_id
+        expected = "ready" if has_all_app_regions(spec.dataset_id) else "coming_soon"
+        assert items[spec.dataset_id] == expected, spec.dataset_id
     assert items["merra2_m2tmnxslv"] == "ready"
     assert any(status == "coming_soon" for status in items.values())
 
 
-def test_regions_are_only_those_with_a_series(index):
+def test_regions_are_exactly_the_app_regions(index):
+    """Extra regions or city pairs on disk (Iberia, the NO2 cities) never reach the app."""
     client, _ = index
     ids = [r["region_id"] for r in client.get("/api/v1/regions").json()]
-    assert ids == ["ireland", "sahel", "us_southwest"]
+    assert ids == list(APP_REGIONS)
+
+
+def test_a_dataset_missing_one_app_region_is_coming_soon(tmp_path):
+    out = tmp_path / "data"
+    shutil.copytree(PROCESSED, out / "processed")
+    (out / "processed" / "merra2_m2tmnxslv" / "sahel.parquet").unlink()
+    build(out / "processed", out)
+    items = {
+        item["dataset_id"]: item["status"]
+        for item in json.loads((out / "catalogue.json").read_text(encoding="utf-8"))
+    }
+    assert items["merra2_m2tmnxslv"] == "coming_soon"
+    assert not (out / "metadata" / "merra2_m2tmnxslv.json").exists()
+
+
+def test_an_extra_region_on_disk_does_not_change_the_output(tmp_path):
+    base, extra = tmp_path / "base", tmp_path / "extra"
+    build(PROCESSED, base)
+    processed = tmp_path / "processed"
+    shutil.copytree(PROCESSED, processed)
+    dataset = processed / "merra2_m2tmnxslv"
+    shutil.copy(dataset / "ireland.parquet", dataset / "iberia.parquet")
+    build(processed, extra)
+    for name in ("regions.json", "catalogue.json"):
+        assert (base / name).read_bytes() == (extra / name).read_bytes()
 
 
 def test_real_series_and_metadata_are_served(index):
@@ -58,7 +90,7 @@ def test_real_series_and_metadata_are_served(index):
     assert len(series.json()["rows"]) == 540
     meta = client.get("/api/v1/metadata", params={"dataset_id": "merra2_m2tmnxslv"})
     assert meta.status_code == 200
-    assert set(meta.json()["provenance"]["regions"]) == {"ireland", "sahel", "us_southwest"}
+    assert set(APP_REGIONS) <= set(meta.json()["provenance"]["regions"])
 
 
 def test_data_version_is_not_sample(index):

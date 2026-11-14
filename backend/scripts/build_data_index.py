@@ -39,6 +39,12 @@ LIMITATIONS = [
     "Changes in what it assimilates can create artificial steps in a record.",
     "Months with no value are kept as empty rows, never filled in.",
 ]
+# The app's regions are an explicit list (decision D26), not whatever has a file. A
+# dataset is `ready` only when it has a series for every one of them; otherwise a
+# static export would have holes. Extra regions or city pairs on disk (Iberia, the
+# NO2 cities) stay out of the catalogue until they are added here on purpose.
+APP_REGIONS = ("ireland", "sahel", "us_southwest")
+
 REGION_SOURCE = "Region boxes defined by TerraLens (Linear doc 01, decision D19)"
 REGION_LICENCE = "TerraLens project boxes; no third-party boundary data"
 
@@ -52,6 +58,9 @@ def build(processed: Path, out: Path) -> list[str]:
     out.mkdir(parents=True, exist_ok=True)
     (out / "metadata").mkdir(exist_ok=True)
     boxes = load_regions()
+    unknown = [r for r in APP_REGIONS if r not in boxes]
+    if unknown:
+        raise ValueError(f"APP_REGIONS not in pipeline/regions.json: {', '.join(unknown)}")
     ids = [spec.dataset_id for spec in VARIABLES.values()]
     if len(set(ids)) != len(ids):
         raise ValueError(
@@ -59,7 +68,6 @@ def build(processed: Path, out: Path) -> list[str]:
         )
 
     catalogue: list[CatalogueItem] = []
-    regions_with_data: set[str] = set()
     newest = dt.date.min
     written: list[str] = []
 
@@ -67,7 +75,8 @@ def build(processed: Path, out: Path) -> list[str]:
         folder = processed / spec.dataset_id
         provenance_file = folder / "provenance.json"
         files = sorted(folder.glob("*.parquet")) if folder.is_dir() else []
-        if not files or not provenance_file.is_file():
+        covered = {path.stem for path in files}
+        if not set(APP_REGIONS) <= covered or not provenance_file.is_file():
             catalogue.append(
                 CatalogueItem(
                     dataset_id=spec.dataset_id,
@@ -81,7 +90,6 @@ def build(processed: Path, out: Path) -> list[str]:
             )
             continue
         provenance = Provenance(**json.loads(provenance_file.read_text(encoding="utf-8")))
-        regions_with_data.update(p.stem for p in files)
         newest = max(newest, provenance.access_date)
         catalogue.append(
             CatalogueItem(
@@ -89,8 +97,8 @@ def build(processed: Path, out: Path) -> list[str]:
                 variable_id=spec.variable_id,
                 label=LABELS[spec.variable_id],
                 unit=provenance.output_unit,
-                period_start=min(r.period_start for r in provenance.regions.values()),
-                period_end=max(r.period_end for r in provenance.regions.values()),
+                period_start=min(provenance.regions[r].period_start for r in APP_REGIONS),
+                period_end=max(provenance.regions[r].period_end for r in APP_REGIONS),
                 status="ready",
             )
         )
@@ -117,7 +125,7 @@ def build(processed: Path, out: Path) -> list[str]:
         written.append(f"metadata/{spec.dataset_id}.json")
 
     regions = []
-    for region_id in sorted(regions_with_data, key=list(boxes).index):
+    for region_id in APP_REGIONS:
         box = boxes[region_id]
         regions.append(
             Region(
