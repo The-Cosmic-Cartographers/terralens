@@ -4,6 +4,10 @@ const STATIC_DATA_BASE_URL =
 const DATA_MODE = import.meta.env.VITE_DATA_MODE || 'static'
 
 const resources = {
+  health: {
+    api: '/health',
+    static: 'health.json',
+  },
   catalogue: {
     api: '/api/v1/catalogue',
     static: 'catalogue.json',
@@ -54,6 +58,7 @@ async function request(kind, params = {}) {
 
 export const dataClient = {
   mode: DATA_MODE,
+  health: () => request('health'),
   catalogue: () => request('catalogue'),
   regions: () => request('regions'),
   metadata: (datasetId) => request('metadata', { datasetId }),

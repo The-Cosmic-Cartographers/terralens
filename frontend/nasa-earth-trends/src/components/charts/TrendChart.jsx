@@ -19,13 +19,13 @@ function TrendChart({ data = chartFrame }) {
           margin={{ top: 12, right: 16, bottom: 4, left: 0 }}
         >
           <CartesianGrid
-            stroke="#d8d8cf"
+            stroke="#d3d8df"
             strokeDasharray="2 5"
             vertical={false}
           />
           <XAxis
             dataKey="year"
-            tick={{ fill: '#777970', fontSize: 11 }}
+            tick={{ fill: '#5b6573', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
@@ -34,7 +34,7 @@ function TrendChart({ data = chartFrame }) {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#8fb7ad"
+            stroke="#0b3d91"
             strokeWidth={3}
             dot={false}
             connectNulls={false}

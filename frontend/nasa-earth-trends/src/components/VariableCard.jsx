@@ -5,7 +5,7 @@ function VariableCard({ variable, index }) {
         <span className="variable-number">0{index + 1}</span>
         <span className="variable-unit">{variable.unit}</span>
       </div>
-      <div className={`variable-glyph glyph-${variable.kind}`} aria-hidden="true">
+      <div className="variable-glyph" aria-hidden="true">
         {variable.glyph}
       </div>
       <h3>{variable.name}</h3>

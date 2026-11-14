@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { useData } from '../hooks/useData.js'
 import { regions } from '../data/regionOptions.js'
+import Panel from './Panel.jsx'
 import RegionMap from './RegionMap.jsx'
 
 function RegionExplorer() {
@@ -14,58 +15,58 @@ function RegionExplorer() {
   )
 
   return (
-    <section className="fieldwork-section" id="fieldwork">
-      <div className="section-heading-row">
-        <div>
-          <span className="section-index">01 / FIELD SITE</span>
-          <h2>Start with a place.</h2>
-          <p>
-            Choose one of the five study regions. The map is a geographic
-            reference—not a result.
-          </p>
-        </div>
-
-        <label className="region-select-wrap">
-          <span>Study region</span>
-          <select
-            value={selectedId}
-            onChange={(event) => setSelectedId(event.target.value)}
-          >
+    <>
+      <Panel
+        className="span-8"
+        title="Study regions"
+        flush
+        meta={
+          <div className="segmented" role="tablist" aria-label="Study region">
             {regions.map((region) => (
-              <option key={region.id} value={region.id}>
-                {region.name}
-              </option>
+              <button
+                key={region.id}
+                type="button"
+                role="tab"
+                aria-selected={region.id === selectedId}
+                className={region.id === selectedId ? 'seg active' : 'seg'}
+                onClick={() => setSelectedId(region.id)}
+              >
+                {region.name.split(' (')[0]}
+              </button>
             ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="fieldwork-grid">
-        <RegionMap
-          region={selectedRegion}
-          regionData={selectedRegionData}
-        />
-
-        <div className="field-note">
-          <span className="note-index">FIELD NOTE / {selectedRegion.id}</span>
-          <h3>{selectedRegion.name}</h3>
-          <p className="field-location">{selectedRegion.shortLocation}</p>
-          <p>{selectedRegion.signal}</p>
-          <div className="field-metadata">
-            <div>
-              <span>Investigation window</span>
-              <strong>1981–2025</strong>
-            </div>
-            <div>
-              <span>Boundary source</span>
-              <strong>
-                {selectedRegionData?.source || 'GeoJSON integration pending'}
-              </strong>
-            </div>
           </div>
-        </div>
-      </div>
-    </section>
+        }
+      >
+        <RegionMap region={selectedRegion} regionData={selectedRegionData} />
+      </Panel>
+
+      <Panel className="span-4" title="Selected site">
+        <h3 className="site-name">{selectedRegion.name}</h3>
+        <p className="field-location">{selectedRegion.shortLocation}</p>
+        <p className="site-signal">{selectedRegion.signal}</p>
+        <dl className="kv">
+          <div>
+            <dt>Investigation window</dt>
+            <dd>1981–2025</dd>
+          </div>
+          <div>
+            <dt>Region id</dt>
+            <dd className="num">{selectedRegion.id}</dd>
+          </div>
+          <div>
+            <dt>Boundary source</dt>
+            <dd>{selectedRegionData?.source || 'Pending'}</dd>
+          </div>
+          <div>
+            <dt>Licence</dt>
+            <dd>{selectedRegionData?.licence || 'Pending'}</dd>
+          </div>
+        </dl>
+        <p className="panel-foot">
+          The map is a geographic reference, not a result.
+        </p>
+      </Panel>
+    </>
   )
 }
 

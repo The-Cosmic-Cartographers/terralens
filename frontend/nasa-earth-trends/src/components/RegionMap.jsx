@@ -66,7 +66,7 @@ function RegionMap({ region, regionData }) {
         type: 'line',
         source: sourceId,
         paint: {
-          'line-color': '#8fb7ad',
+          'line-color': '#0b3d91',
           'line-width': 3,
           'line-opacity': 0.9,
         },

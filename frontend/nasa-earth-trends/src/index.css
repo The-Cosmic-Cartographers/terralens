@@ -1,18 +1,93 @@
+/*
+  TerraLens design system: foundations.
+  Agency-style, evidence-first: white working surfaces, deep navy structure,
+  one blue for action, one red reserved for warnings and the live marker.
+  Tokens live here so every page reads from one place.
+*/
 :root {
-  --heading: Inter, ui-sans-serif, system-ui, sans-serif;
-  --mono: 'SFMono-Regular', Consolas, monospace;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* Colour: structure */
+  --navy-900: #04122e;
+  --navy-800: #071d45;
+  --navy-700: #0b2a63;
+  --blue-600: #0b3d91;
+  --blue-500: #1b57b8;
+  --blue-100: #e3ecf9;
+  --blue-50: #f1f5fb;
+
+  /* Colour: neutrals */
+  --ink: #14181f;
+  --ink-2: #3a424e;
+  --muted: #5b6573;
+  --line: #d3d8df;
+  --line-strong: #aab2bd;
+  --surface: #ffffff;
+  --surface-alt: #f4f6f9;
+  --canvas: #eceff3;
+
+  /* Colour: status (never the only signal; always paired with text) */
+  --red-500: #fc3d21;
+  --red-700: #b3200a;
+  --amber-100: #fff3cf;
+  --amber-700: #7a5600;
+  --green-700: #1d6b3a;
+  --green-100: #e3f3e8;
+
+  /* Type */
+  --font-sans: 'Public Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --heading: var(--font-sans);
+  --mono: var(--font-mono);
+
+  /* Space and shape */
+  --radius: 3px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --page-width: 1200px;
+
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   min-width: 320px;
   margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--blue-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 
 import EmptyState from '../components/EmptyState.jsx'
+import Panel from '../components/Panel.jsx'
 import ProductBadge from '../components/ProductBadge.jsx'
 import SampleDataWarning from '../components/SampleDataWarning.jsx'
 import TrendChart from '../components/charts/TrendChart.jsx'
@@ -10,17 +11,13 @@ function VariableDetailPage() {
   const displayName = variableId?.replaceAll('_', ' ')
 
   return (
-    <div className="content-page">
+    <div className="page">
       <Link className="back-link" to="/explore">
         ← Back to the Lineup
       </Link>
 
-      <div className="page-heading detail-heading">
+      <div className="page-title">
         <div>
-          <div className="eyebrow">
-            <span className="eyebrow-line" />
-            Trend detail
-          </div>
           <h1>{displayName}</h1>
           <p>Historical evidence and methodology for this variable.</p>
         </div>
@@ -29,42 +26,44 @@ function VariableDetailPage() {
 
       <SampleDataWarning />
 
-      <section className="detail-grid">
-        <div className="chart-card">
-          <div className="section-label">
-            Historical series <span>Chart foundation</span>
-          </div>
+      <div className="grid">
+        <Panel
+          className="span-8"
+          title="Historical series"
+          meta={<span className="chip">Chart foundation</span>}
+        >
           <TrendChart />
-        </div>
+        </Panel>
 
-        <aside className="method-card">
-          <span className="card-kicker">Evidence record</span>
-          <h2>Results are precomputed.</h2>
+        <Panel className="span-4" title="Evidence record">
           <p>
-            This view will display supplied trend statistics, coverage and
-            provenance once the result endpoint is available.
+            Results are precomputed. This view will display supplied trend
+            statistics, coverage and provenance once the result endpoint is
+            available.
           </p>
-          <div className="metadata-list">
+          <dl className="kv">
             <div>
-              <span>Variable</span>
-              <strong>{variableId}</strong>
+              <dt>Variable</dt>
+              <dd className="num">{variableId}</dd>
             </div>
             <div>
-              <span>Trend method</span>
-              <strong>Supplied by analysis</strong>
+              <dt>Trend method</dt>
+              <dd>Supplied by analysis</dd>
             </div>
             <div>
-              <span>Product type</span>
-              <strong>Model reanalysis</strong>
+              <dt>Product type</dt>
+              <dd>Model reanalysis</dd>
             </div>
-          </div>
-        </aside>
-      </section>
+          </dl>
+        </Panel>
 
-      <EmptyState
-        title="Trend result not connected yet"
-        message="The current backend contract does not expose a variable-result endpoint. No scientific result is being invented here."
-      />
+        <Panel className="span-12" title="Trend result" flush>
+          <EmptyState
+            title="Trend result not connected yet"
+            message="The current backend contract does not expose a variable-result endpoint. No scientific result is being invented here."
+          />
+        </Panel>
+      </div>
     </div>
   )
 }
