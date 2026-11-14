@@ -75,7 +75,7 @@ def build_files(store: DataStore, allow_sample: bool) -> dict[Path, str]:
         try:
             files[path] = dump(read())
         except DataUnavailable as error:
-            failures.append(f"{path}: {error}")
+            failures.append(f"{path.as_posix()}: {error}")
 
     for item in (c for c in catalogue if c.status == "ready"):
         add(
