@@ -130,8 +130,21 @@
   background: #4cc36f;
 }
 
-.status-off {
+.status-off,
+.status-stale {
   background: var(--red-500);
+}
+
+.status-fresh {
+  background: #4cc36f;
+}
+
+.status-aging {
+  background: #e0a33a;
+}
+
+.status-unknown {
+  background: #8ea2c8;
 }
 
 .side-status dl {

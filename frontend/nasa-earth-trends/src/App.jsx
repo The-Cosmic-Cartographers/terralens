@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
 import WindowSelector from './components/WindowSelector.jsx'
 import { useData } from './hooks/useData.js'
+import { ageLabel, coverageEndFrom, freshnessOf, snapshotDateFrom } from './utils/freshness.js'
 
 import './App.css'
 
@@ -67,7 +68,10 @@ function App() {
   const location = useLocation()
   const [theme, setTheme] = useState(readTheme)
   const { data: health, error, mode } = useData('health')
+  const { data: catalogue } = useData('catalogue')
   const online = Boolean(health) && !error
+  const freshness = freshnessOf(snapshotDateFrom(health?.data_version))
+  const coverageEnd = coverageEndFrom(catalogue)
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark'
@@ -111,12 +115,23 @@ function App() {
         </nav>
 
         <div className="side-status">
-          <span className="side-label">Data status</span>
+          <span className="side-label">Data freshness</span>
           <div className="side-status-row">
-            <span className={online ? 'status-dot' : 'status-dot status-off'} />
-            {online ? 'Snapshot ready' : error ? 'Snapshot unavailable' : 'Checking…'}
+            <span
+              className={`status-dot status-${online ? freshness.tone : 'off'}`}
+              title={online ? `Snapshot rebuilt ${ageLabel(freshness.ageDays).toLowerCase()}` : undefined}
+            />
+            {online ? freshness.label : error ? 'Snapshot unavailable' : 'Checking…'}
           </div>
           <dl>
+            <div>
+              <dt>Updated</dt>
+              <dd>{online ? ageLabel(freshness.ageDays) : '—'}</dd>
+            </div>
+            <div>
+              <dt>Coverage</dt>
+              <dd>{coverageEnd ?? '—'}</dd>
+            </div>
             <div>
               <dt>Version</dt>
               <dd>{health?.data_version ?? '—'}</dd>
