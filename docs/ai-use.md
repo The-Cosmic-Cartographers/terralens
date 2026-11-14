@@ -44,6 +44,8 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-60: centre-in-box footprint in `month_means` so a Harmony pull averages Giovanni's cells (T2M Ireland went from 0.88 °C to 0.0005 °C against Giovanni), `slice_extent` writing the averaged footprint into provenance as `analyzable_region`, and the checkpoint carrying it across runs; tests for the mask, the extent and the hand-off | `pipeline/pull.py`, `pipeline/tests/test_pull.py`, `pipeline/README.md` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-60: IMERG precipitation pulled straight from GES DISC (CMR granule list, 303 to a presigned URL with no auth on the signed hop, HDF5 reduced to 1 degree, cosine-latitude box mean that refuses a mostly-empty month), replacing the blocked row in `pipeline.pull`; `Route` now carries the route it actually used into the CSV, meta and provenance | `pipeline/pull.py`, `pipeline/tests/test_pull.py`, `pipeline/README.md`, `pyproject.toml`, `uv.lock` |
 
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-25: built and verified the soil-moisture, evapotranspiration and aerosol series for Ireland, Sahel and US Southwest from the raw CSV extracts, with provenance (route, box, sha256, job links) and a row-by-row reproducibility check | `data/processed/gldas_noah025_m21_soilmoi0_10/`, `data/processed/gldas_noah025_m21_evap/`, `data/processed/merra2_m2tmnxaer_v5_12_4/`, `backend/tests/test_data_index.py` |
+
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.

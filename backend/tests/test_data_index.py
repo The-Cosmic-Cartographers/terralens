@@ -29,11 +29,20 @@ def test_every_dataset_id_in_the_registry_is_unique():
 
 
 def test_catalogue_marks_pulled_datasets_ready_and_the_rest_coming_soon(index):
+    """Readiness follows the processed folder, so adding a row cannot break this test.
+
+    A dataset is ready when its folder holds at least one series; any other row is
+    coming soon. Asserting a fixed list here made every data PR fail CI for the
+    wrong reason, which is exactly what a contract test should not do.
+    """
     client, _ = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
-    assert items["merra2_m2tmnxslv"] == "ready"
-    assert {v for k, v in items.items() if k != "merra2_m2tmnxslv"} == {"coming_soon"}
     assert len(items) == len(VARIABLES)
+    for spec in VARIABLES.values():
+        has_series = any((PROCESSED / spec.dataset_id).glob("*.parquet"))
+        assert items[spec.dataset_id] == ("ready" if has_series else "coming_soon"), spec.dataset_id
+    assert items["merra2_m2tmnxslv"] == "ready"
+    assert any(status == "coming_soon" for status in items.values())
 
 
 def test_regions_are_only_those_with_a_series(index):
