@@ -143,10 +143,6 @@ function App() {
           </dl>
         </div>
 
-        <p className="side-note">
-          Independent team project for the NASA Space Apps Challenge 2026. Not
-          an official NASA product.
-        </p>
       </aside>
 
       <div className="dash-main">

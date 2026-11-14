@@ -171,14 +171,6 @@
   text-align: right;
 }
 
-.side-note {
-  margin: 0;
-  padding: 0 6px;
-  color: #7f93ba;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
 .dash-main {
   display: flex;
   min-width: 0;
@@ -979,7 +971,6 @@ h3 {
   }
 
   .side-status,
-  .side-note,
   .side-nav .side-label {
     display: none;
   }
@@ -2048,10 +2039,6 @@ body {
 
 .side-status dd {
   color: #e5f2f5;
-}
-
-.side-note {
-  color: #86a3b5;
 }
 
 .topbar {
