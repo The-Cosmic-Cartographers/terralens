@@ -13,13 +13,13 @@
   "period_start": "2000-01-01",
   "period_end": "2025-12-01",
   "qa_rules": [
-    "Giovanni area-averaged time series, monthly",
+    "area mean computed locally from the Harmony subset, monthly",
     "no mixing of product versions inside one series",
     "registered variable window, whole calendar years",
     "missing months kept as null rows",
     "CSV declared unit must match the expected native unit"
   ],
-  "region_source": "Linear doc 11 \u00a73 box, entered in Giovanni",
+  "region_source": "Linear doc 11 \u00a73 box, applied to the locally averaged field (NASA Harmony (GES DISC subset))",
   "transformations": [
     "Giovanni comment/header block skipped",
     "unit unchanged (kg/m2)",
