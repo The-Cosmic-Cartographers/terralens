@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
 import WindowSelector from './components/WindowSelector.jsx'
@@ -38,6 +38,23 @@ function NavIcon({ name }) {
   )
 }
 
+const THEME_KEY = 'terralens-theme'
+// Earlier builds saved the theme on first paint, so a stored value alone does
+// not prove the visitor chose it. Only a toggle sets this marker.
+const THEME_CHOICE_KEY = 'terralens-theme-chosen'
+
+function readTheme() {
+  try {
+    const chosen = window.localStorage.getItem(THEME_CHOICE_KEY)
+    const stored = window.localStorage.getItem(THEME_KEY)
+    if (chosen && (stored === 'light' || stored === 'dark')) return stored
+  } catch {
+    // Blocked storage only costs a preference, never the page.
+  }
+
+  return 'light'
+}
+
 function currentTitle(pathname) {
   if (pathname.startsWith('/explore/')) return 'The Lineup / Trend detail'
   const match = navigation.find((item) =>
@@ -48,15 +65,20 @@ function currentTitle(pathname) {
 
 function App() {
   const location = useLocation()
-  const [theme, setTheme] = useState(() => (
-    window.localStorage.getItem('terralens-theme') || 'dark'
-  ))
+  const [theme, setTheme] = useState(readTheme)
   const { data: health, error, mode } = useData('health')
   const online = Boolean(health) && !error
 
-  useEffect(() => {
-    window.localStorage.setItem('terralens-theme', theme)
-  }, [theme])
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    try {
+      window.localStorage.setItem(THEME_KEY, next)
+      window.localStorage.setItem(THEME_CHOICE_KEY, '1')
+    } catch {
+      // Blocked storage only costs a preference, never the page.
+    }
+  }
 
   return (
     <div className={`dash theme-${theme}`}>
@@ -125,7 +147,7 @@ function App() {
               type="button"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               aria-pressed={theme === 'light'}
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
             >
               <span className="theme-toggle-track" aria-hidden="true">
                 <span className="theme-toggle-thumb" />
