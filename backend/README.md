@@ -45,3 +45,12 @@ Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (defau
 - All files are checked first; if any ready dataset × region is missing or invalid it exits 1 and writes nothing.
 - Only those generated names are replaced. Other files in the output folder are left alone.
 - Output is deterministic, so re-running on the same data gives identical files.
+
+## Checking a snapshot before it ships (NAS-37)
+
+```bash
+PYTHONPATH=backend uv run python -m app.verify_snapshot            # frontend/public/data
+PYTHONPATH=backend uv run python -m app.verify_snapshot some/dir --allow-sample
+```
+
+Every file the export writes must exist, validate against the doc 04 models and sit at the path its own ids say. Any SAMPLE data fails the check unless `--allow-sample` is given, so run it without the flag before the final deploy. `tests/test_repo_hygiene.py` also fails if a credential pattern, a credential file or a raw NASA file is tracked, and checks a committed snapshot is not SAMPLE.
