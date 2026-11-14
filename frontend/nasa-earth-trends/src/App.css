@@ -1129,17 +1129,43 @@ h3 {
 
 .verdict-glossary {
   display: grid;
-  gap: 8px;
+  gap: 12px;
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 
-.verdict-glossary div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.verdict-glossary-note {
+  max-width: 82ch;
   color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.verdict-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.verdict-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.verdict-copy strong {
+  color: var(--ink-2);
+  font: 600 12px/1.3 var(--mono);
+}
+
+.verdict-copy small {
+  display: block;
+  max-width: 78ch;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .period-note,

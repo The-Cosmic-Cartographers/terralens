@@ -47,8 +47,28 @@ export const variableGlossary = [
 ]
 
 export const verdictGlossary = [
-  ['significant', 'Significant trend', 'Adjusted p-value is below 0.05.'],
-  ['weak_evidence', 'Weak evidence', 'Adjusted p-value is between 0.05 and 0.10.'],
-  ['no_clear_trend', 'No clear trend', 'The supplied test cannot separate a trend from noise.'],
-  ['not_enough_data', 'Not enough data', 'Coverage or record length is below the analysis threshold.'],
+  {
+    key: 'significant',
+    label: 'Significant trend',
+    rule: 'Adjusted p < 0.05',
+    explanation: 'Fewer than 5 in 100: if nothing were changing, a result this strong would appear in fewer than five out of a hundred records like this one. The direction is unlikely to be noise. It does not mean the change is large, fast, or caused by anything in particular.',
+  },
+  {
+    key: 'weak_evidence',
+    label: 'Weak evidence',
+    rule: 'Adjusted p 0.05–0.10',
+    explanation: 'Between 5 and 10 in 100: a result this strong would appear in five to ten out of a hundred records with no trend. That is suggestive, not a claim, and the confidence interval usually still includes a flat line.',
+  },
+  {
+    key: 'no_clear_trend',
+    label: 'No clear trend',
+    rule: 'Adjusted p ≥ 0.10',
+    explanation: 'More than 10 in 100: a result this strong would appear in more than ten out of a hundred records with no trend. The test cannot separate a trend from noise over this record. It is not evidence that the value is unchanged — a slow trend hidden by year-to-year swings looks exactly the same.',
+  },
+  {
+    key: 'not_enough_data',
+    label: 'Not enough data',
+    rule: 'Test not run',
+    explanation: 'Too few usable months to test: fewer than ten complete years, or months missing or below the 50% coverage gate. A p-value from a shorter record would overstate confidence, so none is reported.',
+  },
 ]
