@@ -21,6 +21,7 @@ dependencies = [
     "requests>=2.32",
     "harmony-py>=0.5",
     "netcdf4>=1.6",
+    "h5py>=3.10",
 ]
 
 [dependency-groups]
