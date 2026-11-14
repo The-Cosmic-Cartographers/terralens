@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
+import LoadingState from './components/LoadingState.jsx'
 import WindowSelector from './components/WindowSelector.jsx'
 import { useData } from './hooks/useData.js'
 import { ageLabel, coverageEndFrom, freshnessOf, snapshotDateFrom } from './utils/freshness.js'
@@ -172,7 +173,9 @@ function App() {
         </header>
 
         <main className="workspace" key={location.pathname}>
-          <Outlet />
+          <Suspense fallback={<LoadingState label="Loading evidence" />}>
+            <Outlet />
+          </Suspense>
         </main>
 
         <footer className="workspace-foot">

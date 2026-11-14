@@ -95,15 +95,52 @@ async function request(kind, params = {}) {
   throw new Error(`Request failed (${response?.status || 'unknown'}) for ${lastUrl}`)
 }
 
+// Several components ask for the same file (the shell wants the catalogue, so
+// does the overview), and routes remount on every visit. Keeping the promises
+// here collapses those requests into one per resource, and keeps the results
+// for an instant re-render when a page is opened again.
+const pending = new Map()
+const resolved = new Map()
+
+function cacheKey(kind, params) {
+  return `${kind}|${JSON.stringify(params)}`
+}
+
+function cached(kind, params, load) {
+  const key = cacheKey(kind, params)
+
+  if (!pending.has(key)) {
+    pending.set(
+      key,
+      load()
+        .then((data) => {
+          resolved.set(key, data)
+          return data
+        })
+        .catch((error) => {
+          pending.delete(key)
+          throw error
+        }),
+    )
+  }
+
+  return pending.get(key)
+}
+
+function peek(kind, params = {}) {
+  return resolved.get(cacheKey(kind, params))
+}
+
 export const dataClient = {
   mode: DATA_MODE,
-  health: () => request('health'),
-  catalogue: () => request('catalogue'),
-  regions: () => request('regions'),
-  metadata: ({ datasetId }) => request('metadata', { datasetId }),
-  lineup: ({ regionId }) => request('lineup', { regionId }),
-  series: ({ regionId, datasetId }) => request('series', { regionId, datasetId }),
-  trend: ({ regionId, datasetId }) => request('trend', { regionId, datasetId }),
-  windows: ({ regionId, datasetId }) => request('windows', { regionId, datasetId }),
-  compare: ({ datasetId }) => request('compare', { datasetId }),
+  peek,
+  health: () => cached('health', {}, () => request('health')),
+  catalogue: () => cached('catalogue', {}, () => request('catalogue')),
+  regions: () => cached('regions', {}, () => request('regions')),
+  metadata: ({ datasetId }) => cached('metadata', { datasetId }, () => request('metadata', { datasetId })),
+  lineup: ({ regionId }) => cached('lineup', { regionId }, () => request('lineup', { regionId })),
+  series: ({ regionId, datasetId }) => cached('series', { regionId, datasetId }, () => request('series', { regionId, datasetId })),
+  trend: ({ regionId, datasetId }) => cached('trend', { regionId, datasetId }, () => request('trend', { regionId, datasetId })),
+  windows: ({ regionId, datasetId }) => cached('windows', { regionId, datasetId }, () => request('windows', { regionId, datasetId })),
+  compare: ({ datasetId }) => cached('compare', { datasetId }, () => request('compare', { datasetId })),
 }

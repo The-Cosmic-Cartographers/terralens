@@ -16,7 +16,12 @@ const SELECTED_LINE = '#a93635'
 function RegionMap({ region, regionData, onRegionSelect }) {
   const mapContainer = useRef(null)
   const map = useRef(null)
+  const onSelectRef = useRef(onRegionSelect)
   const [localFeatures, setLocalFeatures] = useState([])
+
+  useEffect(() => {
+    onSelectRef.current = onRegionSelect
+  }, [onRegionSelect])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -51,7 +56,8 @@ function RegionMap({ region, regionData, onRegionSelect }) {
   }, [region.center, region.zoom])
 
   useEffect(() => {
-    if (!map.current) return undefined
+    const mapInstance = map.current
+    if (!mapInstance) return undefined
 
     const sourceId = 'study-regions'
     const fillLayerId = 'study-regions-fill'
@@ -61,9 +67,7 @@ function RegionMap({ region, regionData, onRegionSelect }) {
       || localFeatures.find((feature) => feature.properties?.region_id === region.id)?.geometry
 
     const updateRegionLayers = () => {
-      if (map.current.getLayer(lineLayerId)) map.current.removeLayer(lineLayerId)
-      if (map.current.getLayer(fillLayerId)) map.current.removeLayer(fillLayerId)
-      if (map.current.getSource(sourceId)) map.current.removeSource(sourceId)
+      if (!mapInstance.isStyleLoaded()) return
 
       const features = localFeatures.map((feature) => ({
         ...feature,
@@ -78,46 +82,59 @@ function RegionMap({ region, regionData, onRegionSelect }) {
       }
       if (!features.length) return
 
-      map.current.addSource(sourceId, {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features },
-      })
-      map.current.addLayer({
+      const collection = { type: 'FeatureCollection', features }
+      const paint = {
+        fillColor: ['case', isSelected, SELECTED_FILL, REGION_FILL],
+        fillOpacity: ['case', isSelected, 0.3, 0.16],
+        lineColor: ['case', isSelected, SELECTED_LINE, REGION_LINE],
+        lineWidth: ['case', isSelected, 2.5, 1.4],
+        lineOpacity: ['case', isSelected, 0.95, 0.7],
+      }
+
+      // Selecting another box only recolours the same layers. Tearing the
+      // source down and rebuilding it made each click flicker the map.
+      if (mapInstance.getSource(sourceId)) {
+        mapInstance.getSource(sourceId).setData(collection)
+        mapInstance.setPaintProperty(fillLayerId, 'fill-color', paint.fillColor)
+        mapInstance.setPaintProperty(fillLayerId, 'fill-opacity', paint.fillOpacity)
+        mapInstance.setPaintProperty(lineLayerId, 'line-color', paint.lineColor)
+        mapInstance.setPaintProperty(lineLayerId, 'line-width', paint.lineWidth)
+        mapInstance.setPaintProperty(lineLayerId, 'line-opacity', paint.lineOpacity)
+        return
+      }
+
+      mapInstance.addSource(sourceId, { type: 'geojson', data: collection })
+      mapInstance.addLayer({
         id: fillLayerId,
         type: 'fill',
         source: sourceId,
-        paint: {
-          'fill-color': ['case', isSelected, SELECTED_FILL, REGION_FILL],
-          'fill-opacity': ['case', isSelected, 0.3, 0.16],
-        },
+        paint: { 'fill-color': paint.fillColor, 'fill-opacity': paint.fillOpacity },
       })
-      map.current.addLayer({
+      mapInstance.addLayer({
         id: lineLayerId,
         type: 'line',
         source: sourceId,
         paint: {
-          'line-color': ['case', isSelected, SELECTED_LINE, REGION_LINE],
-          'line-width': ['case', isSelected, 2.5, 1.4],
-          'line-opacity': ['case', isSelected, 0.95, 0.7],
+          'line-color': paint.lineColor,
+          'line-width': paint.lineWidth,
+          'line-opacity': paint.lineOpacity,
         },
       })
-      map.current.on('click', fillLayerId, (event) => {
+      mapInstance.on('click', fillLayerId, (event) => {
         const clickedId = event.features?.[0]?.properties?.region_id
-        if (clickedId) onRegionSelect?.(clickedId)
+        if (clickedId) onSelectRef.current?.(clickedId)
       })
-      map.current.on('mouseenter', fillLayerId, () => { map.current.getCanvas().style.cursor = 'pointer' })
-      map.current.on('mouseleave', fillLayerId, () => { map.current.getCanvas().style.cursor = '' })
+      mapInstance.on('mouseenter', fillLayerId, () => { mapInstance.getCanvas().style.cursor = 'pointer' })
+      mapInstance.on('mouseleave', fillLayerId, () => { mapInstance.getCanvas().style.cursor = '' })
     }
 
-    if (map.current.isStyleLoaded()) updateRegionLayers()
-    else map.current.once('load', updateRegionLayers)
+    if (mapInstance.isStyleLoaded()) updateRegionLayers()
+    else mapInstance.once('load', updateRegionLayers)
 
     return () => {
-      map.current?.off('click', fillLayerId)
-      map.current?.off('mouseenter', fillLayerId)
-      map.current?.off('mouseleave', fillLayerId)
+      mapInstance.off('load', updateRegionLayers)
     }
-  }, [localFeatures, region.id, regionData, onRegionSelect])
+  }, [localFeatures, region.id, regionData])
 
   return (
     <div className="region-map-shell">

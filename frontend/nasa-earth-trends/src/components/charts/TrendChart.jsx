@@ -77,8 +77,8 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               color: 'var(--text)',
             }}
           />
-          <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} />
-          <Area dataKey="ciLow" stroke="none" fill="var(--surface)" fillOpacity={1} />
+          <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} isAnimationActive={false} />
+          <Area dataKey="ciLow" stroke="none" fill="var(--surface)" fillOpacity={1} isAnimationActive={false} />
           <Line
             type="monotone"
             dataKey={dataKey}
@@ -87,6 +87,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             strokeWidth={2.5}
             dot={false}
             connectNulls={false}
+            isAnimationActive={false}
           />
           {trend?.sen_slope_per_year != null && (
             <Line
@@ -98,6 +99,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               strokeDasharray="6 4"
               dot={false}
               connectNulls={false}
+              isAnimationActive={false}
             />
           )}
         </LineChart>
