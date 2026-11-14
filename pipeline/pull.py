@@ -3,10 +3,13 @@
 The routes are not interchangeable, so this module decides per variable instead
 of per run:
 
-* **Harmony** (GES DISC subsetting) for MERRA-2 T2M and aerosol and for GLDAS
-  soil moisture and evapotranspiration. It returns one netCDF per month; the
-  area mean is computed here and every parsed month is checkpointed, so a reset
-  connection or a killed runner resumes instead of starting over.
+* **Harmony** (GES DISC subsetting) for MERRA-2 aerosol and for GLDAS soil
+  moisture and evapotranspiration. It returns one netCDF per month; the area mean
+  is computed here and every parsed month is checkpointed, so a reset connection
+  or a killed runner resumes instead of starting over.
+* **T2M stays on Giovanni.** Harmony can subset M2TMNXSLV, but its output would
+  land on the same `data/raw/t2m_<region>.csv` the published series came from, so
+  the pull refuses that row instead of silently replacing a Giovanni source.
 * **Giovanni** stays the route for IMERG, which Harmony does not serve: no
   coverage is registered for the collection, so a Harmony job is rejected before
   it starts. The pull refuses to invent a substitute and reports the series as
@@ -19,7 +22,7 @@ written to a checkpoint, and never reaches `provenance.json`.
 
 Usage:
     EARTHDATA_TOKEN=... uv run python -m pipeline.pull --all
-    uv run python -m pipeline.pull --variable-id t2m --region-id ireland
+    uv run python -m pipeline.pull --variable-id aerosol --region-id ireland
     uv run python -m pipeline.pull --all --dry-run
 
 Exit codes: 0 complete, 2 credentials/config, 3 time limit reached, 4 series failed.
@@ -79,6 +82,16 @@ HARMONY_ROUTES: dict[str, Route] = {
     ),
     "evapotranspiration": Route(
         "C1342986036-GES_DISC", "Evap_tavg", "kg m-2 s-1", "GLDAS_NOAH025_M 2.1"
+    ),
+}
+
+# Rows whose committed series must not be replaced by a Harmony subset. T2M is
+# here because a Harmony run would overwrite data/raw/t2m_<region>.csv, the file
+# the published Giovanni series came from (NAS-60 review, Kevin).
+GIOVANNI_ONLY: dict[str, str] = {
+    "t2m": (
+        "the committed T2M series is a Giovanni export; a Harmony subset must not "
+        "overwrite data/raw/t2m_<region>.csv, so this row stays on Giovanni"
     ),
 }
 
@@ -415,6 +428,9 @@ def plan(
                     f"unknown region_id {region_id!r}; known: {', '.join(sorted(regions))}"
                 )
             if not _applies(variable_id, region_id):
+                continue
+            if variable_id in GIOVANNI_ONLY:
+                blocked.append((variable_id, region_id, GIOVANNI_ONLY[variable_id]))
                 continue
             route = HARMONY_ROUTES.get(variable_id)
             if route is None:

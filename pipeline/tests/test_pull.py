@@ -86,10 +86,17 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
 def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
     work, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
-    assert routed == {"t2m", "aerosol", "soil_moisture_0_10", "evapotranspiration"}
-    # IMERG is the only blocked row over the five Lineup regions; NO2 is a city row.
-    assert {variable for variable, _region, _reason in blocked} == {"precipitation"}
+    assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration"}
+    # IMERG has no Harmony coverage; T2M stays on its committed Giovanni series.
+    assert {variable for variable, _region, _reason in blocked} == {"precipitation", "t2m"}
     assert all(reason for _v, _r, reason in blocked)
+
+
+def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
+    work, blocked = pull.plan(["t2m"], ["ireland"])
+    assert work == []
+    assert blocked[0][0] == "t2m"
+    assert "Giovanni" in blocked[0][2]
 
     work_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
     assert work_no2 == []
@@ -265,5 +272,6 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     monkeypatch.delenv(pull.TOKEN_ENV, raising=False)
     assert pull.main(["--all", "--dry-run"]) == pull.EXIT_OK
     output = capsys.readouterr().out
-    assert "t2m/ireland <- Harmony" in output
+    assert "aerosol/ireland <- Harmony" in output
     assert "precipitation/ireland <- BLOCKED" in output
+    assert "t2m/ireland <- BLOCKED" in output

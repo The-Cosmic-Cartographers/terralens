@@ -13,7 +13,7 @@
 ```bash
 export EARTHDATA_TOKEN=...                      # never written to disk, logs or provenance
 uv run python -m pipeline.pull --all              # every series, then build
-uv run python -m pipeline.pull --variable-id t2m --region-id ireland
+uv run python -m pipeline.pull --variable-id aerosol --region-id ireland
 uv run python -m pipeline.pull --all --dry-run    # print the plan, no token needed
 ```
 
@@ -23,7 +23,7 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 
 | Variable | Route | Products |
 | -- | -- | -- |
-| T2M | Harmony | MERRA-2 `M2TMNXSLV` (`C1276812859-GES_DISC`), field `T2M` |
+| T2M | **Giovanni only** (kept) | the committed series is a Giovanni export; Harmony can subset `M2TMNXSLV` but would overwrite the same raw file, so the pull refuses this row and says so |
 | aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
 | soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
 | evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
@@ -60,6 +60,18 @@ windowed route (13 years per request) and drop the CSV in `data/raw/` as
 
 A 26-year series is five chunks, so roughly 2 min per series when GES DISC is answering. The
 slowest step is the job poll, not the download.
+
+### Dependencies, and the real total
+
+New runtime dependencies: `requests` (the keep-alive sessions), `harmony-py` (job submission)
+and `netcdf4` (the engine behind `xarray`, which was already a dependency). No browser, no
+Selenium, nothing installed at run time.
+
+At ~2 min per series, the 22 Harmony slices in the plan — soil moisture, evapotranspiration and
+aerosol over five regions — come to roughly **45 minutes**, which is over the 30-minute target.
+That is why resuming is the default design rather than an extra: `--time-limit 1800` stops at a
+chunk boundary and the next run continues from the checkpoints. T2M is not in that count (it stays
+on Giovanni), and precipitation and NO₂ are refused rather than pulled.
 
 **Today's block, and why the command still behaved:** every GES DISC read returned
 `403 EULA Acceptance Failure` (`data.gesdisc.earthdata.nasa.gov`), which is also what broke
