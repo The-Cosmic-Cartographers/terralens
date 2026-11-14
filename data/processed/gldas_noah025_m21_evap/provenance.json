@@ -51,7 +51,8 @@
         "series covers the full registered window",
         "mapped to the doc 04 processed-series columns",
         "anomaly left null: climatology and anomalies belong to analysis/",
-        "analyzable_region recomputed with the deterministic 0.25 degree centre-in-box rule"
+        "analyzable_region recomputed with the deterministic 0.25 degree centre-in-box rule",
+        "permalink unavailable: the Harmony job id was not recorded for this run (warning, not silent): the series is reproducible from the box and window"
       ]
     },
     "sahel": {
