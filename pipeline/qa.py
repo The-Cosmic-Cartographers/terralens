@@ -165,14 +165,27 @@ def check_series(
     source_name = str(entry.get("source_csv") or "")
     source = raw_root / source_name if source_name else None
     if source is None or not source.exists():
-        add("warning", f"raw source {source_name!r} is not on disk (data/raw is not committed)")
+        # data/raw is not committed, so an absent export is unverifiable rather than
+        # wrong: the committed series may well be correct and its source simply
+        # lives elsewhere (the Giovanni T2M exports are on Kevin's machine).
+        add(
+            "warning",
+            f"the export this series was built from ({source_name!r}) is not in the repo, "
+            "so its hash cannot be re-checked",
+        )
     else:
         digest = _sha256(source)
         recorded = str(entry.get("source_csv_sha256") or "")
         if not recorded:
             add("error", "provenance has no source hash")
         elif digest != recorded:
-            add("error", "raw CSV has changed since this series was built")
+            # A file with the recorded name but different bytes is a different pull
+            # that happens to share the name, not proof that provenance is wrong.
+            add(
+                "error",
+                f"{source_name} in data/raw is not the export this series was built from "
+                "(sha256 differs); restore that export or rebuild the series from this one",
+            )
 
     return issues
 
@@ -265,7 +278,12 @@ def regenerate(dataset_dir: Path, raw_root: Path, scratch: Path) -> list[Issue]:
         source = raw_root / str(entry.get("source_csv") or "")
         if not source.is_file():
             issues.append(
-                Issue("warning", dataset_id, region_id, "cannot regenerate: raw CSV not on disk")
+                Issue(
+                    "warning",
+                    dataset_id,
+                    region_id,
+                    "cannot regenerate: the export this series was built from is not in the repo",
+                )
             )
             continue
         try:

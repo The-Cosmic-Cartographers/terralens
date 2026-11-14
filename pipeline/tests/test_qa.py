@@ -88,7 +88,29 @@ def test_missing_contract_column_is_an_error_but_does_not_hide_the_hash(tmp_path
 
     messages = [issue.message for issue in qa.check_dataset(dataset, raw) if issue.level == "error"]
     assert any("n_valid_days" in message for message in messages)
-    assert any("raw CSV has changed" in message for message in messages)
+    assert any("is not the export this series was built from" in message for message in messages)
+
+
+def test_an_export_that_is_not_in_the_repo_is_a_warning_not_an_error(
+    tmp_path: Path,
+) -> None:
+    """data/raw is not committed, so a missing export is unverifiable, not wrong."""
+    dataset, raw = _frames(tmp_path)
+    (raw / "t2m_ireland.csv").unlink()
+
+    issues = qa.check_dataset(dataset, raw)
+    assert [issue for issue in issues if issue.level == "error"] == []
+    assert any("is not in the repo" in issue.message for issue in issues)
+    assert any(issue.level == "warning" for issue in issues)
+
+
+def test_a_different_file_with_the_recorded_name_says_so_plainly(tmp_path: Path) -> None:
+    dataset, raw = _frames(tmp_path)
+    (raw / "t2m_ireland.csv").write_text("Unit,K\nMonth,Mean\n1981-01,1.0\n", encoding="utf-8")
+
+    messages = [issue.message for issue in qa.check_dataset(dataset, raw) if issue.level == "error"]
+    assert any("is not the export this series was built from" in message for message in messages)
+    assert any("restore that export or rebuild" in message for message in messages)
 
 
 def test_wrong_stored_unit_is_an_error(tmp_path: Path) -> None:

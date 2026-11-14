@@ -108,8 +108,10 @@ reports it per series and the rerun resumes.
 - every month of the registered window is present exactly once;
 - the provenance period matches the file, and `requested_box` parses as W,S,E,N inside
   valid coordinates (a box that differs from `pipeline/regions.json` is a warning);
-- the raw CSV's sha256 matches the hash recorded when the series was built, so a changed
-  raw file or a missing hash is an error;
+- the sha256 of the export the series was built from matches the hash in provenance. A file
+  with the recorded name but different bytes is an error (it is a different pull); an export
+  that is simply absent is a warning, because `data/raw` is not committed and the recorded
+  export may live elsewhere. A provenance with no hash at all is an error;
 - provenance regions and parquet files are one-to-one, and an empty permalink is only a
   warning (the two Ireland GLDAS pulls never logged a job id).
 
