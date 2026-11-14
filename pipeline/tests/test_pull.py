@@ -166,6 +166,7 @@ def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
     resumed.load()
     assert resumed.extent == "51.40,55.40,-10.50,-6.00"
 
+
 def test_precipitation_is_a_real_route_and_not_a_blocked_row() -> None:
     """IMERG is pulled from GES DISC directly, since Harmony has no coverage for it."""
     work, blocked = pull.plan(["precipitation"], ["ireland"])
