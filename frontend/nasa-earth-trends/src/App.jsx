@@ -165,7 +165,18 @@ function App() {
         </main>
 
         <footer className="workspace-foot">
-          <span>Data: NASA GES DISC (MERRA-2, GLDAS), GPM IMERG, Earthdata</span>
+          <span>
+            Data:{' '}
+            <a className="source-link" href="https://disc.gsfc.nasa.gov" target="_blank" rel="noreferrer noopener">NASA GES DISC</a>
+            {' ('}
+            <a className="source-link" href="https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/" target="_blank" rel="noreferrer noopener">MERRA-2</a>
+            {', '}
+            <a className="source-link" href="https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH025_M_2.1/summary" target="_blank" rel="noreferrer noopener">GLDAS</a>
+            {'), '}
+            <a className="source-link" href="https://gpm.nasa.gov/data/imerg" target="_blank" rel="noreferrer noopener">GPM IMERG</a>
+            {', '}
+            <a className="source-link" href="https://www.earthdata.nasa.gov" target="_blank" rel="noreferrer noopener">Earthdata</a>
+          </span>
           <span>Evidence over assumptions. No forecasts, no causes.</span>
         </footer>
       </div>

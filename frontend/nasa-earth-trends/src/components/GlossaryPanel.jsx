@@ -1,5 +1,7 @@
 import Panel from './Panel.jsx'
+import SourceLink from './SourceLink.jsx'
 import { variableGlossary, verdictGlossary } from '../data/glossary.js'
+import { datasetSourceUrl } from '../data/sources.js'
 
 function GlossaryPanel() {
   return (
@@ -13,7 +15,9 @@ function GlossaryPanel() {
             </div>
             <p>{item.definition}</p>
             <small>{item.whyItMatters}</small>
-            <span className="glossary-source">{item.source}</span>
+            <SourceLink className="glossary-source" href={datasetSourceUrl(item.datasetId)}>
+              {item.source}
+            </SourceLink>
           </article>
         ))}
       </div>

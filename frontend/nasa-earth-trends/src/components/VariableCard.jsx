@@ -1,3 +1,6 @@
+import SourceLink from './SourceLink.jsx'
+import { datasetSourceUrl } from '../data/sources.js'
+
 function VariableCard({ variable, index }) {
   return (
     <article className="variable-card">
@@ -15,7 +18,7 @@ function VariableCard({ variable, index }) {
         <p>{variable.significance}</p>
       </details>
       <div className="variable-card-footer">
-        <span>{variable.source}</span>
+        <SourceLink href={datasetSourceUrl(variable.datasetId)}>{variable.source}</SourceLink>
         <span className="awaiting-result">Result supplied by analysis</span>
       </div>
     </article>

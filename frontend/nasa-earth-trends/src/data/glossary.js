@@ -1,6 +1,7 @@
 export const variableGlossary = [
   {
     variableId: 't2m',
+    datasetId: 'merra2_m2tmnxslv',
     name: 'Air temperature',
     unit: '°C',
     source: 'MERRA-2 model reanalysis',
@@ -9,6 +10,7 @@ export const variableGlossary = [
   },
   {
     variableId: 'soil_moisture_0_10',
+    datasetId: 'gldas_noah025_m21_soilmoi0_10',
     name: 'Soil moisture',
     unit: 'kg/m²',
     source: 'GLDAS land model',
@@ -17,6 +19,7 @@ export const variableGlossary = [
   },
   {
     variableId: 'precipitation',
+    datasetId: 'gpm_3imergm_v07b',
     name: 'Precipitation',
     unit: 'mm/month',
     source: 'GPM IMERG satellite estimate',
@@ -25,6 +28,7 @@ export const variableGlossary = [
   },
   {
     variableId: 'evapotranspiration',
+    datasetId: 'gldas_noah025_m21_evap',
     name: 'Evapotranspiration',
     unit: 'mm/day',
     source: 'GLDAS land model',
@@ -33,6 +37,7 @@ export const variableGlossary = [
   },
   {
     variableId: 'aerosol',
+    datasetId: 'merra2_m2tmnxaer_v5_12_4',
     name: 'Aerosol optical depth',
     unit: 'unitless',
     source: 'MERRA-2 model reanalysis',

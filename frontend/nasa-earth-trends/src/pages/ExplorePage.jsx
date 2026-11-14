@@ -17,6 +17,7 @@ import { useData } from '../hooks/useData.js'
 const guide = [
   {
     name: 'Air temperature',
+    datasetId: 'merra2_m2tmnxslv',
     unit: '°C',
     glyph: 'T°',
     source: 'MERRA-2 reanalysis',
@@ -26,6 +27,7 @@ const guide = [
   },
   {
     name: 'Soil moisture',
+    datasetId: 'gldas_noah025_m21_soilmoi0_10',
     unit: 'kg/m²',
     glyph: '≈',
     source: 'GLDAS land model',
@@ -35,6 +37,7 @@ const guide = [
   },
   {
     name: 'Precipitation',
+    datasetId: 'gpm_3imergm_v07b',
     unit: 'mm/month',
     glyph: '∇',
     source: 'GPM IMERG satellite estimate',
@@ -44,6 +47,7 @@ const guide = [
   },
   {
     name: 'Evapotranspiration',
+    datasetId: 'gldas_noah025_m21_evap',
     unit: 'mm/day',
     glyph: '↑',
     source: 'GLDAS land model',
@@ -53,6 +57,7 @@ const guide = [
   },
   {
     name: 'Aerosol optical depth',
+    datasetId: 'merra2_m2tmnxaer_v5_12_4',
     unit: 'unitless',
     glyph: '◉',
     source: 'MERRA-2 reanalysis',
@@ -145,10 +150,10 @@ function ExplorePage() {
         <Panel className="span-12" title="Variable guide">
           <div className="lineup-grid">
             {guide.map((variable, index) => (
-              <Link className="lineup-link-card" to={`/explore/${variable.variableId}?region=${regionId}`} key={variable.variableId}>
+              <div className="lineup-link-card" key={variable.variableId}>
                 <VariableCard variable={variable} index={index} />
-                <span className="lineup-availability">Open detail view</span>
-              </Link>
+                <Link className="lineup-availability" to={`/explore/${variable.variableId}?region=${regionId}`}>Open detail view →</Link>
+              </div>
             ))}
           </div>
         </Panel>

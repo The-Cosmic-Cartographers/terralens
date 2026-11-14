@@ -7,9 +7,11 @@ import LoadingState from '../components/LoadingState.jsx'
 import Panel from '../components/Panel.jsx'
 import ProductBadge from '../components/ProductBadge.jsx'
 import SampleDataWarning from '../components/SampleDataWarning.jsx'
+import SourceLink from '../components/SourceLink.jsx'
 import TimeMachine from '../components/TimeMachine.jsx'
 import TrendChart from '../components/charts/TrendChart.jsx'
 import { regions } from '../data/regionOptions.js'
+import { provenanceUrl } from '../data/sources.js'
 import { useData } from '../hooks/useData.js'
 import { useWindow } from '../state/window.js'
 import { formatP, formatSigned } from '../utils/format.js'
@@ -99,7 +101,14 @@ function VariableDetailPage() {
             <div><dt>Unit</dt><dd>{trend?.unit_per_year?.replace('/yr', '') || series?.unit || dataset?.unit || 'Pending'}</dd></div>
             <div><dt>Trend method</dt><dd>{trend?.method || 'Supplied by analysis'}</dd></div>
             <div><dt>Coverage</dt><dd>{trend?.mean_coverage_fraction == null ? 'Pending' : `${(trend.mean_coverage_fraction * 100).toFixed(1)}%`}</dd></div>
-            <div><dt>Source</dt><dd>{metadata?.provenance?.product || 'Product metadata pending'}</dd></div>
+            <div>
+              <dt>Source</dt>
+              <dd>
+                <SourceLink href={provenanceUrl(metadata?.provenance, regionId)}>
+                  {metadata?.provenance?.product || 'Product metadata pending'}
+                </SourceLink>
+              </dd>
+            </div>
           </dl>
         </Panel>
 
