@@ -32,6 +32,7 @@ from app.models import (
     Metadata,
     Provenance,
     Region,
+    RegionProvenance,
     SeriesRow,
     TrendResult,
     Window,
@@ -392,7 +393,22 @@ def build_windows(raw: RawResult) -> Windows:
 
 
 def provenance_for(spec: DatasetSpec) -> Provenance:
-    boxes = "; ".join(f"{r.region_id}: {','.join(str(c) for c in r.box)}" for r in REGIONS)
+    regions = {
+        r.region_id: RegionProvenance(
+            region_id=r.region_id,
+            requested_box=",".join(str(c) for c in r.box),
+            analyzable_region="n/a (synthetic)",
+            giovanni_variable_id="n/a",
+            permalink="https://example.invalid/sample",
+            period_start=dt.date(spec.start, 1, 1),
+            period_end=dt.date(spec.end, 12, 1),
+            source_csv="n/a (generated)",
+            source_csv_sha256="0" * 64,
+            observations=(spec.end - spec.start + 1) * 12,
+            transformations=["synthetic series with a known trend"],
+        )
+        for r in REGIONS
+    }
     return Provenance(
         dataset_id=spec.dataset_id,
         product=SAMPLE,
@@ -409,12 +425,9 @@ def provenance_for(spec: DatasetSpec) -> Provenance:
         period_end=dt.date(spec.end, 12, 1),
         qa_rules=["none: synthetic data"],
         region_source="sample boxes from Linear doc 01",
-        requested_box=boxes,
-        analyzable_region="n/a (synthetic)",
-        giovanni_variable_id="n/a",
-        giovanni_permalink="https://example.invalid/sample",
         citation=SAMPLE,
         transformations=["synthetic series with a known trend"],
+        regions=regions,
     )
 
 
