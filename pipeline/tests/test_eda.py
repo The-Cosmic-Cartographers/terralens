@@ -20,10 +20,19 @@ from pipeline.eda import (
 )
 
 
-def _frame(start: str = "1981-01-01", years: int = 10, slope_per_year: float = 0.0) -> pd.DataFrame:
+def _frame(
+    start: str = "1981-01-01",
+    years: int = 10,
+    slope_per_year: float = 0.0,
+    jitter: float = 0.0,
+) -> pd.DataFrame:
     index = pd.date_range(start, periods=years * 12, freq="MS")
     months = np.arange(len(index))
     values = 10.0 + slope_per_year * months / 12.0 + 3.0 * np.sin(2 * np.pi * (months % 12) / 12)
+    if jitter:
+        # A perfectly repeating sine leaves Theil-Sen with a degenerate interval;
+        # real series never do, so the fixture should not either.
+        values = values + np.random.default_rng(0).normal(0.0, jitter, len(index))
     return pd.DataFrame(
         {
             "timestamp": index,
@@ -76,9 +85,11 @@ def test_anomalies_remove_the_monthly_mean() -> None:
 
 
 def test_trend_recovers_a_known_slope() -> None:
-    result = trend(_frame(years=20, slope_per_year=0.5))
-    assert result["slope_per_decade"] == pytest.approx(5.0, abs=0.2)
+    result = trend(_frame(years=30, slope_per_year=0.5, jitter=0.4))
+
+    assert result["slope_per_decade"] == pytest.approx(5.0, abs=0.3)
     assert result["ci_low"] < result["slope_per_decade"] < result["ci_high"]
+    assert result["ci_low"] < 5.0 < result["ci_high"], "the interval must cover the true slope"
     assert result["p_value"] < 0.01
 
 
