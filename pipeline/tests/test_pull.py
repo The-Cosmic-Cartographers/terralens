@@ -150,7 +150,7 @@ def test_slice_extent_reports_the_cells_that_were_actually_averaged(tmp_path: Pa
         tmp_path, [51.5, 52.5, 55.5], [-10.0, -8.0], [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
     )
     assert _REAL_SLICE_EXTENT(payload, tmp_path, box=(-10.5, 51.4, -6.0, 55.4)) == (
-        "51.50,52.50,-10.00,-8.00"
+        "-10.00,51.50,-8.00,52.50"
     )
 
 
