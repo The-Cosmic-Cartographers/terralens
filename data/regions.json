@@ -1,0 +1,107 @@
+[
+  {
+    "region_id": "ireland",
+    "name": "Ireland",
+    "description": "Box -10.5 to -6.0 degrees east, 51.4 to 55.4 degrees north.",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -10.5,
+            51.4
+          ],
+          [
+            -6.0,
+            51.4
+          ],
+          [
+            -6.0,
+            55.4
+          ],
+          [
+            -10.5,
+            55.4
+          ],
+          [
+            -10.5,
+            51.4
+          ]
+        ]
+      ]
+    },
+    "geometry_url": null,
+    "source": "Region boxes defined by TerraLens (Linear doc 01, decision D19)",
+    "licence": "TerraLens project boxes; no third-party boundary data"
+  },
+  {
+    "region_id": "sahel",
+    "name": "Sahel (West Africa)",
+    "description": "Box 0.0 to 20.0 degrees east, 12.0 to 18.0 degrees north.",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            0.0,
+            12.0
+          ],
+          [
+            20.0,
+            12.0
+          ],
+          [
+            20.0,
+            18.0
+          ],
+          [
+            0.0,
+            18.0
+          ],
+          [
+            0.0,
+            12.0
+          ]
+        ]
+      ]
+    },
+    "geometry_url": null,
+    "source": "Region boxes defined by TerraLens (Linear doc 01, decision D19)",
+    "licence": "TerraLens project boxes; no third-party boundary data"
+  },
+  {
+    "region_id": "us_southwest",
+    "name": "US Southwest (Colorado Basin)",
+    "description": "Box -115.0 to -105.0 degrees east, 31.0 to 38.0 degrees north.",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -115.0,
+            31.0
+          ],
+          [
+            -105.0,
+            31.0
+          ],
+          [
+            -105.0,
+            38.0
+          ],
+          [
+            -115.0,
+            38.0
+          ],
+          [
+            -115.0,
+            31.0
+          ]
+        ]
+      ]
+    },
+    "geometry_url": null,
+    "source": "Region boxes defined by TerraLens (Linear doc 01, decision D19)",
+    "licence": "TerraLens project boxes; no third-party boundary data"
+  }
+]

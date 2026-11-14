@@ -21,6 +21,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-56: Kevin's NAS-7 review fixes — per-variable windows, CSV unit-row guard, missing months kept as null rows, with tests | `pipeline/build.py`, `pipeline/giovanni.py`, `pipeline/registry.py`, `pipeline/tests/` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-6: T2M 1981–2025 for Ireland, Sahel and US Southwest, pulled from the NASA POWER regional API (MERRA-2) and built into processed series; added `--access-route` so provenance names the real access path | `data/raw/` (git-ignored), `data/processed/merra2_m2tmnxslv/`, `pipeline/build.py` |
 | 2026-11-14 | Kevin | Claude Code | Pulled three T2M series through the Giovanni web UI with browser automation and fixed the pipeline parser for real Giovanni dates (NAS-6) | `pipeline/giovanni.py`, `pipeline/tests/`, `data/processed/merra2_m2tmnxslv/` |
+| 2026-11-14 | Kevin | Claude Code | Index builder for the real data folder (catalogue, regions, metadata, data version), unique GLDAS dataset ids in the registry, and tests (NAS-6) | `backend/scripts/build_data_index.py`, `backend/tests/test_data_index.py`, `data/catalogue.json`, `data/regions.json`, `data/metadata/`, `pipeline/registry.py` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 

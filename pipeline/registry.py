@@ -47,7 +47,7 @@ VARIABLES: dict[str, Variable] = {
     ),
     "soil_moisture_0_10": Variable(
         variable_id="soil_moisture_0_10",
-        dataset_id="gldas_noah025_m21",
+        dataset_id="gldas_noah025_m21_soilmoi0_10",
         product="GLDAS-2.1 Noah monthly soil moisture, 0-10 cm (GLDAS_NOAH025_M)",
         version="2.1",
         native_unit="kg/m2",
@@ -59,7 +59,7 @@ VARIABLES: dict[str, Variable] = {
     ),
     "evapotranspiration": Variable(
         variable_id="evapotranspiration",
-        dataset_id="gldas_noah025_m21",
+        dataset_id="gldas_noah025_m21_evap",
         product="GLDAS-2.1 Noah monthly evapotranspiration (GLDAS_NOAH025_M)",
         version="2.1",
         native_unit="kg/m2/s",
