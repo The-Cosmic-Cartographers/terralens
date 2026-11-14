@@ -65,7 +65,7 @@ const guide = [
 function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [regionId, setRegionId] = useState(searchParams.get('region') || regions[0].id)
-  const { data: catalogue, loading: catalogueLoading, error: catalogueError, mode } = useData('catalogue')
+  const { data: catalogue, loading: catalogueLoading, error: catalogueError } = useData('catalogue')
   const { data: lineup, loading: lineupLoading, error: lineupError } = useData('lineup', { regionId })
   const items = catalogue ?? []
   const rows = lineup?.rows ?? []
@@ -84,7 +84,6 @@ function ExplorePage() {
           <h1>The Lineup</h1>
           <p>Ranked environmental signals across the selected region, using supplied results from 1981–2025.</p>
         </div>
-        <span className="chip">{mode === 'static' ? 'Static snapshot' : 'Live API'}</span>
       </div>
 
       <SampleDataWarning />
