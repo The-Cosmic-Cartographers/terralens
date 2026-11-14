@@ -24,3 +24,22 @@ The API reads `TERRALENS_DATA_DIR` (default `./data`). Point it at the SAMPLE fi
 ```bash
 TERRALENS_DATA_DIR=./data/fixtures uv run uvicorn app.main:app --app-dir backend --reload
 ```
+
+## Static export (NAS-21)
+
+The deployed app reads static JSON, not a live server. The export writes every API response to the doc 04 §5 paths, using the same store as the API.
+
+```bash
+# real data (refuses if data_version contains SAMPLE)
+PYTHONPATH=backend uv run python -m app.export
+
+# local development with the SAMPLE fixtures
+PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --allow-sample
+```
+
+Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (default `frontend/public/data`), `--allow-sample`.
+
+- Writes `health.json` (carries `data_version`), `catalogue.json`, `regions.json`, `metadata/`, `lineup/`, `series/`, `trend/`, `windows/`. `compare/` arrives with NAS-23.
+- All files are checked first; if any ready dataset × region is missing or invalid it exits 1 and writes nothing.
+- Only those generated names are replaced. Other files in the output folder are left alone.
+- Output is deterministic, so re-running on the same data gives identical files.
