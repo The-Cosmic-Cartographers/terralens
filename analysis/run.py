@@ -1,8 +1,14 @@
 """Analysis entry point: processed Parquet -> contract results (NAS-12, NAS-28/30).
 
-Reads the pipeline's monthly series, runs the decided statistics, applies BH
-within each region's lineup, and writes the three files the API and the static
-export read:
+Reads the pipeline's monthly series, runs the decided statistics, and applies
+BH **twice**, because the contract has two families (D23): within each region's
+lineup, and within each variable across regions for the compare view. The same
+region and variable therefore carries two adjusted p-values — the Lineup one in
+`lineup/<region>.json`, the compare one in `<dataset_id>/trends.json`. The API
+serves `/trend` from the lineup file so a detail card always matches the Lineup
+verdict, and `/compare` from trends.json.
+
+The three files the API and the static export read:
 
     data/results/<dataset_id>/trends.json              (doc 04 schema 2)
     data/results/lineup/<region_id>.json               (doc 04 schema 2a)
@@ -248,6 +254,29 @@ def apply_bh(trends: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return ranked
 
 
+def apply_compare_family(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """BH within each variable across regions — the family `/compare` validates.
+
+    `CompareResult` requires `bh_family == compare:<variable_id>` with one family
+    per variable, so this must run over the rows of **every** region at once.
+    Mutates and returns the same row objects; a withheld row stays out of the
+    family and keeps null p-values, exactly as in the lineup.
+    """
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        grouped.setdefault(row["variable_id"], []).append(row)
+
+    out: list[dict[str, Any]] = []
+    for variable_id, family in grouped.items():
+        tl.finalize_lineup(family)
+        for row in family:
+            row["bh_family"] = f"compare:{variable_id}"
+            if row["verdict"] == "significant":
+                row["detect_years"] = None
+        out.extend(family)
+    return out
+
+
 ROW_ONLY_FIELDS = ("definition", "sparkline")
 
 
@@ -259,6 +288,7 @@ def _trend_only(row: dict[str, Any]) -> dict[str, Any]:
 def write_outputs(
     *,
     trends: list[dict[str, Any]],
+    lineup_rows: list[dict[str, Any]],
     windows: list[dict[str, Any]],
     region: str,
 ) -> list[Path]:
@@ -303,7 +333,7 @@ def write_outputs(
                 "sparkline": row["sparkline"],
                 "trend": _trend_only(row),
             }
-            for row in sorted(trends, key=_rank_key)
+            for row in sorted(lineup_rows, key=_rank_key)
         ],
     }
     validated_lineup = Lineup.model_validate(lineup).model_dump(mode="json")
@@ -377,17 +407,45 @@ def main(argv: Iterable[str] | None = None) -> int:
     if not targets:
         parser.error("no processed parquet files under data/processed")
 
+    bundles: dict[str, dict[str, Any]] = {}
     for region in targets:
         trends, windows = analyse_region(region)
         if not trends:
             print(f"{region}: no analysable series")
             continue
-        ranked = apply_bh(trends)
-        written = write_outputs(trends=trends, windows=windows, region=region)
-        top = ranked[0]
+        # two copies: the lineup family and the compare family adjust the same
+        # row differently, and both values have to survive to their own file.
+        lineup_rows = [dict(row) for row in trends]
+        ranked = apply_bh(lineup_rows)
+        bundles[region] = {
+            "compare": trends,
+            "lineup": lineup_rows,
+            "ranked": ranked,
+            "windows": windows,
+        }
+
+    if args.region and bundles:
         print(
-            f"{region}: {len(trends)} rows, top = {top['variable_id']} "
-            f"({top['verdict']}), {len(windows)} windows, {len(written)} files"
+            "note: a single-region run leaves one member in each compare family; "
+            "run every region before shipping results"
+        )
+
+    compare_rows = apply_compare_family(
+        [row for bundle in bundles.values() for row in bundle["compare"]]
+    )
+
+    for region, bundle in bundles.items():
+        own = [row for row in compare_rows if row["region_id"] == region]
+        written = write_outputs(
+            trends=own,
+            lineup_rows=bundle["lineup"],
+            windows=bundle["windows"],
+            region=region,
+        )
+        top = bundle["ranked"][0]
+        print(
+            f"{region}: {len(bundle['compare'])} rows, top = {top['variable_id']} "
+            f"({top['verdict']}), {len(bundle['windows'])} windows, {len(written)} files"
         )
         for path in written:
             print(f"  wrote {path.relative_to(REPO_ROOT)}")

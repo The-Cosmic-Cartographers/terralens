@@ -66,6 +66,12 @@ def check_trends(checks: Checks) -> int:
                     row["unit_per_year"],
                 )
 
+                checks.add(
+                    f"{label}: trends.json carries the compare family",
+                    row["bh_family"] == f"compare:{row['variable_id']}",
+                    row["bh_family"],
+                )
+
             if withheld:
                 checks.add(
                     f"{label}: withheld row carries no statistics",
