@@ -72,3 +72,22 @@ def test_reads_a_colon_style_unit_row() -> None:
 def test_returns_none_when_the_export_declares_no_unit() -> None:
     text = "Month,Mean\n2001-01,12.0\n"
     assert declared_unit(text) is None
+
+
+REAL_LAYOUT = Path(__file__).parent / "data" / "giovanni_t2m_real_layout.csv"
+
+
+def test_reads_the_layout_of_a_real_giovanni_export() -> None:
+    # A real export writes "1981-01-01 00:00:00" and a metadata block of Title:/Bounding Box: lines.
+    frame = read_giovanni_csv(REAL_LAYOUT)
+    assert len(frame) == 12
+    assert frame["timestamp"].iloc[0] == pd.Timestamp("1981-01-01")
+    assert frame["timestamp"].iloc[-1] == pd.Timestamp("1981-12-01")
+    assert frame["value"].iloc[0] == pytest.approx(279.772736)
+    assert read_giovanni_unit(REAL_LAYOUT) is None  # real exports print no Unit line
+
+
+def test_accepts_a_date_with_a_time_of_day() -> None:
+    text = "time,mean_X\n2000-01-01 00:00:00,1.5\n2000-02-01 00:00:00,2.5\n"
+    frame = parse_giovanni_csv(text)
+    assert list(frame["value"]) == [1.5, 2.5]
