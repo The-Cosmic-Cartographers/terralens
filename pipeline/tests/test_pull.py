@@ -17,6 +17,11 @@ from pipeline import pull
 from pipeline.giovanni import read_giovanni_csv, read_giovanni_unit
 from pipeline.registry import Variable
 
+# The autouse fixture below replaces these with fakes; these are the real ones, for the
+# tests that exercise the netCDF math itself.
+_REAL_MONTH_MEANS = pull.month_means
+_REAL_SLICE_EXTENT = pull.slice_extent
+
 
 def _variable(start: int = 2001, end: int = 2002) -> Variable:
     return Variable(
@@ -65,7 +70,12 @@ def _isolated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(pull, "RAW", raw)
     monkeypatch.setattr(pull, "CHECKPOINTS", checkpoints)
     monkeypatch.setattr(
-        pull, "month_means", lambda payload, field, scratch: {payload.decode(): 280.0}
+        pull,
+        "month_means",
+        lambda payload, field, scratch, box=None: {payload.decode(): 280.0},
+    )
+    monkeypatch.setattr(
+        pull, "slice_extent", lambda payload, scratch, box=None: "51.40,55.40,-10.50,-6.00"
     )
     monkeypatch.setattr(pull.time, "sleep", lambda _seconds: None)
 
@@ -90,6 +100,69 @@ def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> Non
     # IMERG has no Harmony coverage; T2M stays on its committed Giovanni series.
     assert {variable for variable, _region, _reason in blocked} == {"precipitation", "t2m"}
     assert all(reason for _v, _r, reason in blocked)
+
+
+def _slice(tmp_path: Path, lat: list[float], lon: list[float], values: list[list[float]]) -> bytes:
+    """One monthly netCDF slice, the shape Harmony returns."""
+    import numpy as np
+    import xarray as xr
+
+    dataset = xr.Dataset(
+        {"T2M": (("time", "lat", "lon"), np.array([values], dtype="float32"))},
+        coords={"time": [np.datetime64("2001-01-01")], "lat": lat, "lon": lon},
+    )
+    path = tmp_path / "slice.nc"
+    dataset.to_netcdf(path, engine="netcdf4")
+    payload = path.read_bytes()
+    path.unlink()
+    return payload
+
+
+def test_centre_mask_drops_edge_cells_whose_centre_is_outside_the_box() -> None:
+    import numpy as np
+
+    lat = np.array([51.5, 52.5, 55.5])
+    lon = np.array([-10.0, -8.0])
+    inside = pull.centre_mask(lat, lon, (-10.5, 51.4, -6.0, 55.4))
+    assert inside is not None
+    assert inside[:, 0].tolist() == [True, True, False]
+    assert pull.centre_mask(lat, lon, None) is None
+
+
+def test_month_means_averages_only_cells_inside_the_box(tmp_path: Path) -> None:
+    import math
+
+    payload = _slice(
+        tmp_path, [51.5, 52.5, 55.5], [-10.0, -8.0], [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    )
+    box = (-10.5, 51.4, -6.0, 55.4)
+
+    narrow = _REAL_MONTH_MEANS(payload, "T2M", tmp_path, box=box)["2001-01"]
+    w1, w2 = math.cos(math.radians(51.5)), math.cos(math.radians(52.5))
+    assert narrow == pytest.approx((w1 * (1 + 2) + w2 * (3 + 4)) / (2 * w1 + 2 * w2))
+
+    wide = _REAL_MONTH_MEANS(payload, "T2M", tmp_path)["2001-01"]
+    assert wide > narrow  # the outside cell is warmer, so leaving it in lifts the mean
+
+
+def test_slice_extent_reports_the_cells_that_were_actually_averaged(tmp_path: Path) -> None:
+    payload = _slice(
+        tmp_path, [51.5, 52.5, 55.5], [-10.0, -8.0], [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    )
+    assert _REAL_SLICE_EXTENT(payload, tmp_path, box=(-10.5, 51.4, -6.0, 55.4)) == (
+        "51.50,52.50,-10.00,-8.00"
+    )
+
+
+def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
+    first = _series()
+    first.months = {"2001-01": 280.0}
+    first.extent = "51.40,55.40,-10.50,-6.00"
+    first.save()
+
+    resumed = _series()
+    resumed.load()
+    assert resumed.extent == "51.40,55.40,-10.50,-6.00"
 
 
 def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
@@ -264,6 +337,26 @@ def test_build_is_handed_the_registry_labels(monkeypatch: pytest.MonkeyPatch) ->
     assert captured["native_unit"] == "K"
     assert captured["access_route"] == "NASA Harmony (GES DISC subset)"
     assert "job-9" in str(captured["permalink"])
+
+
+def test_build_is_handed_the_footprint_as_analyzable_region(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_build(csv_path: Path, **kwargs: object) -> tuple[Path, Path]:
+        captured.update(kwargs)
+        return Path("out.parquet"), Path("provenance.json")
+
+    monkeypatch.setattr(pull.build_module, "build", fake_build)
+    series = _series()
+    series.months = {"2001-01": 280.0}
+    series.extent = "51.50,55.00,-10.50,-6.50"
+    csv_path = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
+
+    pull.build_series(series, pull.HARMONY_ROUTES["t2m"], csv_path, Path("processed"))
+
+    assert captured["analyzable_region"] == "51.50,55.00,-10.50,-6.50"
 
 
 def test_dry_run_prints_the_plan_and_never_needs_a_token(

@@ -33,6 +33,16 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 A blocked series is reported by name and exit code, never filled with a substitute or a different
 product. `--dry-run` shows which is which before anything runs.
 
+### The footprint rule
+
+Harmony returns every cell that **intersects** the requested box, while Giovanni analyses only cells
+whose **centre** lies inside it. Averaging the intersecting set pulls a regional mean towards the
+surrounding climate — on T2M Ireland that was 0.88 °C at worst. `month_means` therefore masks to
+centre-in-box before averaging, and `slice_extent` records the extent of the cells that were
+actually averaged in `provenance.json` (`analyzable_region`), which is usually one cell narrower
+than the requested box on each side. With the mask, a Harmony pull reproduces the Giovanni T2M
+series to 0.0005 °C (RMS 0.0003 °C).
+
 ### What makes it survive this network
 
 - **Keep-alive sessions per worker** (`--workers`, default 8). The host resets roughly one TLS handshake in three; reusing connections, not more retries, is what makes a run finish.

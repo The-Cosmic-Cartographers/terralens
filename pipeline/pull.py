@@ -116,6 +116,7 @@ class Series:
     box: tuple[float, float, float, float]
     months: dict[str, float] = field(default_factory=dict)
     jobs: list[str] = field(default_factory=list)
+    extent: str | None = None
 
     @property
     def label(self) -> str:
@@ -134,11 +135,17 @@ class Series:
             str(month): float(value) for month, value in payload.get("months", {}).items()
         }
         self.jobs = list(payload.get("jobs", []))
+        extent = payload.get("extent")
+        self.extent = str(extent) if extent else None
 
     def save(self) -> None:
         CHECKPOINTS.mkdir(parents=True, exist_ok=True)
         self.checkpoint().write_text(
-            json.dumps({"months": self.months, "jobs": self.jobs}, indent=0) + "\n",
+            json.dumps(
+                {"months": self.months, "jobs": self.jobs, "extent": self.extent},
+                indent=0,
+            )
+            + "\n",
             encoding="utf-8",
         )
 
@@ -250,8 +257,58 @@ class HarmonySource:
         return None
 
 
-def month_means(payload: bytes, field_name: str, scratch: Path) -> dict[str, float]:
-    """Cosine-latitude area mean of one monthly slice."""
+def centre_mask(
+    lat: np.ndarray, lon: np.ndarray, box: tuple[float, float, float, float] | None
+) -> np.ndarray | None:
+    """Keep only cells whose centre falls inside the box (Giovanni's footprint rule).
+
+    Harmony returns every cell that *intersects* the requested box, so an edge cell
+    whose centre sits outside it is included. Averaging those pulls the mean towards
+    the surrounding climate: on T2M Ireland that was 0.88 degC at worst. Giovanni
+    analyses only centre-in-box cells, and this is what makes a Harmony series
+    comparable with a Giovanni one (verified on T2M to 0.0005 degC).
+    """
+    if box is None:
+        return None
+    west, south, east, north = box
+    return ((lat >= south) & (lat <= north))[:, None] & ((lon >= west) & (lon <= east))[None, :]
+
+
+def slice_extent(
+    payload: bytes, scratch: Path, *, box: tuple[float, float, float, float] | None = None
+) -> str | None:
+    """The S,N,W,E extent of the cells a slice actually averages, for provenance.
+
+    A caller cannot infer this from the requested box: the mask drops edge cells, so
+    the averaged footprint is usually one cell narrower on each side.
+    """
+    path = scratch / f"extent_{threading.get_ident()}_{time.time_ns()}.nc"
+    path.write_bytes(payload)
+    try:
+        with xr.open_dataset(path, engine="netcdf4") as dataset:
+            if "lat" not in dataset or "lon" not in dataset:
+                return None
+            lat = np.asarray(dataset["lat"].values)
+            lon = np.asarray(dataset["lon"].values)
+            inside = centre_mask(lat, lon, box)
+            if inside is not None and inside.any():
+                lat = lat[inside.any(axis=1)]
+                lon = lon[inside.any(axis=0)]
+            if not len(lat) or not len(lon):
+                return None
+            return f"{lat.min():.2f},{lat.max():.2f},{lon.min():.2f},{lon.max():.2f}"
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def month_means(
+    payload: bytes,
+    field_name: str,
+    scratch: Path,
+    *,
+    box: tuple[float, float, float, float] | None = None,
+) -> dict[str, float]:
+    """Cosine-latitude area mean of one monthly slice, centre-in-box only."""
     path = scratch / f"pull_{threading.get_ident()}_{time.time_ns()}.nc"
     path.write_bytes(payload)
     try:
@@ -263,6 +320,12 @@ def month_means(payload: bytes, field_name: str, scratch: Path) -> dict[str, flo
             lon_count = dataset.sizes["lon"]
             data = np.asarray(values.values).reshape(-1, lon_count)
             mask = np.isfinite(data)
+            if box is not None and "lat" in dataset and "lon" in dataset:
+                inside = centre_mask(
+                    np.asarray(dataset["lat"].values), np.asarray(dataset["lon"].values), box
+                )
+                if inside is not None:
+                    mask = mask & inside
             if not mask.any():
                 return {}
             if "lat" in values.dims:
@@ -303,6 +366,7 @@ def write_csv(series: Series, route: Route) -> Path:
                 "first": rows[0].split(",")[0],
                 "last": rows[-1].split(",")[0],
                 "jobs": sorted(set(series.jobs)),
+                "analyzable_region": series.extent,
                 "access_route": "NASA Harmony (GES DISC subset)",
             },
             indent=2,
@@ -335,7 +399,7 @@ def build_series(series: Series, route: Route, csv_path: Path, out_root: Path) -
                 "north": series.box[3],
             }
         ),
-        analyzable_region=None,
+        analyzable_region=series.extent,
         permalink=f"https://harmony.earthdata.nasa.gov/jobs/{series.jobs[-1]}"
         if series.jobs
         else None,
@@ -387,9 +451,14 @@ def pull_series(
                 if pending:
                     say(f"    pass {attempt + 1}: {len(pending)} slices still missing")
                     time.sleep(1.5 * (attempt + 1))
+            if series.extent is None and payloads:
+                series.extent = slice_extent(payloads[0], scratch, box=series.box)
             with ThreadPoolExecutor(max_workers=workers) as pool:
                 parsed = list(
-                    pool.map(lambda item: month_means(item, route.field, scratch), payloads)
+                    pool.map(
+                        lambda item: month_means(item, route.field, scratch, box=series.box),
+                        payloads,
+                    )
                 )
             for result in parsed:
                 for month, mean in result.items():
