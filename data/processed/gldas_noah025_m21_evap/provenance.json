@@ -1,0 +1,101 @@
+{
+  "dataset_id": "gldas_noah025_m21_evap",
+  "product": "GLDAS-2.1 Noah monthly evapotranspiration (GLDAS_NOAH025_M)",
+  "version": "2.1",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/d24efd21-9e97-42d6-a1f6-544872ea73e3",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "Evap_tavg",
+  "scale_factor": 1.0,
+  "native_unit": "kg/m2/s",
+  "output_unit": "mm/day",
+  "spatial_resolution": "0.25\u00b0",
+  "period_start": "2000-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "Giovanni area-averaged time series, monthly",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, entered in Giovanni",
+  "transformations": [
+    "Giovanni comment/header block skipped",
+    "unit conversion kg/m2/s -> mm/day",
+    "CSV declared unit 'kg m-2 s-1' matched the expected 'kg/m2/s'",
+    "clipped to the registered window 2000-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "",
+      "source_csv": "evapotranspiration_ireland.csv",
+      "source_csv_sha256": "4db7759697c8831605b784afe9f99a3d771f9407d376175bf61d327b65e665ef",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit conversion kg/m2/s -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg/m2/s'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/1bbaea87-1ad9-4d66-abb5-e21f080f0329",
+      "source_csv": "evapotranspiration_sahel.csv",
+      "source_csv_sha256": "52eb307f326eb01f4f404feb57a56c79b5daf3e9886ea5fff268803b6b15baeb",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit conversion kg/m2/s -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg/m2/s'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/d24efd21-9e97-42d6-a1f6-544872ea73e3",
+      "source_csv": "evapotranspiration_us_southwest.csv",
+      "source_csv_sha256": "7a533ada56f953ab0b27f9e9f1ce28a46cc9c3f94a1a0f16ac296c3085ee374d",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit conversion kg/m2/s -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg/m2/s'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

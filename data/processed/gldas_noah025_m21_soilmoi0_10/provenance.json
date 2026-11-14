@@ -1,0 +1,101 @@
+{
+  "dataset_id": "gldas_noah025_m21_soilmoi0_10",
+  "product": "GLDAS-2.1 Noah monthly soil moisture, 0-10 cm (GLDAS_NOAH025_M)",
+  "version": "2.1",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/d24efd21-9e97-42d6-a1f6-544872ea73e3",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "SoilMoi0_10cm_inst",
+  "scale_factor": 1.0,
+  "native_unit": "kg/m2",
+  "output_unit": "kg/m2",
+  "spatial_resolution": "0.25\u00b0",
+  "period_start": "2000-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "Giovanni area-averaged time series, monthly",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, entered in Giovanni",
+  "transformations": [
+    "Giovanni comment/header block skipped",
+    "unit unchanged (kg/m2)",
+    "CSV declared unit 'kg m-2' matched the expected 'kg/m2'",
+    "clipped to the registered window 2000-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "",
+      "source_csv": "soil_moisture_0_10_ireland.csv",
+      "source_csv_sha256": "e216299af28582e979c30b56d2f62b74ca0821f6b0fd2e0662f904e9dd03c80d",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (kg/m2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg/m2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/1bbaea87-1ad9-4d66-abb5-e21f080f0329",
+      "source_csv": "soil_moisture_0_10_sahel.csv",
+      "source_csv_sha256": "4b8c0dfb0bbf05187bf84bf394d3c8b4771caecef463ae9414753733d93bf109",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (kg/m2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg/m2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/d24efd21-9e97-42d6-a1f6-544872ea73e3",
+      "source_csv": "soil_moisture_0_10_us_southwest.csv",
+      "source_csv_sha256": "2b16e07302accc87578e071b0572baa4c6496d7268398193c6e8e71f6728744e",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (kg/m2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg/m2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

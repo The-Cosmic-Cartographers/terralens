@@ -15,7 +15,7 @@
     "unit": "kg/m2",
     "period_start": "2000-01-01",
     "period_end": "2025-12-01",
-    "status": "coming_soon"
+    "status": "ready"
   },
   {
     "dataset_id": "gldas_noah025_m21_evap",
@@ -24,7 +24,7 @@
     "unit": "mm/day",
     "period_start": "2000-01-01",
     "period_end": "2025-12-01",
-    "status": "coming_soon"
+    "status": "ready"
   },
   {
     "dataset_id": "gpm_3imergm_v07b",
@@ -42,7 +42,7 @@
     "unit": "1",
     "period_start": "2003-01-01",
     "period_end": "2025-12-01",
-    "status": "coming_soon"
+    "status": "ready"
   },
   {
     "dataset_id": "omi_omno2d_v004",
