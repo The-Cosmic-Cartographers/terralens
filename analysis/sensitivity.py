@@ -254,7 +254,7 @@ def build_document(rows: list[dict]) -> str:
         "be the single easiest way to mislead a reader."
     )
     lines.append(
-        "* **\"No clear trend\" is not \"no change\".** With 21–45 years and this much "
+        '* **"No clear trend" is not "no change".** With 21–45 years and this much '
         "year-to-year noise, many real changes are simply not detectable yet; the "
         "detectability figure says how long a record would be needed."
     )

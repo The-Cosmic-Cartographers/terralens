@@ -61,8 +61,12 @@ def test_full_window_matches_the_headline_pipeline(built):
     # the un-anomalised series with a zero-baseline to compare like with like)
     values = anomalies + 12.0
     rows_in = [
-        {"year": int(years[y]), "month": m + 1, "value": float(values[y, m]),
-         "coverage_fraction": 1.0}
+        {
+            "year": int(years[y]),
+            "month": m + 1,
+            "value": float(values[y, m]),
+            "coverage_fraction": 1.0,
+        }
         for y in range(years.size)
         for m in range(12)
     ]
@@ -108,14 +112,42 @@ def test_incomplete_years_never_enter_a_window():
 
 def test_bh_runs_within_a_window_and_sets_verdicts():
     family = [
-        {"start": 1981, "end": 2025, "variable_id": "t2m", "p_value": 0.001,
-         "sen_slope_per_year": 0.03, "confidence_interval_95": [0.02, 0.04], "verdict": None},
-        {"start": 1981, "end": 2025, "variable_id": "precipitation", "p_value": 0.02,
-         "sen_slope_per_year": -0.5, "confidence_interval_95": [-0.9, -0.1], "verdict": None},
-        {"start": 1981, "end": 2025, "variable_id": "soil_moisture_0_10", "p_value": 0.30,
-         "sen_slope_per_year": 0.0, "confidence_interval_95": [-0.1, 0.1], "verdict": None},
-        {"start": 1990, "end": 2025, "variable_id": "t2m", "p_value": 0.01,
-         "sen_slope_per_year": 0.04, "confidence_interval_95": [0.01, 0.07], "verdict": None},
+        {
+            "start": 1981,
+            "end": 2025,
+            "variable_id": "t2m",
+            "p_value": 0.001,
+            "sen_slope_per_year": 0.03,
+            "confidence_interval_95": [0.02, 0.04],
+            "verdict": None,
+        },
+        {
+            "start": 1981,
+            "end": 2025,
+            "variable_id": "precipitation",
+            "p_value": 0.02,
+            "sen_slope_per_year": -0.5,
+            "confidence_interval_95": [-0.9, -0.1],
+            "verdict": None,
+        },
+        {
+            "start": 1981,
+            "end": 2025,
+            "variable_id": "soil_moisture_0_10",
+            "p_value": 0.30,
+            "sen_slope_per_year": 0.0,
+            "confidence_interval_95": [-0.1, 0.1],
+            "verdict": None,
+        },
+        {
+            "start": 1990,
+            "end": 2025,
+            "variable_id": "t2m",
+            "p_value": 0.01,
+            "sen_slope_per_year": 0.04,
+            "confidence_interval_95": [0.01, 0.07],
+            "verdict": None,
+        },
     ]
     final = tw.finalize_window_family(family)
     first_window = [r for r in final if r["start"] == 1981]
@@ -130,8 +162,13 @@ def test_contract_rows_drop_test_fields_and_round(built):
     contract = tw.contract_rows(rows)
     assert all(not any(key.startswith("_") for key in row) for row in contract)
     required = {
-        "start", "end", "sen_slope_per_year", "confidence_interval_95",
-        "p_value", "adjusted_p_value", "verdict",
+        "start",
+        "end",
+        "sen_slope_per_year",
+        "confidence_interval_95",
+        "p_value",
+        "adjusted_p_value",
+        "verdict",
     }
     assert all(required <= set(row) for row in contract)
     assert len(json.dumps(contract)) < len(json.dumps(rows))
@@ -185,9 +222,7 @@ def test_require_full_coverage_false_restores_the_old_behaviour():
     gappy[20, 3] = np.nan
     gap = int(years[20])
 
-    rows = tw.build_windows(
-        gappy, years, min_window_years=10, require_full_coverage=False
-    )
+    rows = tw.build_windows(gappy, years, min_window_years=10, require_full_coverage=False)
 
     spanning = [r for r in rows if r["start"] <= gap <= r["end"]]
     assert spanning

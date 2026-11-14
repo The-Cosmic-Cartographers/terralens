@@ -214,9 +214,7 @@ def sen_ci(
 # ---------------------------------------------------------------------------
 # Detectability (Weatherhead et al. 1998)
 # ---------------------------------------------------------------------------
-def detectability_years(
-    monthly_anomalies: Sequence[float], slope_per_year: float
-) -> float | None:
+def detectability_years(monthly_anomalies: Sequence[float], slope_per_year: float) -> float | None:
     """Years of record needed to detect `slope_per_year` at 90 % power, 5 % level.
 
     n* ≈ [ (3.3 σ_N / |ω|) · sqrt((1 + φ)/(1 − φ)) ]^(2/3)
@@ -486,8 +484,7 @@ def analyze_series(
     missing_fraction = missing_cells / total_cells
     if missing_fraction > MAX_MISSING_FRACTION:
         base["withheld_reason"] = (
-            f"{missing_fraction:.0%} of months missing; maximum is "
-            f"{MAX_MISSING_FRACTION:.0%}"
+            f"{missing_fraction:.0%} of months missing; maximum is {MAX_MISSING_FRACTION:.0%}"
         )
         return base
     if complete_years < MIN_COMPLETE_YEARS:
@@ -577,9 +574,7 @@ def analyze_series(
     base["effect_size_swings"] = effect_size_swings(slope, int(annual_clean.size), annual_sd)
     # contract (doc 04): detectability is only filled when the verdict is not significant
     detect = (
-        None
-        if base["verdict"] == "significant"
-        else detectability_years(anomalies_flat, slope)
+        None if base["verdict"] == "significant" else detectability_years(anomalies_flat, slope)
     )
     if detect is not None and detect <= int(annual_clean.size):
         # The record is already longer than the length needed under stationary

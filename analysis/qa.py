@@ -119,12 +119,8 @@ def check_trends(checks: Checks) -> int:
             )
             checks.add(
                 f"{label}: direction agrees with the slope sign",
-                (
-                    row["trend_direction"] == "increasing" and row["sen_slope_per_year"] > 0
-                )
-                or (
-                    row["trend_direction"] == "decreasing" and row["sen_slope_per_year"] < 0
-                )
+                (row["trend_direction"] == "increasing" and row["sen_slope_per_year"] > 0)
+                or (row["trend_direction"] == "decreasing" and row["sen_slope_per_year"] < 0)
                 or row["trend_direction"] == "no_significant_trend",
                 f"{row['trend_direction']} slope={row['sen_slope_per_year']:+.4f}",
             )
@@ -244,8 +240,11 @@ def check_windows(checks: Checks) -> int:
             f"{len(pairs)} unique of {len(windows)}",
         )
         bad_length = [w for w in windows if w["end"] - w["start"] + 1 < minimum]
-        checks.add(f"windows {region}: every window spans the minimum", not bad_length,
-                   f"{len(bad_length)} short")
+        checks.add(
+            f"windows {region}: every window spans the minimum",
+            not bad_length,
+            f"{len(bad_length)} short",
+        )
 
         bad_ci = [
             w
@@ -269,8 +268,11 @@ def check_windows(checks: Checks) -> int:
         bad_verdict = [
             w for w in windows if w["verdict"] != tl.verdict_from_p(w["adjusted_p_value"], False)
         ]
-        checks.add(f"windows {region}: verdicts match adjusted p", not bad_verdict,
-                   f"{len(bad_verdict)} bad")
+        checks.add(
+            f"windows {region}: verdicts match adjusted p",
+            not bad_verdict,
+            f"{len(bad_verdict)} bad",
+        )
     return count
 
 

@@ -186,16 +186,10 @@ def analyse_region(region: str) -> tuple[list[dict[str, Any]], list[dict[str, An
             annual_agg=agg,
             bh_family=family,
         )
-        payload = trend_payload(
-            row=analysis, meta=meta, region_id=region, bh_family=family
-        )
+        payload = trend_payload(row=analysis, meta=meta, region_id=region, bh_family=family)
         payload["definition"] = DEFINITIONS.get(variable_id, variable_id)
         payload["sparkline"] = tl.sparkline(
-            [
-                v
-                for v in _annual_values(frame, agg)
-                if v is not None
-            ]
+            [v for v in _annual_values(frame, agg) if v is not None]
         )
         trend_rows.append(payload)
 
