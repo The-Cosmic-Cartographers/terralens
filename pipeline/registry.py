@@ -71,9 +71,11 @@ VARIABLES: dict[str, Variable] = {
     ),
     "precipitation": Variable(
         variable_id="precipitation",
-        dataset_id="gpm_3imergm_v07",
-        product="GPM IMERG Final monthly precipitation (GPM_3IMERGM)",
-        version="V07",
+        dataset_id="gpm_3imergm_v07b",
+        # Pinned to the V07B reprocessed run (NAS-57): the granule filenames carry
+        # `.V07B`, and V07 and V07B must never be mixed inside one series.
+        product="GPM IMERG Final monthly precipitation, V07B reprocessed run (GPM_3IMERGM)",
+        version="V07B",
         native_unit="mm/hr",
         output_unit="mm/month",
         spatial_resolution="0.1°",
