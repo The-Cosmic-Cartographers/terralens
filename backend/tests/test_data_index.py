@@ -48,7 +48,6 @@ def test_a_dataset_is_ready_only_when_it_covers_every_app_region(index):
         expected = "ready" if has_all_app_regions(spec.dataset_id) else "coming_soon"
         assert items[spec.dataset_id] == expected, spec.dataset_id
     assert items["merra2_m2tmnxslv"] == "ready"
-    assert any(status == "coming_soon" for status in items.values())
 
 
 def test_regions_are_exactly_the_app_regions(index):

@@ -96,9 +96,10 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
 
 
 def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
-    work, blocked = pull.plan(None, ["ireland"])
+    work, cities, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
     assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration", "precipitation"}
+    assert cities == []
     # T2M stays on its committed Giovanni series rather than being overwritten.
     assert {variable for variable, _region, _reason in blocked} == {"t2m"}
     assert all(reason for _v, _r, reason in blocked)
@@ -169,7 +170,7 @@ def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
 
 def test_precipitation_is_a_real_route_and_not_a_blocked_row() -> None:
     """IMERG is pulled from GES DISC directly, since Harmony has no coverage for it."""
-    work, blocked = pull.plan(["precipitation"], ["ireland"])
+    work, cities, blocked = pull.plan(["precipitation"], ["ireland"])
     assert not blocked
     route = work[0][2]
     assert route is pull.IMERG_ROUTE
@@ -202,25 +203,26 @@ def test_the_csv_records_which_route_produced_it() -> None:
 
 
 def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
-    work, blocked = pull.plan(["t2m"], ["ireland"])
+    work, cities, blocked = pull.plan(["t2m"], ["ireland"])
     assert work == []
+    assert cities == []
     assert blocked[0][0] == "t2m"
     assert "Giovanni" in blocked[0][2]
 
-    work_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
+    work_no2, cities_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
     assert work_no2 == []
-    assert blocked_no2[0][0] == "no2"
+    assert blocked_no2 == []
+    assert cities_no2 == ["dublin_no2"]
 
 
 def test_plan_is_the_doc_11_lineup_and_not_the_cartesian_product() -> None:
     """27 series: five rows over five regions, plus NO2 for Dublin and Delhi only."""
-    work, blocked = pull.plan(None, None)
-    assert len(work) + len(blocked) == 27
+    work, cities, blocked = pull.plan(None, None)
+    assert len(work) + len(cities) + len(blocked) == 27
     assert {region for _spec, region, _route in work} >= {"ireland", "us_southwest"}
     assert not {region for _spec, region, _route in work} & set(pull.NO2_REGIONS)
-    assert {region for variable, region, _reason in blocked if variable == "no2"} == set(
-        pull.NO2_REGIONS
-    )
+    assert set(cities) == set(pull.NO2_REGIONS)
+    assert not {region for variable, region, _reason in blocked if variable == "no2"}
 
 
 def test_plan_rejects_an_unknown_region() -> None:
@@ -425,6 +427,7 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     assert pull.main(["--all", "--dry-run"]) == pull.EXIT_OK
     output = capsys.readouterr().out
     assert "aerosol/ireland <- Harmony" in output
+    assert "no2/dublin_no2 <- OPeNDAP" in output
     assert "precipitation/ireland <- GES DISC direct" in output
     assert "t2m/ireland <- BLOCKED" in output
 
@@ -445,10 +448,10 @@ def test_an_extent_in_the_wrong_order_is_refused() -> None:
 
 def test_harmony_t2m_is_allowed_only_for_the_two_new_regions() -> None:
     """Kevin's exception on NAS-64: new regions yes, the committed three no."""
-    work, blocked = pull.plan(["t2m"], ["iberia"])
+    work, _cities, blocked = pull.plan(["t2m"], ["iberia"])
     assert [spec.variable_id for spec, _region, _route in work] == ["t2m"]
     assert blocked == []
 
-    work_old, blocked_old = pull.plan(["t2m"], ["ireland"])
+    work_old, _cities_old, blocked_old = pull.plan(["t2m"], ["ireland"])
     assert work_old == []
     assert blocked_old and blocked_old[0][0] == "t2m"
