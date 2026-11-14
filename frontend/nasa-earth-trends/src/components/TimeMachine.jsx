@@ -5,8 +5,9 @@ import ErrorState from './ErrorState.jsx'
 import LoadingState from './LoadingState.jsx'
 import VerdictBadge from './VerdictBadge.jsx'
 import { useData } from '../hooks/useData.js'
+import { formatP, formatSigned } from '../utils/format.js'
 
-function TimeMachine({ regionId, datasetId }) {
+function TimeMachine({ regionId, datasetId, headline = null }) {
   const { data, loading, error } = useData('windows', { regionId, datasetId })
   const [start, setStart] = useState(null)
   const [end, setEnd] = useState(null)
@@ -25,6 +26,18 @@ function TimeMachine({ regionId, datasetId }) {
   const selected = data?.windows?.find(
     (item) => item.start === effectiveStart && item.end === effectiveEnd,
   )
+
+  // The full period is the headline result: show the same numbers as the Trend
+  // result panel, never a second p-value for the same record.
+  const isFullPeriod = Boolean(selected) && selected.start === bounds?.min && selected.end === bounds?.max
+  const shown = isFullPeriod && headline
+    ? {
+        ...selected,
+        verdict: headline.verdict,
+        sen_slope_per_year: headline.sen_slope_per_year,
+        adjusted_p_value: headline.adjusted_p_value,
+      }
+    : selected
 
   if (loading) return <LoadingState label="Loading precomputed windows" />
   if (error) return <ErrorState message={error.message} />
@@ -73,12 +86,12 @@ function TimeMachine({ regionId, datasetId }) {
         </label>
       </div>
 
-      {selected ? (
+      {shown ? (
         <div className="window-result">
-          <div><span>Selected window</span><strong>{selected.start} — {selected.end}</strong></div>
-          <VerdictBadge verdict={selected.verdict} />
-          <div><span>Sen slope / year</span><strong>{selected.sen_slope_per_year ?? '—'}</strong></div>
-          <div><span>Adjusted p-value</span><strong>{selected.adjusted_p_value ?? '—'}</strong></div>
+          <div><span>Selected window</span><strong>{shown.start} — {shown.end}</strong></div>
+          <VerdictBadge verdict={shown.verdict} />
+          <div><span>Sen slope / year</span><strong>{formatSigned(shown.sen_slope_per_year, 3)}</strong></div>
+          <div><span>{isFullPeriod ? 'Adjusted p-value' : 'Window p-value'}</span><strong>{formatP(shown.adjusted_p_value)}</strong></div>
         </div>
       ) : (
         <div className="window-result window-result-empty">

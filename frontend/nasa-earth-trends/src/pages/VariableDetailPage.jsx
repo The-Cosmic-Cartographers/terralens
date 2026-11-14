@@ -11,6 +11,7 @@ import TimeMachine from '../components/TimeMachine.jsx'
 import TrendChart from '../components/charts/TrendChart.jsx'
 import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
+import { formatP, formatSigned } from '../utils/format.js'
 
 const fallbackDataset = {
   t2m: {
@@ -39,6 +40,7 @@ function VariableDetailPage() {
   const { data: metadata } = useData('metadata', { datasetId })
   const chartData = useMemo(() => (series?.rows || []).map((row) => ({
     label: row.timestamp?.slice(0, 4),
+    t: Number(row.timestamp?.slice(0, 4)) + (Number(row.timestamp?.slice(5, 7)) - 1) / 12,
     value: seriesMode === 'anomaly' ? row.anomaly : row.value,
     ciLow: null,
     ciHigh: null,
@@ -86,9 +88,9 @@ function VariableDetailPage() {
           {trend ? (
             <div className="evidence-grid">
               <div><span>Verdict</span><strong>{trend.verdict || 'Not supplied'}</strong></div>
-              <div><span>Sen slope / year</span><strong>{trend.sen_slope_per_year ?? '—'}</strong></div>
-              <div><span>95% confidence interval</span><strong>{trend.confidence_interval_95?.join(' to ') || '—'}</strong></div>
-              <div><span>Adjusted p-value</span><strong>{trend.adjusted_p_value ?? '—'}</strong></div>
+              <div><span>Sen slope / year</span><strong>{formatSigned(trend.sen_slope_per_year, 3)}</strong></div>
+              <div><span>95% confidence interval</span><strong>{trend.confidence_interval_95?.map((value) => formatSigned(value, 3)).join(' to ') || '—'}</strong></div>
+              <div><span>Adjusted p-value</span><strong>{formatP(trend.adjusted_p_value)}</strong></div>
               <div><span>Observations</span><strong>{trend.observation_count ?? '—'}</strong></div>
             </div>
           ) : (
@@ -97,7 +99,7 @@ function VariableDetailPage() {
         </Panel>
 
         <Panel className="span-12" title="Time Machine">
-          <TimeMachine regionId={regionId} datasetId={datasetId} />
+          <TimeMachine regionId={regionId} datasetId={datasetId} headline={trend} />
         </Panel>
       </div>
     </div>

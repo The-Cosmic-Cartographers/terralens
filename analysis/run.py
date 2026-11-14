@@ -36,6 +36,7 @@ import pandas as pd
 
 from analysis import stats as tl
 from analysis import windows as tw
+from pipeline.regions import APP_REGIONS
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = REPO_ROOT / "data" / "processed"
@@ -64,6 +65,10 @@ PRODUCT_TYPE: dict[str, str] = {
 # Precipitation is a monthly total, so its annual aggregate is a sum; every
 # other row is a state, so the annual mean is the right aggregate.
 ANNUAL_AGG: dict[str, str] = {"precipitation": "sum"}
+
+# The Sen slope is fitted to the annual aggregate, so for a summed variable its
+# unit is the annual total, not the monthly value the series is stored in.
+SLOPE_BASE_UNIT: dict[str, str] = {"precipitation": "mm (annual total)"}
 
 BASELINE = (1991, 2020)
 MIN_WINDOW_YEARS = 10
@@ -128,7 +133,7 @@ def trend_payload(
         "series_used": "anomaly",
         "trend_direction": "withheld" if withheld else row["trend_direction"],
         "sen_slope_per_year": None if withheld else row["sen_slope_per_year"],
-        "unit_per_year": f"{unit}/yr",
+        "unit_per_year": f"{SLOPE_BASE_UNIT.get(meta['variable_id'], unit)}/yr",
         "confidence_interval_95": None if withheld else tuple(row["confidence_interval_95"]),
         "p_value": None if withheld else row["p_value"],
         "adjusted_p_value": None if withheld else row["adjusted_p_value"],
@@ -389,7 +394,8 @@ LABELS: dict[str, str] = {
 
 
 def regions_with_data() -> list[str]:
-    return sorted({path.stem for path in PROCESSED.glob("*/*.parquet")})
+    on_disk = {path.stem for path in PROCESSED.glob("*/*.parquet")}
+    return [region for region in APP_REGIONS if region in on_disk]
 
 
 def main(argv: Iterable[str] | None = None) -> int:

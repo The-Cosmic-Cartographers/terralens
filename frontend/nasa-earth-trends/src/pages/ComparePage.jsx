@@ -9,12 +9,13 @@ import SampleDataWarning from '../components/SampleDataWarning.jsx'
 import VerdictBadge from '../components/VerdictBadge.jsx'
 import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
+import { formatIntervalPerDecade, formatP, formatSigned } from '../utils/format.js'
 
+// Pairs among the three app regions (decision D26).
 const pairs = [
-  ['ireland', 'iberia'],
-  ['sahel', 'iberia'],
+  ['ireland', 'sahel'],
+  ['sahel', 'us_southwest'],
   ['us_southwest', 'ireland'],
-  ['dublin_no2', 'delhi_no2'],
 ]
 
 const labels = {
@@ -33,7 +34,7 @@ function directionSymbol(direction) {
 }
 
 function slopePerDecade(value) {
-  return value == null ? '—' : (Number(value) * 10).toFixed(2)
+  return formatSigned(value == null ? null : Number(value) * 10)
 }
 
 function CompareCard({ result }) {
@@ -51,8 +52,8 @@ function CompareCard({ result }) {
       <VerdictBadge verdict={result.verdict} />
       <dl className="kv">
         <div><dt>Rate</dt><dd>{slopePerDecade(result.sen_slope_per_year)} {result.unit_per_year?.replace('/yr', '/decade') || 'per decade'}</dd></div>
-        <div><dt>95% interval</dt><dd>{result.confidence_interval_95?.map((value) => Number(value).toFixed(2)).join(' to ') || '—'}</dd></div>
-        <div><dt>Adjusted p</dt><dd>{result.adjusted_p_value ?? '—'}</dd></div>
+        <div><dt>95% interval</dt><dd>{formatIntervalPerDecade(result.confidence_interval_95)}</dd></div>
+        <div><dt>Adjusted p</dt><dd>{formatP(result.adjusted_p_value)}</dd></div>
         <div><dt>Period</dt><dd>{result.period_start} – {result.period_end}</dd></div>
       </dl>
       <ProductBadge type={result.product_type} />

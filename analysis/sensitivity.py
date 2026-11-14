@@ -31,6 +31,7 @@ from analysis.run import (
     load_series,
     to_rows,
 )
+from pipeline.regions import APP_REGIONS
 from pipeline.registry import VARIABLES
 
 DOC = REPO_ROOT / "docs" / "sensitivity-notes.md"
@@ -53,7 +54,7 @@ UNIT_PER_DECADE = {
     "t2m": "°C/decade",
     "soil_moisture_0_10": "kg/m²/decade",
     "evapotranspiration": "mm/day/decade",
-    "precipitation": "mm/month/decade",
+    "precipitation": "mm (annual total)/decade",
     "aerosol": "AOT/decade",
     "no2": "molec/cm²/decade",
 }
@@ -271,7 +272,7 @@ def build_document(rows: list[dict]) -> str:
 
 
 def main() -> int:
-    parquets = sorted(PROCESSED.glob("*/*.parquet"))
+    parquets = sorted(path for path in PROCESSED.glob("*/*.parquet") if path.stem in APP_REGIONS)
     if not parquets:
         print("no processed series found")
         return 1
