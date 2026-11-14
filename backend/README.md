@@ -7,11 +7,17 @@
 - Reads files from `data/processed/` and `data/results/`. It never computes statistics.
 - Run: `uv run uvicorn app.main:app --app-dir backend --reload`
 
-## Endpoints so far (API v1, part A)
+## Endpoints so far (API v1)
 
 `GET /health` · `GET /api/v1/catalogue` · `GET /api/v1/regions` · `GET /api/v1/metadata?dataset_id=`
 
-Errors use the doc 04 format: 404 `dataset_not_found`, 422 `invalid_parameter`, 503 `data_unavailable` (a file is missing or fails its model).
+Per region: `GET /api/v1/regions/{region_id}/series?dataset_id=` · `/trend?dataset_id=` · `/lineup` · `/windows?dataset_id=`
+
+Across regions: `GET /api/v1/compare?dataset_id=` (one variable, every region, compare-family BH adjustment read from `results/<dataset_id>/trends.json`; `period_note` is set when regions' periods differ and the reported period is their overlap). Its adjusted p-values come from a different family than the Lineup's, so a region can read differently in the two views.
+
+`/trend` returns the lineup-family result, so the detail card always matches the Lineup row. A withheld result is 200 with `trend_direction: "withheld"`.
+
+Errors use the doc 04 format: 404 `region_not_found` / `dataset_not_found`, 422 `invalid_parameter`, 503 `data_unavailable` (a file is missing, unreadable, or fails its model).
 
 ## Data folder
 
@@ -20,3 +26,41 @@ The API reads `TERRALENS_DATA_DIR` (default `./data`). Point it at the SAMPLE fi
 ```bash
 TERRALENS_DATA_DIR=./data/fixtures uv run uvicorn app.main:app --app-dir backend --reload
 ```
+
+## Static export (NAS-21)
+
+The deployed app reads static JSON, not a live server. The export writes every API response to the doc 04 §5 paths, using the same store as the API.
+
+```bash
+# real data (refuses if data_version contains SAMPLE)
+PYTHONPATH=backend uv run python -m app.export
+
+# local development with the SAMPLE fixtures
+PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --allow-sample
+```
+
+Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (default `frontend/public/data`), `--allow-sample`.
+
+- Writes `health.json` (carries `data_version`), `catalogue.json`, `regions.json`, `metadata/`, `lineup/`, `series/`, `trend/`, `windows/`, `compare/`.
+- All files are checked first; if any ready dataset × region is missing or invalid it exits 1 and writes nothing.
+- Only those generated names are replaced. Other files in the output folder are left alone.
+- Output is deterministic, so re-running on the same data gives identical files.
+
+## Checking a snapshot before it ships (NAS-37)
+
+```bash
+PYTHONPATH=backend uv run python -m app.verify_snapshot            # frontend/public/data
+PYTHONPATH=backend uv run python -m app.verify_snapshot some/dir --allow-sample
+```
+
+Every file the export writes must exist, validate against the doc 04 models and sit at the path its own ids say. Any SAMPLE data fails the check unless `--allow-sample` is given, so run it without the flag before the final deploy. `tests/test_repo_hygiene.py` also fails if a credential pattern, a credential file or a raw NASA file is tracked, and checks a committed snapshot is not SAMPLE.
+
+## Index files for the real data (NAS-6)
+
+After a pipeline run, write the files the API needs next to `data/processed/`:
+
+```bash
+PYTHONPATH=backend:. uv run python -m scripts.build_data_index
+```
+
+It writes `data/catalogue.json` (a dataset is `ready` once its series exist, otherwise `coming_soon`), `data/regions.json` (only regions that have a series), `data/metadata/<dataset_id>.json` and `data/data_version.txt` (`giovanni-<newest access date>`). Re-run it after every pull; the output is deterministic. `/lineup`, `/trend`, `/windows` and `/compare` still need the analysis module's result files.

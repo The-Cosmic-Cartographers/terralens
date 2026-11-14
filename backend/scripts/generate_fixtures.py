@@ -27,11 +27,14 @@ from scipy import stats
 
 from app.models import (
     CatalogueItem,
+    ChangePoint,
     Lineup,
     LineupRow,
     Metadata,
     Provenance,
     Region,
+    RegionProvenance,
+    SeasonalSlopes,
     SeriesRow,
     TrendResult,
     Window,
@@ -247,6 +250,45 @@ def detect_years(monthly: list[float], slope: float) -> float:
     return round(min(n_star, 500.0), 1)
 
 
+def pettitt(years: list[int], values: list[float]) -> tuple[int, float, float, float, float] | None:
+    """Pettitt (1979) change point on annual values: (year, K, p, mean_before, mean_after)."""
+    n = len(values)
+    if n < 8:
+        return None
+    signs = np.sign(np.subtract.outer(values, values))  # signs[j, i] = sign(x_j - x_i)
+    u = [float(signs[t + 1 :, : t + 1].sum()) for t in range(n - 1)]
+    t_best = int(np.argmax(np.abs(u)))
+    k = abs(u[t_best])
+    p_value = min(1.0, 2 * math.exp(-6 * k**2 / (n**3 + n**2)))
+    before = float(np.mean(values[: t_best + 1]))
+    after = float(np.mean(values[t_best + 1 :]))
+    return years[t_best], k, p_value, before, after
+
+
+def seasonal_slopes(rows: list[SeriesRow]) -> dict[str, float | None]:
+    """Descriptive Sen slope per year for each season (DJF, MAM, JJA, SON)."""
+    names = {12: "DJF", 1: "DJF", 2: "DJF", 3: "MAM", 4: "MAM", 5: "MAM"}
+    names.update({6: "JJA", 7: "JJA", 8: "JJA", 9: "SON", 10: "SON", 11: "SON"})
+    by_season: dict[str, dict[int, list[float]]] = {n: {} for n in ("DJF", "MAM", "JJA", "SON")}
+    for row in rows:
+        if row.anomaly is None:
+            continue
+        year = row.timestamp.year + (
+            1 if row.timestamp.month == 12 else 0
+        )  # December joins next DJF
+        by_season[names[row.timestamp.month]].setdefault(year, []).append(row.anomaly)
+    out: dict[str, float | None] = {}
+    for season, per_year in by_season.items():
+        years = sorted(y for y, v in per_year.items() if len(v) >= 2)
+        if len(years) < 8:
+            out[season] = None
+            continue
+        out[season] = round(
+            float(stats.theilslopes([float(np.mean(per_year[y])) for y in years], years)[0]), 6
+        )
+    return out
+
+
 @dataclass
 class RawResult:
     spec: DatasetSpec
@@ -260,6 +302,7 @@ class RawResult:
     detect: float | None
     sparkline: list[float]
     anomaly_years: dict[int, float]
+    diagnostics: tuple[ChangePoint | None, SeasonalSlopes | None] = (None, None)
 
 
 def analyse(spec: DatasetSpec, region: RegionSpec, rows: list[SeriesRow]) -> RawResult:
@@ -277,6 +320,19 @@ def analyse(spec: DatasetSpec, region: RegionSpec, rows: list[SeriesRow]) -> Raw
     spread = float(np.std(series, ddof=1))
     effect = round(slope * (len(years) - 1) / spread, 2) if spread else None
     monthly = [r.anomaly for r in rows if r.anomaly is not None]
+    found = pettitt(years, series)
+    change_point = (
+        ChangePoint(
+            change_point_year=found[0],
+            K=round(found[1], 3),
+            p_value=round(found[2], 6),
+            mean_before=round(found[3], 6),
+            mean_after=round(found[4], 6),
+            n=len(years),
+        )
+        if found
+        else None
+    )
     return RawResult(
         spec,
         region,
@@ -289,6 +345,7 @@ def analyse(spec: DatasetSpec, region: RegionSpec, rows: list[SeriesRow]) -> Raw
         detect_years(monthly, slope),
         sparkline,
         anomalies,
+        (change_point, SeasonalSlopes(**seasonal_slopes(rows))),
     )
 
 
@@ -346,6 +403,8 @@ def build_trend(raw: RawResult, adjusted_p: float | None, family: str) -> TrendR
         verdict=verdict_for(adjusted_p),
         effect_size_swings=raw.effect,
         detect_years=None if significant else raw.detect,
+        change_point=raw.diagnostics[0],
+        seasonal_slopes=raw.diagnostics[1],
     )
 
 
@@ -392,7 +451,22 @@ def build_windows(raw: RawResult) -> Windows:
 
 
 def provenance_for(spec: DatasetSpec) -> Provenance:
-    boxes = "; ".join(f"{r.region_id}: {','.join(str(c) for c in r.box)}" for r in REGIONS)
+    regions = {
+        r.region_id: RegionProvenance(
+            region_id=r.region_id,
+            requested_box=",".join(str(c) for c in r.box),
+            analyzable_region="n/a (synthetic)",
+            giovanni_variable_id="n/a",
+            permalink="https://example.invalid/sample",
+            period_start=dt.date(spec.start, 1, 1),
+            period_end=dt.date(spec.end, 12, 1),
+            source_csv="n/a (generated)",
+            source_csv_sha256="0" * 64,
+            observations=(spec.end - spec.start + 1) * 12,
+            transformations=["synthetic series with a known trend"],
+        )
+        for r in REGIONS
+    }
     return Provenance(
         dataset_id=spec.dataset_id,
         product=SAMPLE,
@@ -409,12 +483,9 @@ def provenance_for(spec: DatasetSpec) -> Provenance:
         period_end=dt.date(spec.end, 12, 1),
         qa_rules=["none: synthetic data"],
         region_source="sample boxes from Linear doc 01",
-        requested_box=boxes,
-        analyzable_region="n/a (synthetic)",
-        giovanni_variable_id="n/a",
-        giovanni_permalink="https://example.invalid/sample",
         citation=SAMPLE,
         transformations=["synthetic series with a known trend"],
+        regions=regions,
     )
 
 

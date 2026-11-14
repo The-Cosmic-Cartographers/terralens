@@ -1,0 +1,32 @@
+# SAMPLE - NOT NASA DATA
+# Tiny synthetic export used only by pipeline/tests. It imitates the shape of a
+# Giovanni area-averaged time-series CSV so the parser can be tested offline.
+# Selected parameters: T2M
+# Data processed on: 2026-11-14
+Parameter,T2M
+Unit,K
+Month,Mean
+1981-01,283.15
+1981-02,283.35
+1981-03,283.55
+1981-04,283.75
+1981-05,283.95
+1981-06,284.15
+1981-07,284.35
+1981-08,284.55
+1981-09,284.75
+1981-10,284.95
+1981-11,285.15
+1981-12,285.35
+1982-01,283.25
+1982-02,283.45
+1982-03,283.65
+1982-04,283.85
+1982-05,284.05
+1982-06,284.25
+1982-07,284.45
+1982-08,284.65
+1982-09,284.85
+1982-10,285.05
+1982-11,285.25
+1982-12,285.45

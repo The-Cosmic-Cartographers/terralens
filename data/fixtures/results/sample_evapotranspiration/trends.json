@@ -30,7 +30,21 @@
     "bh_family": "compare:evapotranspiration",
     "verdict": "no_clear_trend",
     "effect_size_swings": 0.14,
-    "detect_years": 153.6
+    "detect_years": 153.6,
+    "change_point": {
+      "change_point_year": 2012,
+      "K": 41.0,
+      "p_value": 1.0,
+      "mean_before": -0.009594,
+      "mean_after": 0.009614,
+      "n": 26
+    },
+    "seasonal_slopes": {
+      "DJF": -0.002757,
+      "MAM": 0.004453,
+      "JJA": -0.002478,
+      "SON": 0.000554
+    }
   },
   {
     "dataset_id": "sample_evapotranspiration",
@@ -63,6 +77,20 @@
     "bh_family": "compare:evapotranspiration",
     "verdict": "no_clear_trend",
     "effect_size_swings": 1.15,
-    "detect_years": 40.5
+    "detect_years": 40.5,
+    "change_point": {
+      "change_point_year": 2010,
+      "K": 73.0,
+      "p_value": 0.34692,
+      "mean_before": -0.036355,
+      "mean_after": 0.026651,
+      "n": 26
+    },
+    "seasonal_slopes": {
+      "DJF": 0.007551,
+      "MAM": 0.003008,
+      "JJA": -0.000909,
+      "SON": 0.008869
+    }
   }
 ]
