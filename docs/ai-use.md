@@ -78,5 +78,6 @@ Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat 
 | 2026-11-14 | Parth | Codebuff (Buffy) | Sidebar "Data status" became a data freshness indicator: dot tone and age from the snapshot build date, plus observation coverage end, version and source | `frontend/nasa-earth-trends/src/utils/freshness.js`, `frontend/nasa-earth-trends/src/App.jsx`, `frontend/nasa-earth-trends/src/App.css` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | Removed the sidebar disclaimer line ("Independent team project for the NASA Space Apps Challenge 2026. Not an official NASA product.") and its now-unused styles | `frontend/nasa-earth-trends/src/App.jsx`, `frontend/nasa-earth-trends/src/App.css` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | Stated the analysis minimums on Overview (ten complete years, at most 20% months missing, months under half coverage dropped) so the "Not enough data" verdict is not unexplained | `frontend/nasa-earth-trends/src/pages/HomePage.jsx`, `frontend/nasa-earth-trends/src/App.css` |
+| 2026-11-14 | Parth | Codebuff (Buffy) | Added the missing .sr-only rule so the Lineup region label stays screen-reader-only instead of rendering against the select | `frontend/nasa-earth-trends/src/App.css` |
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.
