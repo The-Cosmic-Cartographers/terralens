@@ -96,6 +96,50 @@
         "mapped to the doc 04 processed-series columns",
         "anomaly left null: climatology and anomalies belong to analysis/"
       ]
+    },
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "-9.50,36.50,3.50,43.50",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
+      "source_csv": "precipitation_iberia.csv",
+      "source_csv_sha256": "3533330817ee291682f2f869260dfde728f219cd8ef857c877df6289cc478d75",
+      "observations": 288,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (mm/month)",
+        "CSV declared unit 'mm/month' matched the expected 'mm/month'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "68.50,22.50,77.50,31.50",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
+      "source_csv": "precipitation_nw_south_asia.csv",
+      "source_csv_sha256": "388e555c013829ae3d273c0072f461f6407dda51ae7f53ff7a5294afb59d303b",
+      "observations": 288,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (mm/month)",
+        "CSV declared unit 'mm/month' matched the expected 'mm/month'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
     }
   }
 }

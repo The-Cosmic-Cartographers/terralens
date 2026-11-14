@@ -96,6 +96,50 @@
         "mapped to the doc 04 processed-series columns",
         "anomaly left null: climatology and anomalies belong to analysis/"
       ]
+    },
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "-9.88,36.12,3.38,43.88",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "",
+      "source_csv": "evapotranspiration_iberia.csv",
+      "source_csv_sha256": "3171b8f7a1f44ec37b5529a8814c7137fa5c7c0be15eeb76e53b28b59880b515",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "68.12,22.12,77.88,31.88",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/b0a46c9a-d772-4d95-98f1-d5e8511fdb11",
+      "source_csv": "evapotranspiration_nw_south_asia.csv",
+      "source_csv_sha256": "10ca46cb12c9964eb190ca2df9b1de3ecfa129e6d91eecf0a675adceb2729bf8",
+      "observations": 312,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
     }
   }
 }

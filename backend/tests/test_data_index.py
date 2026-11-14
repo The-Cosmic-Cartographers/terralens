@@ -48,7 +48,7 @@ def test_catalogue_marks_pulled_datasets_ready_and_the_rest_coming_soon(index):
 def test_regions_are_only_those_with_a_series(index):
     client, _ = index
     ids = [r["region_id"] for r in client.get("/api/v1/regions").json()]
-    assert ids == ["ireland", "sahel", "us_southwest"]
+    assert ids == ["ireland", "iberia", "sahel", "nw_south_asia", "us_southwest"]
 
 
 def test_real_series_and_metadata_are_served(index):
