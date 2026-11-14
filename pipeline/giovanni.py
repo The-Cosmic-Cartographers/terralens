@@ -31,6 +31,8 @@ MISSING_TOKENS = {
 
 DATE_HEADERS = {"month", "date", "time", "datetime", "year-month", "ym", "yyyy-mm"}
 
+UNIT_KEYS = {"unit", "units"}
+
 
 class GiovanniParseError(ValueError):
     """Raised when a Giovanni CSV has no usable date/value table."""
@@ -100,3 +102,30 @@ def read_giovanni_csv(path: str | Path) -> pd.DataFrame:
     """Read and parse a Giovanni CSV file from disk."""
     text = Path(path).read_text(encoding="utf-8", errors="replace")
     return parse_giovanni_csv(text)
+
+
+def declared_unit(text: str) -> str | None:
+    """Return the unit Giovanni printed above the table, if it printed one.
+
+    Exports carry a ``Unit,K`` (or ``Units: mm/month``) line above the header.
+    That line is the only evidence of what the numbers in the file actually are,
+    so the builder compares it against the registry instead of trusting either
+    side alone: a silently pre-converted export must not be converted twice.
+    """
+    for line in text.splitlines()[:40]:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        key, separator, value = stripped.partition(",")
+        if not separator:
+            key, separator, value = stripped.partition(":")
+        if separator and key.strip().strip('"').strip().lower() in UNIT_KEYS:
+            unit = value.strip().strip('"').strip()
+            return unit or None
+    return None
+
+
+def read_giovanni_unit(path: str | Path) -> str | None:
+    """Read the declared unit from a Giovanni CSV file, if present."""
+    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    return declared_unit(text)

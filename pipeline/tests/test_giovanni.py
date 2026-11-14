@@ -7,7 +7,13 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from pipeline.giovanni import GiovanniParseError, parse_giovanni_csv, read_giovanni_csv
+from pipeline.giovanni import (
+    GiovanniParseError,
+    declared_unit,
+    parse_giovanni_csv,
+    read_giovanni_csv,
+    read_giovanni_unit,
+)
 
 SAMPLE = Path(__file__).parent / "data" / "giovanni_t2m_sample.csv"
 
@@ -52,3 +58,17 @@ def test_full_iso_dates_are_accepted() -> None:
 def test_rejects_a_file_without_a_table() -> None:
     with pytest.raises(GiovanniParseError):
         parse_giovanni_csv("# only comments and notes\nNothing here\n")
+
+
+def test_reads_the_unit_row_from_the_sample() -> None:
+    assert read_giovanni_unit(SAMPLE) == "K"
+
+
+def test_reads_a_colon_style_unit_row() -> None:
+    text = "# comment\nUnits: mm/month\nMonth,Mean\n2001-01,12.0\n"
+    assert declared_unit(text) == "mm/month"
+
+
+def test_returns_none_when_the_export_declares_no_unit() -> None:
+    text = "Month,Mean\n2001-01,12.0\n"
+    assert declared_unit(text) is None

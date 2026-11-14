@@ -3,6 +3,11 @@
 These are the five rows Kevin verified in Giovanni on 14 Nov plus the OMI NO2
 field name that the verification corrected. They are defaults for the CLI only;
 every value can be overridden, and provenance records what was actually used.
+
+The window fields are D21 (doc 10): whole calendar years, fixed per variable so
+two regions of the same row can never be compared over different periods. T2M
+starts in 1981 even though MERRA-2 begins in 1980; IMERG stops at 2024 because
+the Giovanni product ends on 2025-09-30.
 """
 
 from __future__ import annotations
@@ -22,6 +27,8 @@ class Variable:
     output_unit: str
     spatial_resolution: str
     giovanni_variable_id: str
+    start_year: int
+    end_year: int
 
 
 VARIABLES: dict[str, Variable] = {
@@ -34,6 +41,8 @@ VARIABLES: dict[str, Variable] = {
         output_unit="°C",
         spatial_resolution="0.5° x 0.625°",
         giovanni_variable_id="T2M",
+        start_year=1981,
+        end_year=2025,
     ),
     "soil_moisture_0_10": Variable(
         variable_id="soil_moisture_0_10",
@@ -44,6 +53,8 @@ VARIABLES: dict[str, Variable] = {
         output_unit="kg/m2",
         spatial_resolution="0.25°",
         giovanni_variable_id="SoilMoi0_10cm_inst",
+        start_year=2000,
+        end_year=2025,
     ),
     "evapotranspiration": Variable(
         variable_id="evapotranspiration",
@@ -54,6 +65,8 @@ VARIABLES: dict[str, Variable] = {
         output_unit="mm/day",
         spatial_resolution="0.25°",
         giovanni_variable_id="Evap_tavg",
+        start_year=2000,
+        end_year=2025,
     ),
     "precipitation": Variable(
         variable_id="precipitation",
@@ -64,6 +77,8 @@ VARIABLES: dict[str, Variable] = {
         output_unit="mm/month",
         spatial_resolution="0.1°",
         giovanni_variable_id="precipitation",
+        start_year=2001,
+        end_year=2024,
     ),
     "aerosol": Variable(
         variable_id="aerosol",
@@ -74,6 +89,8 @@ VARIABLES: dict[str, Variable] = {
         output_unit="1",
         spatial_resolution="0.5° x 0.625°",
         giovanni_variable_id="TOTEXTTAU",
+        start_year=2003,
+        end_year=2025,
     ),
     "no2": Variable(
         variable_id="no2",
@@ -84,5 +101,7 @@ VARIABLES: dict[str, Variable] = {
         output_unit="molec/cm2",
         spatial_resolution="0.25°",
         giovanni_variable_id="ColumnAmountNO2TropCloudScreened",
+        start_year=2005,
+        end_year=2025,
     ),
 }

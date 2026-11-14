@@ -18,6 +18,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | Repo updated for the Vite + React frontend: env var, CORS default port, ignore rules, README | `.env.example`, `.gitignore`, `README.md`, `backend/app/config.py`, `backend/tests/test_api.py` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-5: D19 Iberia box and NW South Asia label fixes, aerosol row in the variable registry | `pipeline/regions.json`, `pipeline/registry.py` |
 | 2026-11-14 | Kevin | Claude Code | Contract update: optional series coverage, per-region provenance, pipeline-to-API integration tests, review of PR #11 (NAS-16) | `backend/app/models/`, `backend/scripts/generate_fixtures.py`, `data/fixtures/`, `backend/tests/` |
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-56: Kevin's NAS-7 review fixes — per-variable windows, CSV unit-row guard, missing months kept as null rows, with tests | `pipeline/build.py`, `pipeline/giovanni.py`, `pipeline/registry.py`, `pipeline/tests/` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
