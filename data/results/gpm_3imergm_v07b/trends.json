@@ -1,0 +1,143 @@
+[
+  {
+    "dataset_id": "gpm_3imergm_v07b",
+    "variable_id": "precipitation",
+    "region_id": "ireland",
+    "period_start": "2001-01-01",
+    "period_end": "2024-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 4.621454416666656,
+    "unit_per_year": "mm (annual total)/yr",
+    "confidence_interval_95": [
+      -2.9631825000000447,
+      14.30522714285712
+    ],
+    "p_value": 0.6082307357165855,
+    "adjusted_p_value": 0.723929306106911,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 288,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.12; Hamed\u2013Rao variance factor 1.28; raw seasonal MK p = 0.5619",
+    "caveats": [
+      "record_long_enough_but_not_significant"
+    ],
+    "withheld_reason": null,
+    "product_type": "satellite",
+    "bh_family": "compare:precipitation",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.8018308088354975,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2007,
+      "K": 49.0,
+      "p_value": 0.7354523800009973,
+      "mean_before": 1318.6855585714286,
+      "mean_after": 1406.300869411765,
+      "n": 24
+    },
+    "seasonal_slopes": {
+      "DJF": 2.102258992063492,
+      "MAM": -0.00932965099715089,
+      "JJA": -1.0858173611111126,
+      "SON": 0.37805952380952335
+    }
+  },
+  {
+    "dataset_id": "gpm_3imergm_v07b",
+    "variable_id": "precipitation",
+    "region_id": "sahel",
+    "period_start": "2001-01-01",
+    "period_end": "2024-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 2.8846869999999982,
+    "unit_per_year": "mm (annual total)/yr",
+    "confidence_interval_95": [
+      0.3138325000000002,
+      5.694168571428577
+    ],
+    "p_value": 0.19522847041835556,
+    "adjusted_p_value": 0.5856854112550667,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 288,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.32; Hamed\u2013Rao variance factor 1.96; raw seasonal MK p = 0.0701",
+    "caveats": [
+      "record_long_enough_but_not_significant"
+    ],
+    "withheld_reason": null,
+    "product_type": "satellite",
+    "bh_family": "compare:precipitation",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 1.4375400477560518,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2017,
+      "K": 79.0,
+      "p_value": 0.14848527467308348,
+      "mean_before": 312.6347570588235,
+      "mean_after": 372.03924714285716,
+      "n": 24
+    },
+    "seasonal_slopes": {
+      "DJF": -0.0003528124999999994,
+      "MAM": -0.024291682539682505,
+      "JJA": 0.7464084722222226,
+      "SON": 0.3201557291666666
+    }
+  },
+  {
+    "dataset_id": "gpm_3imergm_v07b",
+    "variable_id": "precipitation",
+    "region_id": "us_southwest",
+    "period_start": "2001-01-01",
+    "period_end": "2024-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": -1.0617431746031714,
+    "unit_per_year": "mm (annual total)/yr",
+    "confidence_interval_95": [
+      -3.6745399999999906,
+      2.751030833333336
+    ],
+    "p_value": 0.723929306106911,
+    "adjusted_p_value": 0.723929306106911,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 288,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.21; Hamed\u2013Rao variance factor 1.53; raw seasonal MK p = 0.6623",
+    "caveats": [
+      "record_long_enough_but_not_significant"
+    ],
+    "withheld_reason": null,
+    "product_type": "satellite",
+    "bh_family": "compare:precipitation",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.5195976233773814,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2003,
+      "K": 43.0,
+      "p_value": 0.9256403727719135,
+      "mean_before": 261.79766,
+      "mean_after": 314.82149761904765,
+      "n": 24
+    },
+    "seasonal_slopes": {
+      "DJF": 0.03691479344729344,
+      "MAM": 0.08578902339181288,
+      "JJA": 0.23313269230769224,
+      "SON": -0.12255907936507932
+    }
+  }
+]

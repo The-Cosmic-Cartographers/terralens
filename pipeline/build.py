@@ -276,6 +276,28 @@ def build(
         "anomaly left null: climatology and anomalies belong to analysis/",
     ]
 
+    if "giovanni" in access_route.lower():
+        qa_rules = [
+            "Giovanni area-averaged time series, monthly",
+            "no mixing of product versions inside one series",
+            "registered variable window, whole calendar years",
+            "missing months kept as null rows",
+            "CSV declared unit must match the expected native unit",
+        ]
+        region_source = "Linear doc 11 §3 box, entered in Giovanni"
+    else:
+        # NAS-64 review: a locally reduced field must not carry Giovanni boilerplate.
+        qa_rules = [
+            "area mean computed locally from the source field, monthly",
+            "no mixing of product versions inside one series",
+            "registered variable window, whole calendar years",
+            "missing months kept as null rows",
+            "CSV declared unit must match the expected native unit",
+        ]
+        region_source = (
+            f"Linear doc 11 §3 box, applied to the locally averaged field ({access_route})"
+        )
+
     parquet = write_series(frame, out_root, dataset_id, region_id)
     first, last = trimmed["timestamp"].iloc[0], trimmed["timestamp"].iloc[-1]
     provenance = write_provenance(
@@ -295,14 +317,8 @@ def build(
             "spatial_resolution": spatial_resolution,
             "period_start": first.date().isoformat(),
             "period_end": last.date().isoformat(),
-            "qa_rules": [
-                "Giovanni area-averaged time series, monthly",
-                "no mixing of product versions inside one series",
-                "registered variable window, whole calendar years",
-                "missing months kept as null rows",
-                "CSV declared unit must match the expected native unit",
-            ],
-            "region_source": "Linear doc 11 §3 box, entered in Giovanni",
+            "qa_rules": qa_rules,
+            "region_source": region_source,
             "transformations": transformations,
         },
         {
