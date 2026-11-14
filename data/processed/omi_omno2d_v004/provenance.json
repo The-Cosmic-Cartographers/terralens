@@ -1,0 +1,85 @@
+{
+  "dataset_id": "omi_omno2d_v004",
+  "product": "OMI-Aura daily tropospheric NO2 column, 30% cloud screened (OMNO2d)",
+  "version": "v004",
+  "doi_or_url": "https://doi.org/10.5067/Aura/OMI/DATA3407",
+  "access_date": "2026-11-14",
+  "access_route": "NASA GES DISC OPeNDAP (granule-level NetCDF subset)",
+  "variable_field": "/HDFEOS/GRIDS/ColumnAmountNO2/Data_Fields/ColumnAmountNO2TropCloudScreened",
+  "scale_factor": 1.0,
+  "native_unit": "molec/cm2",
+  "output_unit": "molec/cm2",
+  "spatial_resolution": "0.25\u00b0",
+  "period_start": "2005-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "OMI OMNO2d V004, daily product, 30% cloud screened",
+    "only cells whose centre is inside the registered box",
+    "monthly value needs at least 10 valid days; below that it is null",
+    "n_valid_days records the clear days behind each month",
+    "coverage_fraction stays null: a daily product has day counts, not cell coverage",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows"
+  ],
+  "region_source": "Linear doc 11 section 3a NO2 city sub-box",
+  "transformations": [
+    "one OPeNDAP granule subset per city per day; no full-granule downloads",
+    "subset rows 472-477, columns 1026-1031 (0.25 degree cells whose centre is in the box)",
+    "cosine-latitude weighted area mean per day",
+    "missing values and all-fill days kept out of the daily mean",
+    "negative daily retrievals retained: the product does not clip retrieval noise",
+    "daily values reduced to months with the D22 rule (10 valid days)",
+    "clipped to the registered window 2005-01 to 2025-12",
+    "missing months kept as null rows",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "delhi_no2": {
+      "region_id": "delhi_no2",
+      "requested_box": "76.5,28.0,78.0,29.5",
+      "analyzable_region": "76.62,28.12,77.88,29.38",
+      "period_start": "2005-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "ColumnAmountNO2TropCloudScreened",
+      "permalink": "https://opendap.earthdata.nasa.gov/collections/C3333493715-GES_DISC",
+      "source_csv": "no2_delhi_no2.csv",
+      "source_csv_sha256": "f138ff42fcf21f83e061527018d409782bb9403c2abef4c2a70638a2714772c7",
+      "observations": 251,
+      "transformations": [
+        "one OPeNDAP granule subset per city per day; no full-granule downloads",
+        "subset rows 472-477, columns 1026-1031 (0.25 degree cells whose centre is in the box)",
+        "cosine-latitude weighted area mean per day",
+        "missing values and all-fill days kept out of the daily mean",
+        "negative daily retrievals retained: the product does not clip retrieval noise",
+        "daily values reduced to months with the D22 rule (10 valid days)",
+        "clipped to the registered window 2005-01 to 2025-12",
+        "missing months kept as null rows",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "dublin_no2": {
+      "region_id": "dublin_no2",
+      "requested_box": "-6.5,53.25,-6.0,53.45",
+      "analyzable_region": "-6.38,53.38,-6.12,53.38",
+      "period_start": "2005-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "ColumnAmountNO2TropCloudScreened",
+      "permalink": "https://opendap.earthdata.nasa.gov/collections/C3333493715-GES_DISC",
+      "source_csv": "no2_dublin_no2.csv",
+      "source_csv_sha256": "27d8282c603596005bf0ca02b9c8fe2f2f136acced2fd5fe824d78087784dcba",
+      "observations": 211,
+      "transformations": [
+        "one OPeNDAP granule subset per city per day; no full-granule downloads",
+        "subset rows 573-573, columns 694-695 (0.25 degree cells whose centre is in the box)",
+        "cosine-latitude weighted area mean per day",
+        "missing values and all-fill days kept out of the daily mean",
+        "negative daily retrievals retained: the product does not clip retrieval noise",
+        "daily values reduced to months with the D22 rule (10 valid days)",
+        "clipped to the registered window 2005-01 to 2025-12",
+        "missing months kept as null rows",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

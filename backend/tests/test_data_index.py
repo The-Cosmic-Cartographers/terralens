@@ -38,17 +38,27 @@ def test_catalogue_marks_pulled_datasets_ready_and_the_rest_coming_soon(index):
     client, _ = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
     assert len(items) == len(VARIABLES)
+    missing = set()
     for spec in VARIABLES.values():
         has_series = any((PROCESSED / spec.dataset_id).glob("*.parquet"))
         assert items[spec.dataset_id] == ("ready" if has_series else "coming_soon"), spec.dataset_id
+        if not has_series:
+            missing.add(spec.dataset_id)
+    assert {k for k, v in items.items() if v == "coming_soon"} == missing
     assert items["merra2_m2tmnxslv"] == "ready"
-    assert any(status == "coming_soon" for status in items.values())
 
 
 def test_regions_are_only_those_with_a_series(index):
     client, _ = index
     ids = [r["region_id"] for r in client.get("/api/v1/regions").json()]
-    assert ids == ["ireland", "sahel", "us_southwest"]
+    with_series = {
+        path.stem
+        for dataset in PROCESSED.iterdir()
+        if dataset.is_dir()
+        for path in dataset.glob("*.parquet")
+    }
+    assert set(ids) == with_series
+    assert len(ids) == len(set(ids))
 
 
 def test_real_series_and_metadata_are_served(index):

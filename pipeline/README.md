@@ -28,7 +28,7 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 | soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
 | evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
 | precipitation | **GES DISC direct** | GPM IMERG Final V07B `GPM_3IMERGM` (`C2723754851-GES_DISC`): one HDF5 per month listed from CMR, fetched through GES DISC's 303 to a presigned URL, reduced to a 1° field and cosine-averaged over the box. Harmony has no coverage for this collection and its OPeNDAP endpoints answer 410/404 |
-| NO₂ | **no verified route** | `OMNO2d` exists in CMR but no field name has been proven from this pipeline |
+| NO₂ | **OPeNDAP daily granule subset** | `OMNO2d` V004 (`C3333493715-GES_DISC`), field `ColumnAmountNO2TropCloudScreened`, one subset per city per day from `pipeline.no2` |
 
 A blocked series is reported by name and exit code, never filled with a substitute or a different
 product. `--dry-run` shows which is which before anything runs.
@@ -42,6 +42,20 @@ centre-in-box before averaging, and `slice_extent` records the extent of the cel
 actually averaged in `provenance.json` (`analyzable_region`), which is usually one cell narrower
 than the requested box on each side. With the mask, a Harmony pull reproduces the Giovanni T2M
 series to 0.0005 °C (RMS 0.0003 °C).
+
+### The NO₂ route
+
+OMNO2d is a *daily* product: one cloud-screened retrieval per day, absent where the sky was not
+clear. It therefore cannot be a monthly subset, and the other routes do not serve V004 at all —
+Harmony rejects the variable name (`Coverages were not found`), Giovanni's time-series API knows the
+product only as V003, its Simple Subset Wizard answers `dataSetNotConfigured`, the S3 direct-access
+role is not authorised on the protected bucket, and no-auth/HTTP-Basic both bounce to Earthdata Login.
+
+`pipeline.no2` uses the granule-level OPeNDAP service instead: one request per city per day returns
+the box's cells as a NetCDF subset, 1–3 kB against the 11 MB global granule, with no redirect hop.
+The daily values go through `pipeline.omi`, so a month needs **10 clear days** and carries its
+`n_valid_days`; below that the month is kept as a null row with its count. The 34 days of known Aura
+outages in 2005–2025 have no granule at all and are reported as gaps, never as failed downloads.
 
 ### What makes it survive this network
 
@@ -81,7 +95,11 @@ At ~2 min per series, the 22 Harmony slices in the plan — soil moisture, evapo
 aerosol over five regions — come to roughly **45 minutes**, which is over the 30-minute target.
 That is why resuming is the default design rather than an extra: `--time-limit 1800` stops at a
 chunk boundary and the next run continues from the checkpoints. T2M is not in that count (it stays
-on Giovanni), and precipitation and NO₂ are refused rather than pulled.
+on Giovanni) and precipitation is refused rather than pulled.
+
+NO₂ is additive to that budget: 15,272 city-days over 2005–2025 at roughly 15 subsets per second
+is about 17 minutes for both cities, and its checkpoint is per day, so `--time-limit` stops it just
+as cleanly.
 
 **Today's block, and why the command still behaved:** every GES DISC read returned
 `403 EULA Acceptance Failure` (`data.gesdisc.earthdata.nasa.gov`), which is also what broke

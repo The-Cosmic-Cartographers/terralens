@@ -15,8 +15,9 @@ of per run:
   coverage is registered for the collection, so a Harmony job is rejected before
   it starts. The pull refuses to invent a substitute and reports the series as
   blocked instead.
-* **OMI NO2** has a CMR collection but no route verified from this machine; it is
-  reported the same way rather than guessed at.
+* **OMI NO2** is daily, not monthly, and has no working Harmony/Giovanni route for
+  V004. It is pulled by `pipeline.no2`, one granule-level OPeNDAP subset per city
+  per day, and the daily series is reduced to months with the D22 rule.
 
 Credentials come from `EARTHDATA_TOKEN` only. The token is never printed, never
 written to a checkpoint, and never reaches `provenance.json`.
@@ -50,6 +51,7 @@ import xarray as xr
 from requests.adapters import HTTPAdapter
 
 from pipeline import build as build_module
+from pipeline import no2 as no2_module
 from pipeline.regions import box_string, load_regions
 from pipeline.registry import VARIABLES, Variable
 
@@ -123,12 +125,9 @@ IMERG_ROUTE = Route(
     permalink="https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
 )
 
-NO_ROUTE: dict[str, str] = {
-    "no2": (
-        "OMNO2d (C3333493715-GES_DISC) exists in CMR but no route through this "
-        "pipeline has been verified yet; do not guess a variable name for it"
-    ),
-}
+# Every row has a route now: Harmony for MERRA-2/GLDAS, GES DISC direct for IMERG,
+# and the OPeNDAP subsetter for NO2. Kept as the place a future blocker is named.
+NO_ROUTE: dict[str, str] = {}
 
 
 @dataclass
@@ -773,12 +772,18 @@ def _applies(variable_id: str, region_id: str) -> bool:
 
 def plan(
     variable_ids: list[str] | None, region_ids: list[str] | None
-) -> tuple[list[tuple[Variable, str, Route]], list[tuple[str, str, str]]]:
-    """Return (work, blocked) for the requested slices."""
+) -> tuple[list[tuple[Variable, str, Route]], list[str], list[tuple[str, str, str]]]:
+    """Return (harmony_work, city_ids, blocked) for the requested slices.
+
+    NO2 is not a Harmony row: it is daily, and the only working route is the
+    granule-level OPeNDAP subsetter in `pipeline.no2`. The city ids are returned
+    separately so `main` can hand them to that puller.
+    """
     regions = load_regions()
     wanted_regions = region_ids or sorted(regions)
     selected = variable_ids or list(VARIABLES)
     work: list[tuple[Variable, str, Route]] = []
+    cities: list[str] = []
     blocked: list[tuple[str, str, str]] = []
     for variable_id in selected:
         spec = VARIABLES[variable_id]
@@ -788,6 +793,9 @@ def plan(
                     f"unknown region_id {region_id!r}; known: {', '.join(sorted(regions))}"
                 )
             if not _applies(variable_id, region_id):
+                continue
+            if variable_id == "no2":
+                cities.append(region_id)
                 continue
             if variable_id in GIOVANNI_ONLY and not (
                 variable_id == "t2m" and region_id in HARMONY_T2M_REGIONS
@@ -801,7 +809,7 @@ def plan(
                 blocked.append((variable_id, region_id, NO_ROUTE.get(variable_id, "no route")))
             else:
                 work.append((spec, region_id, route))
-    return work, blocked
+    return work, cities, blocked
 
 
 def token_from_environment(env: dict[str, str] | None = None) -> str:
@@ -836,7 +844,7 @@ def main(argv: list[str] | None = None) -> int:
     variable_ids = args.variable_id or list(VARIABLES)
 
     try:
-        work, blocked = plan(variable_ids, args.region_id)
+        work, cities, blocked = plan(variable_ids, args.region_id)
     except KeyError as error:
         parser.error(str(error))
 
@@ -844,6 +852,11 @@ def main(argv: list[str] | None = None) -> int:
         for spec, region_id, route in work:
             via = "GES DISC direct" if route is IMERG_ROUTE else "Harmony"
             print(f"{spec.variable_id}/{region_id} <- {via} {route.collection} ({route.field})")
+        for region_id in cities:
+            print(
+                f"no2/{region_id} <- OPeNDAP daily granule subset "
+                f"({no2_module.COLLECTION}, {no2_module.FIELD_PATH.rsplit('/', 1)[-1]})"
+            )
         for variable_id, region_id, reason in blocked:
             print(f"{variable_id}/{region_id} <- BLOCKED: {reason}")
         return EXIT_OK
@@ -939,7 +952,23 @@ def main(argv: list[str] | None = None) -> int:
     for variable_id, region_id, reason in blocked:
         print(f"-- {variable_id}/{region_id}: blocked - {reason}")
 
-    print(f"\n{len(work) - len(failures)}/{len(work)} series built in {deadline.elapsed():.0f}s")
+    if cities:
+        remaining = max(1.0, args.time_limit - deadline.elapsed()) if args.time_limit else None
+        print(f"== no2 cities via OPeNDAP: {', '.join(cities)}")
+        code = no2_module.run_regions(
+            cities,
+            token=token,
+            workers=args.workers,
+            raw=args.raw,
+            out=args.out,
+            build=not args.no_build,
+            deadline=dt.timedelta(seconds=remaining) if remaining else None,
+        )
+        if code != EXIT_OK:
+            failures.append(f"no2/{','.join(cities)}: OPeNDAP pull incomplete")
+
+    built = len(work) + len(cities) - len(failures)
+    print(f"\n{built}/{len(work) + len(cities)} series built in {deadline.elapsed():.0f}s")
     if failures:
         print("failed:")
         for line in failures:
