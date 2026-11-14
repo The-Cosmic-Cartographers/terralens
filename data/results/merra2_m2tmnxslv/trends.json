@@ -28,7 +28,21 @@
     "bh_family": "lineup:ireland",
     "verdict": "significant",
     "effect_size_swings": 1.9109354322311396,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 1996,
+      "K": 338.0,
+      "p_value": 0.0012740371340212507,
+      "mean_before": 9.679073713541687,
+      "mean_after": 10.259130545977035,
+      "n": 45
+    },
+    "seasonal_slopes": {
+      "DJF": 0.025573570409982198,
+      "MAM": 0.021634897407945653,
+      "JJA": 0.016605992319508385,
+      "SON": 0.027782821794871727
+    }
   },
   {
     "dataset_id": "merra2_m2tmnxslv",
@@ -59,7 +73,21 @@
     "bh_family": "lineup:sahel",
     "verdict": "significant",
     "effect_size_swings": 1.5890795376478575,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 1995,
+      "K": 314.0,
+      "p_value": 0.0034907388183861793,
+      "mean_before": 27.418972088888914,
+      "mean_after": 28.009418925000027,
+      "n": 45
+    },
+    "seasonal_slopes": {
+      "DJF": 0.018870552380952126,
+      "MAM": 0.028076720238094446,
+      "JJA": 0.009777833333333142,
+      "SON": 0.013357326644370521
+    }
   },
   {
     "dataset_id": "merra2_m2tmnxslv",
@@ -90,6 +118,20 @@
     "bh_family": "lineup:us_southwest",
     "verdict": "significant",
     "effect_size_swings": 2.789451062396805,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 1999,
+      "K": 398.0,
+      "p_value": 7.410637335899956e-05,
+      "mean_before": 13.924255850877216,
+      "mean_after": 14.954512701923104,
+      "n": 45
+    },
+    "seasonal_slopes": {
+      "DJF": 0.03529802356902374,
+      "MAM": 0.03322696320346398,
+      "JJA": 0.05255979814814859,
+      "SON": 0.059378996983409066
+    }
   }
 ]

@@ -65,7 +65,21 @@
         "bh_family": "lineup:sahel",
         "verdict": "significant",
         "effect_size_swings": 1.5890795376478575,
-        "detect_years": null
+        "detect_years": null,
+        "change_point": {
+          "change_point_year": 1995,
+          "K": 314.0,
+          "p_value": 0.0034907388183861793,
+          "mean_before": 27.418972088888914,
+          "mean_after": 28.009418925000027,
+          "n": 45
+        },
+        "seasonal_slopes": {
+          "DJF": 0.018870552380952126,
+          "MAM": 0.028076720238094446,
+          "JJA": 0.009777833333333142,
+          "SON": 0.013357326644370521
+        }
       }
     }
   ]

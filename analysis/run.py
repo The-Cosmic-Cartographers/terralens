@@ -141,6 +141,10 @@ def trend_payload(
         # the model rejects effect size and detectability on withheld rows
         "effect_size_swings": None if withheld else row["effect_size_swings"],
         "detect_years": None if withheld else row["detect_years"],
+        # D25 diagnostics: descriptive only, never part of a BH family, and the
+        # model rejects them on withheld rows just like the fields above.
+        "change_point": None if withheld else row.get("change_point"),
+        "seasonal_slopes": None if withheld else row.get("seasonal_slopes"),
     }
 
 

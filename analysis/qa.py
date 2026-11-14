@@ -87,6 +87,10 @@ def check_trends(checks: Checks) -> int:
                     f"{label}: withheld row has no detectability",
                     row["detect_years"] is None and row["effect_size_swings"] is None,
                 )
+                checks.add(
+                    f"{label}: withheld row has no D25 diagnostics",
+                    row.get("change_point") is None and row.get("seasonal_slopes") is None,
+                )
                 continue
 
             p, adj = row["p_value"], row["adjusted_p_value"]
@@ -131,6 +135,29 @@ def check_trends(checks: Checks) -> int:
                 f"{label}: coverage is a fraction",
                 0.0 <= row["mean_coverage_fraction"] <= 1.0,
                 f"{row['mean_coverage_fraction']:.3f}",
+            )
+
+            # --- D25 diagnostics: shown, descriptive, contract-shaped --------
+            change_point = row.get("change_point")
+            seasons = row.get("seasonal_slopes")
+            start_year = int(row["period_start"][:4])
+            end_year = int(row["period_end"][:4])
+            checks.add(
+                f"{label}: change point falls inside the period",
+                change_point is not None
+                and start_year <= change_point["change_point_year"] <= end_year,
+                str(change_point and change_point["change_point_year"]),
+            )
+            checks.add(
+                f"{label}: change point stays a diagnostic",
+                change_point is not None
+                and (change_point["p_value"] < 0.05 and row["verdict"] != "significant")
+                == ("level_shift_detected" in row["caveats"]),
+            )
+            checks.add(
+                f"{label}: one slope for each season",
+                seasons is not None and set(seasons) == {"DJF", "MAM", "JJA", "SON"},
+                ",".join(sorted(seasons)) if seasons else "missing",
             )
     return count
 

@@ -65,8 +65,9 @@ One line each, shown beside the pill.
 > * **Box averages hide internal variation.** A trend for "Iberia" is not a trend for every valley in Iberia.
 > * **Every result is period-specific.** Each row prints its own window; the Time Machine shows how much the answer depends on it.
 > * **"No clear trend" is not "no change".** It means this record cannot demonstrate one.
-> * **One change point at most.** The Pettitt diagnostic looks for a single level shift, is conservative on short records, and never sets a verdict.
+> * **One change point at most.** The Pettitt diagnostic looks for a single level shift, is conservative on short records, and never sets a verdict. It also fires in the middle of a genuine monotonic trend, so it is labelled a step change only when the trend itself is not significant.
 > * **Multiple testing is corrected, not eliminated.** Benjamini–Hochberg controls the expected share of false discoveries within a family; it does not make any single row certain.
+> * **Diagnostics are descriptive.** The change point and the per-season slopes come with no p-value of their own and are never part of a correction family.
 > * **Nothing here is attributed or forecast.**
 
 ## 7. What TerraLens does not do
