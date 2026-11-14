@@ -45,8 +45,11 @@ UNUSED = [
     ("SeaWiFS", "no ocean-colour variable is in the Lineup"),
     ("AppEEARS", "the NDVI stretch row was never started"),
     ("NOAA CDO", "no station data was pulled — the token never arrived"),
-    ("NASA POWER", "used once as a cross-check for T2M, then superseded by the Giovanni export; "
-                   "the committed series do not come from it"),
+    (
+        "NASA POWER",
+        "used once as a cross-check for T2M, then superseded by the Giovanni export; "
+        "the committed series do not come from it",
+    ),
 ]
 
 TEMPLATE = (

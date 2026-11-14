@@ -22,6 +22,7 @@
 - `pymannkendall>=1.4.3`
 - `geopandas>=1.0`
 - `shapely>=2.0`
+- `matplotlib>=3.8`
 - `pytest>=8` (development)
 - `httpx>=0.27` (development)
 - `ruff>=0.6` (development)
