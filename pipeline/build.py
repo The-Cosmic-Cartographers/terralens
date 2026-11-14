@@ -197,6 +197,7 @@ def build(
     start_year: int | None,
     end_year: int | None,
     out_root: Path,
+    access_route: str = "NASA GES DISC / Giovanni",
 ) -> tuple[Path, Path]:
     """Run the whole conversion for one CSV and return (parquet, provenance) paths."""
     spec_start, spec_end = window_for(variable_id)
@@ -254,7 +255,7 @@ def build(
             "version": version,
             "doi_or_url": permalink or "",
             "access_date": access_date,
-            "access_route": "NASA GES DISC / Giovanni",
+            "access_route": access_route,
             "variable_field": giovanni_variable_id,
             "scale_factor": 1.0,
             "native_unit": native_unit,
@@ -306,6 +307,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--analyzable-region", default=None, help="region string Giovanni reports")
     parser.add_argument("--permalink", default=None)
+    parser.add_argument(
+        "--access-route",
+        default=None,
+        help="how the bytes were obtained (default: NASA GES DISC / Giovanni)",
+    )
     parser.add_argument("--access-date", default=date.today().isoformat())
     parser.add_argument(
         "--start-year",
@@ -357,6 +363,7 @@ def main(argv: list[str] | None = None) -> int:
             start_year=args.start_year,
             end_year=args.end_year,
             out_root=args.out,
+            access_route=args.access_route or "NASA GES DISC / Giovanni",
         )
     except (UnitMismatchError, ValueError) as error:
         parser.error(str(error))
