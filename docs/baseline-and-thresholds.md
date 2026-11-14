@@ -1,10 +1,10 @@
 # What 1.5 °C means — static explainer card
 
-> **Unverified, not for public use yet.** The dated claims below (2024 and 2026 as years above
-> 1.5 °C, the C3S statement of 11 November 2026, the 0.88 °C baseline conversion) have not been
-> checked against their sources. Nandini checks each figure before the card appears anywhere
-> public. It is not part of the MVP and stays out of the product pages until the Lineup, detail
-> page and Time Machine work.
+> **Fact-checked 14 November 2026** against the sources listed at the end (NAS-63). Each dated
+> figure was read back to its publisher: 2024 as the first calendar year above 1.5 °C, 2026 as
+> virtually certain to be the second, 2023–2026 as the expected first four-year average above
+> it, the 20-year definition and its midpoint rule, and the 0.88 °C conversion. Figures are
+> fixed quotations; re-check them if C3S publishes a new annual statement.
 
 **Status:** copy ready. It is static text: it computes nothing, calls no endpoint, and must
 never be attached to a region card. Frontend places it (About/help); Nandini owns the wording.
@@ -33,8 +33,8 @@ card, no Lineup row, no Case File carries a "1.5 °C" badge.
 **"Has the world passed 1.5 °C?"**
 
 > Not in the sense the Paris Agreement means. 2024 was the first calendar year above 1.5 °C
-> relative to 1850–1900, and 2026 is virtually certain to be the second, with 2023–2026 the
-> first four-year average above it. But the IPCC defines a warming level on a 20-year running
+> relative to 1850–1900, and 2026 is virtually certain to be the second, with 2023–2026
+> expected to be the first four-year average above it. But the IPCC defines a warming level on a 20-year running
 > average, and the "year of exceedance" is the midpoint of the first such period — so the
 > level is expected in the early 2030s and is confirmed roughly ten years after that. A single
 > year also carries about ±0.25 °C of internal variability.

@@ -32,9 +32,9 @@ Substitutions and limits, stated up front:
 
 > All three places have warmed since 1981. They have not warmed at the same rate. The
 > south-western United States warmed about twice as fast as Ireland, and almost three times
-> as fast as the Sahel; its interval does not overlap either of theirs, so the difference
-> is large relative to the uncertainty. Ireland and the Sahel cannot be separated from each other — their intervals
-> overlap — so the product does not order those two.
+> as fast as the Sahel; its interval sits above both of theirs, so the difference is large
+> relative to the uncertainty. Ireland's and the Sahel's intervals overlap, and this page
+> reports no formal test between two places, so the product does not order those two.
 
 **Numbers**
 
@@ -45,7 +45,9 @@ Substitutions and limits, stated up front:
 | Sahel | +0.17 °C per decade | +0.04 to +0.29 | 1.0 × 10⁻³ | 1981-01 – 2025-12 | significant |
 
 Ireland's interval (+0.12 to +0.31) and the Sahel's (+0.04 to +0.29) overlap, so the two are
-not ordered; the US Southwest's interval starts above the top of both.
+not ordered — and no formal between-region test is reported here, which is why the copy says
+"does not order" rather than "is not different". The US Southwest's interval starts above the
+top of both.
 
 Source: `data/results/lineup/{us_southwest,ireland,sahel}.json`, family `lineup:<region>`.
 540 monthly observations each, no missing months.
