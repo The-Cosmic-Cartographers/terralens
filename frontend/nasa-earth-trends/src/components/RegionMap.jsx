@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -8,6 +8,25 @@ const FALLBACK_CENTER = [20, 25]
 function RegionMap({ region, regionData }) {
   const mapContainer = useRef(null)
   const map = useRef(null)
+  const [localGeometry, setLocalGeometry] = useState(null)
+
+  useEffect(() => {
+    if (regionData?.geometry) {
+      return undefined
+    }
+
+    const controller = new AbortController()
+
+    fetch(`/data/regions/${region.id}.geojson`, { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((feature) => setLocalGeometry({
+        regionId: region.id,
+        geometry: feature?.geometry || null,
+      }))
+      .catch(() => setLocalGeometry({ regionId: region.id, geometry: null }))
+
+    return () => controller.abort()
+  }, [region.id, regionData])
 
   useEffect(() => {
     if (!mapContainer.current || map.current) {
@@ -36,6 +55,7 @@ function RegionMap({ region, regionData }) {
     }
 
     const selectedGeometry = regionData?.geometry
+      || (localGeometry?.regionId === region.id ? localGeometry.geometry : null)
     const sourceId = 'selected-region'
     const layerId = 'selected-region-outline'
 
@@ -78,12 +98,13 @@ function RegionMap({ region, regionData }) {
     } else {
       map.current.once('load', updateRegionLayer)
     }
-  }, [regionData])
+  }, [localGeometry, region.id, regionData])
 
   return (
     <div className="region-map-shell">
       <div ref={mapContainer} className="region-map" />
-      {!regionData?.geometry && (
+      {!regionData?.geometry
+        && !(localGeometry?.regionId === region.id && localGeometry.geometry) && (
         <div className="map-data-note">
           Region boundary will appear when its GeoJSON is available.
         </div>

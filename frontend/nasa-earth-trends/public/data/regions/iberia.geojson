@@ -1,0 +1,12 @@
+{
+  "type": "Feature",
+  "properties": {
+    "region_id": "iberia",
+    "source": "TerraLens project study box",
+    "licence": "OpenStreetMap contributors / ODbL 1.0"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[-10, 36], [-2, 36], [-2, 44], [-10, 44], [-10, 36]]]
+  }
+}
