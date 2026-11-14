@@ -102,7 +102,7 @@ against the agreed rules.
 
 These need a human and, in two cases, screens that do not exist yet:
 
-* **Frontend copy** — verdict pills, method box, limitations panel, error and empty states. Blocked on the screens (NAS-31 to NAS-35).
+* **Frontend copy** — audited by hand in `docs/frontend-copy-audit.md`: five blocking findings, and the number rules cannot be tested until the result views render data.
 * **Project page numbers** — every figure on the submission form has to be re-read from `data/results/` (NAS-39, NAS-40).
 * **Wording** — the say/don't-say table in `docs/methodology.md` §8 has to be applied by eye to every sentence a judge reads.
 * **Provenance** — dataset versions and access dates in `provenance.json` against the actual Giovanni exports (NAS-41).

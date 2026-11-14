@@ -147,7 +147,7 @@ def test_unit_row_mismatch_stops_the_build(tmp_path: Path) -> None:
             **_kwargs(
                 tmp_path,
                 variable_id="precipitation",
-                dataset_id="gpm_3imergm_v07",
+                dataset_id="gpm_3imergm_v07b",
                 native_unit="mm/hr",
                 output_unit="mm/month",
             ),

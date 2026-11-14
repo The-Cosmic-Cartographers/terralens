@@ -52,7 +52,7 @@ def test_no_raw_nasa_files_are_tracked():
 
 
 def test_a_committed_snapshot_is_never_sample_data():
-    folder = ROOT / "frontend" / "public" / "data"
+    folder = ROOT / "frontend" / "nasa-earth-trends" / "public" / "data"
     if not (folder / "health.json").is_file():
         pytest.skip("no snapshot is committed")
     from app.verify_snapshot import verify
