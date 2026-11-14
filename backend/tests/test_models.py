@@ -282,6 +282,66 @@ def test_provenance_region_fields_are_required_and_unknown_ones_rejected():
         Provenance(**record)
 
 
+# --- trend diagnostics (D25) ------------------------------------------------
+
+
+CHANGE_POINT = {
+    "change_point_year": 1998,
+    "K": 120.0,
+    "p_value": 0.01,
+    "mean_before": -0.2,
+    "mean_after": 0.3,
+    "n": 45,
+}
+SEASONAL = {"DJF": 0.04, "MAM": 0.02, "JJA": 0.01, "SON": None}
+
+
+def test_trend_accepts_the_d25_diagnostics():
+    result = TrendResult(**trend(change_point=CHANGE_POINT, seasonal_slopes=SEASONAL))
+    assert result.change_point.change_point_year == 1998
+    assert result.seasonal_slopes.SON is None
+
+
+def test_trend_diagnostics_are_optional():
+    assert TrendResult(**trend()).change_point is None
+    assert TrendResult(**trend()).seasonal_slopes is None
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"change_point": {**CHANGE_POINT, "change_point_year": 1900}},  # outside the period
+        {"change_point": {**CHANGE_POINT, "p_value": 1.5}},
+        {"change_point": {**CHANGE_POINT, "K": -1.0}},
+        {"change_point": {**CHANGE_POINT, "surprise": 1}},
+        {"seasonal_slopes": {"DJF": 0.1, "MAM": 0.1, "JJA": 0.1}},  # a season is missing
+        {"seasonal_slopes": {**SEASONAL, "WINTER": 0.1}},
+    ],
+)
+def test_trend_rejects_bad_diagnostics(overrides):
+    with pytest.raises(ValidationError):
+        TrendResult(**trend(**overrides))
+
+
+def test_a_withheld_result_cannot_carry_diagnostics():
+    for extra in ({"change_point": CHANGE_POINT}, {"seasonal_slopes": SEASONAL}):
+        with pytest.raises(ValidationError):
+            TrendResult(**withheld_trend(**extra))
+
+
+def test_the_record_long_enough_caveat_is_an_ordinary_caveat():
+    record = trend(
+        trend_direction="no_significant_trend",
+        significant_at_0_05=False,
+        verdict="no_clear_trend",
+        adjusted_p_value=0.4,
+        p_value=0.3,
+        detect_years=None,
+        caveats=["record_long_enough_but_not_significant"],
+    )
+    assert TrendResult(**record).detect_years is None
+
+
 # --- trend ----------------------------------------------------------------
 
 
