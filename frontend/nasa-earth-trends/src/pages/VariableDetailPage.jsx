@@ -11,6 +11,7 @@ import TimeMachine from '../components/TimeMachine.jsx'
 import TrendChart from '../components/charts/TrendChart.jsx'
 import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
+import { useWindow } from '../state/window.js'
 import { formatP, formatSigned } from '../utils/format.js'
 
 const fallbackDataset = {
@@ -38,6 +39,7 @@ function VariableDetailPage() {
   const datasetId = searchParams.get('dataset') || dataset?.dataset_id
   const { data: series } = useData('series', { regionId, datasetId })
   const { data: metadata } = useData('metadata', { datasetId })
+  const { startYear, endYear } = useWindow()
   const chartData = useMemo(() => (series?.rows || []).map((row) => ({
     label: row.timestamp?.slice(0, 4),
     t: Number(row.timestamp?.slice(0, 4)) + (Number(row.timestamp?.slice(5, 7)) - 1) / 12,
@@ -45,6 +47,17 @@ function VariableDetailPage() {
     ciLow: null,
     ciHigh: null,
   })), [series, seriesMode])
+  // The header picker trims the plotted years. It never recalculates anything:
+  // the supplied trend statistics keep describing the whole record, and the
+  // note under the chart says so whenever the plot is shorter than the record.
+  const plottedData = useMemo(
+    () => chartData.filter((point) => {
+      const year = Number(point.label)
+      return Number.isFinite(year) && year >= startYear && year <= endYear
+    }),
+    [chartData, startYear, endYear],
+  )
+  const isTrimmed = plottedData.length > 0 && plottedData.length < chartData.length
   const region = regions.find((item) => item.id === regionId) || regions[0]
   const loading = catalogueLoading || trendLoading
 
@@ -71,7 +84,13 @@ function VariableDetailPage() {
             <button type="button" className={seriesMode === 'value' ? 'active' : ''} onClick={() => setSeriesMode('value')}>Measured</button>
             <button type="button" className={seriesMode === 'anomaly' ? 'active' : ''} onClick={() => setSeriesMode('anomaly')}>Anomaly</button>
           </div>
-          {chartData.length ? <TrendChart data={chartData} trend={trend} /> : <EmptyState title="Historical series unavailable" message="No monthly series was supplied for this region and variable." />}
+          {chartData.length ? <TrendChart data={plottedData} trend={trend} /> : <EmptyState title="Historical series unavailable" message="No monthly series was supplied for this region and variable." />}
+          {isTrimmed && (
+            <p className="chart-note">
+              Plot stops at {endYear}. The trend statistics on this page still describe the full supplied
+              record{trend?.period_start && trend?.period_end ? ` (${trend.period_start.slice(0, 4)}–${trend.period_end.slice(0, 4)})` : ''}.
+            </p>
+          )}
         </Panel>
 
         <Panel className="span-4" title="Evidence record">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
+import WindowSelector from './components/WindowSelector.jsx'
 import { useData } from './hooks/useData.js'
 
 import './App.css'
@@ -133,7 +134,7 @@ function App() {
                 {theme === 'dark' ? 'Dark mode' : 'Light mode'}
               </span>
             </button>
-            <span className="chip">Window 1981–2025</span>
+            <WindowSelector />
           </div>
         </header>
 

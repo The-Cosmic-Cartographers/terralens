@@ -69,5 +69,6 @@ Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat 
 | 2026-11-14 | Parth | Codebuff (Buffy) | Removed the "Coming soon" KPI from The Lineup and tightened its KPI grid to three columns | `frontend/nasa-earth-trends/src/pages/ExplorePage.jsx`, `frontend/nasa-earth-trends/src/App.css` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | Removed the "Static snapshot" / "Live API" chip from The Lineup header and dropped the now-unused `mode` binding | `frontend/nasa-earth-trends/src/pages/ExplorePage.jsx` |
 | 2026-11-14 | Parth | Codebuff (Buffy) | Removed the "Precomputed results" pill from the app header | `frontend/nasa-earth-trends/src/App.jsx` |
+| 2026-11-14 | Parth | Codebuff (Buffy) | Replaced the static window chip with a scrollable year picker; header year now clips the detail chart to the chosen end year while statistics stay full-record | `frontend/nasa-earth-trends/src/components/WindowSelector.jsx`, `frontend/nasa-earth-trends/src/state/`, `frontend/nasa-earth-trends/src/App.jsx`, `frontend/nasa-earth-trends/src/main.jsx`, `frontend/nasa-earth-trends/src/pages/VariableDetailPage.jsx`, `frontend/nasa-earth-trends/src/App.css` |
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.
