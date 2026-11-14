@@ -14,6 +14,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | Drafted the Linear project docs 00–12, task list, plan page, architecture diagram and judging Q&A; checked Giovanni availability and request timing through browser automation (no NASA data was saved or committed) | Linear, not in the repo |
 | 2026-11-14 | Kevin | Claude Code | README rewrite (NAS-38) | `README.md`, `docs/ai-use.md` |
 | 2026-11-14 | Kevin | Claude Code | Snapshot verifier, repo hygiene tests and a secrets/raw-file scan of the repo and git history (NAS-37) | `backend/app/verify_snapshot.py`, `backend/tests/test_verify_snapshot.py`, `backend/tests/test_repo_hygiene.py`, `backend/README.md` |
+| 2026-11-14 | Parth | Codebuff (Buffy) | Pipeline v0: Giovanni CSV parsing, unit conversion, contract Parquet and provenance output, tests | `pipeline/` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
