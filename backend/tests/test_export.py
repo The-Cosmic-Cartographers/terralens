@@ -48,6 +48,9 @@ def test_every_file_equals_the_api_response(snapshot, monkeypatch):
         meta = client.get("/api/v1/metadata", params={"dataset_id": dataset}).json()
         assert read(out / "metadata" / f"{dataset}.json") == meta
         checked += 1
+        compare = client.get("/api/v1/compare", params={"dataset_id": dataset}).json()
+        assert read(out / "compare" / f"{dataset}.json") == compare
+        checked += 1
         for region in ("ireland", "iberia"):
             for kind in ("series", "trend", "windows"):
                 response = client.get(

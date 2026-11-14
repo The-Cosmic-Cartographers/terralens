@@ -1,4 +1,5 @@
-"""REST API v1 (doc 04 §3): catalogue, regions, metadata, series, trend, lineup, windows."""
+"""REST API v1 (doc 04 §3): catalogue, regions, metadata, series, trend, lineup, windows,
+compare."""
 
 from typing import Annotated
 
@@ -7,6 +8,7 @@ from fastapi import APIRouter, Depends, Path, Query
 from app.config import data_dir
 from app.models import (
     CatalogueItem,
+    CompareResult,
     ErrorResponse,
     Lineup,
     Metadata,
@@ -80,3 +82,13 @@ def lineup(region_id: RegionId, store: Store) -> Lineup:
 def windows(region_id: RegionId, dataset_id: DatasetId, store: Store) -> Windows:
     """Time Machine windows for one region and dataset (schema 2b)."""
     return store.windows(region_id, dataset_id)
+
+
+@router.get("/compare", response_model=CompareResult)
+def compare(dataset_id: DatasetId, store: Store) -> CompareResult:
+    """One variable across every region (schema 3), with the compare-family BH adjustment.
+
+    Its adjusted p-values come from a different family than the Lineup's, so the same
+    region can read differently here and on its Lineup row. That is intended.
+    """
+    return store.compare(dataset_id)

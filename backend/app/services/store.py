@@ -10,6 +10,7 @@ Layout, relative to the data root (the same for data/ and data/fixtures/):
     processed/<dataset_id>/<region_id>.parquet
     results/lineup/<region_id>.json
     results/windows/<dataset_id>/<region_id>.json
+    results/<dataset_id>/trends.json     (compare family: a list of results, one per region)
 """
 
 import json
@@ -24,6 +25,7 @@ from pydantic import TypeAdapter
 from app.config import DATA_VERSION_FALLBACK
 from app.models import (
     CatalogueItem,
+    CompareResult,
     Lineup,
     Metadata,
     Provenance,
@@ -170,3 +172,53 @@ class DataStore:
             return windows
 
         return self._validated(f"results/windows/{dataset_id}/{region_id}.json", validate)
+
+    def compare(self, dataset_id: str) -> CompareResult:
+        """One variable across regions, with the compare-family BH adjustment from the files.
+
+        The statistics are read, never recomputed. When the regions' periods differ, the
+        reported period is their overlap and `period_note` says each region's own period.
+        """
+        self._require_dataset(dataset_id)
+        relative = f"results/{dataset_id}/trends.json"
+        region_ids = [region.region_id for region in self.regions()]
+
+        def validate(payload: Any) -> CompareResult:
+            results = TypeAdapter(list[TrendResult]).validate_python(payload)
+            if not results:
+                raise ValueError("the file has no results")
+            regions = [result.region_id for result in results]
+            if len(set(regions)) != len(regions):
+                raise ValueError("a region appears twice")
+            if not set(regions) <= set(region_ids):
+                raise ValueError("a result names an unknown region")
+            if {result.dataset_id for result in results} != {dataset_id}:
+                raise ValueError("a result belongs to another dataset")
+            # Keep the order of regions.json so the output does not depend on file order.
+            results.sort(key=lambda result: region_ids.index(result.region_id))
+            starts = {result.period_start for result in results}
+            ends = {result.period_end for result in results}
+            period_start, period_end = max(starts), min(ends)
+            if period_start > period_end:
+                raise ValueError("the regions' periods do not overlap")
+            note = None
+            if len(starts) > 1 or len(ends) > 1:
+                spans = "; ".join(
+                    f"{result.region_id} {result.period_start:%Y-%m} to {result.period_end:%Y-%m}"
+                    for result in results
+                )
+                note = (
+                    "Regions are not on the same period. Each result covers its own period "
+                    f"({spans}); the dates above are the overlap."
+                )
+            return CompareResult(
+                dataset_id=dataset_id,
+                variable_id=results[0].variable_id,
+                period_start=period_start,
+                period_end=period_end,
+                period_note=note,
+                bh_family=results[0].bh_family,
+                results=results,
+            )
+
+        return self._validated(relative, validate)
