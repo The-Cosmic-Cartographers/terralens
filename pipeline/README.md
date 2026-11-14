@@ -49,7 +49,22 @@ parsed. Rerun the same command later — nothing is re-downloaded. For IMERG, us
 windowed route (13 years per request) and drop the CSV in `data/raw/` as
 `precipitation_<region>.csv`; `pipeline.build` reads both routes identically.
 
-### Measured
+### Measured (2026-11-14, this machine, home connection)
 
-Filled in from the run recorded in the NAS-60 PR: wall-clock per series, the slowest step, and
-what a clean 27-series run actually costs on this machine.
+| Step | Time | Note |
+| -- | -- | -- |
+| Harmony job, 5-year chunk | ~90 s | job poll waits 5 s per status call; the subset itself is seconds |
+| Slices per chunk | 60 | one netCDF per month, ~2–4 MB each |
+| Download pass, 60 slices, 8 workers | ~20–40 s | keep-alive sessions; without them roughly one handshake in three was reset |
+| Parse + area mean, 60 slices | ~5 s | cosine-latitude weighted mean in a thread pool |
+
+A 26-year series is five chunks, so roughly 2 min per series when GES DISC is answering. The
+slowest step is the job poll, not the download.
+
+**Today's block, and why the command still behaved:** every GES DISC read returned
+`403 EULA Acceptance Failure` (`data.gesdisc.earthdata.nasa.gov`), which is also what broke
+Harmony's OPeNDAP subsetter — jobs died at 23% with `Subsetter failed with error: 403`. The
+pull exited `4`, named the job and the series, and left the checkpoint empty; nothing was
+substituted. The fix is on the account, not in the code: accept the GES DISC application at
+`urs.earthdata.nasa.gov/approve_app?client_id=e2WVk8Pw6weeLUKZYOxvTQ`, then rerun the same
+command.
