@@ -1,6 +1,6 @@
 # TerraLens
 
-**Other tools test the trend you already suspected. TerraLens finds the suspects.**
+**Other tools chart the trend you already suspected. TerraLens finds the suspects.**
 
 TerraLens is an Earth-system trend discovery tool built for the NASA Space Apps Challenge 2026, *Be An Earth System Trend Detective!*. Pick a place and it scans a lineup of five NASA Earth-science variables, ranks what is really changing, and shows the evidence: Sen's slope with a 95% confidence interval, a seasonal Mann–Kendall test corrected for testing several variables at once, and a plain-language verdict. When the honest answer is "not proven yet", it says so.
 
