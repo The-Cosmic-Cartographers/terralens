@@ -4,7 +4,7 @@
   "version": "V07B",
   "doi_or_url": "https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
   "access_date": "2026-11-14",
-  "access_route": "NASA GPM IMERG Final V07B via GES DISC (1-degree area mean)",
+  "access_route": "NASA GES DISC direct HDF5 download, 1-degree area mean",
   "variable_field": "precipitation",
   "scale_factor": 1.0,
   "native_unit": "mm/month",
@@ -13,13 +13,13 @@
   "period_start": "2001-01-01",
   "period_end": "2024-12-01",
   "qa_rules": [
-    "Giovanni area-averaged time series, monthly",
+    "area mean computed locally from the source field, monthly",
     "no mixing of product versions inside one series",
     "registered variable window, whole calendar years",
     "missing months kept as null rows",
     "CSV declared unit must match the expected native unit"
   ],
-  "region_source": "Linear doc 11 \u00a73 box, entered in Giovanni",
+  "region_source": "Linear doc 11 \u00a73 box, applied to the locally averaged field (NASA GES DISC direct HDF5 download, 1-degree area mean)",
   "transformations": [
     "Giovanni comment/header block skipped",
     "unit unchanged (mm/month)",
