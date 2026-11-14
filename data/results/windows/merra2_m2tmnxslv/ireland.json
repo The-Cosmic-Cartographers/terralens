@@ -6204,7 +6204,7 @@
         0.072447
       ],
       "p_value": 0.251208,
-      "adjusted_p_value": 0.376812,
+      "adjusted_p_value": 0.251208,
       "verdict": "no_clear_trend"
     },
     {
@@ -6216,7 +6216,7 @@
         0.054855
       ],
       "p_value": 0.164385,
-      "adjusted_p_value": 0.246577,
+      "adjusted_p_value": 0.164385,
       "verdict": "no_clear_trend"
     },
     {
@@ -6240,7 +6240,7 @@
         0.028133
       ],
       "p_value": 0.147725,
-      "adjusted_p_value": 0.221588,
+      "adjusted_p_value": 0.147725,
       "verdict": "no_clear_trend"
     },
     {
@@ -6252,7 +6252,7 @@
         0.025362
       ],
       "p_value": 0.179019,
-      "adjusted_p_value": 0.268528,
+      "adjusted_p_value": 0.179019,
       "verdict": "no_clear_trend"
     },
     {
@@ -6264,7 +6264,7 @@
         0.028242
       ],
       "p_value": 0.263034,
-      "adjusted_p_value": 0.394551,
+      "adjusted_p_value": 0.263034,
       "verdict": "no_clear_trend"
     },
     {
@@ -6276,7 +6276,7 @@
         0.026193
       ],
       "p_value": 0.321243,
-      "adjusted_p_value": 0.344812,
+      "adjusted_p_value": 0.321243,
       "verdict": "no_clear_trend"
     },
     {
@@ -6324,7 +6324,7 @@
         0.035092
       ],
       "p_value": 0.599787,
-      "adjusted_p_value": 0.697707,
+      "adjusted_p_value": 0.599787,
       "verdict": "no_clear_trend"
     },
     {
@@ -6336,7 +6336,7 @@
         0.045303
       ],
       "p_value": 0.223418,
-      "adjusted_p_value": 0.335127,
+      "adjusted_p_value": 0.223418,
       "verdict": "no_clear_trend"
     },
     {
@@ -6348,7 +6348,7 @@
         0.042407
       ],
       "p_value": 0.150663,
-      "adjusted_p_value": 0.225994,
+      "adjusted_p_value": 0.150663,
       "verdict": "no_clear_trend"
     },
     {
@@ -6360,7 +6360,7 @@
         0.052202
       ],
       "p_value": 0.057908,
-      "adjusted_p_value": 0.086862,
+      "adjusted_p_value": 0.057908,
       "verdict": "weak_evidence"
     },
     {
@@ -6372,7 +6372,7 @@
         0.114609
       ],
       "p_value": 0.401483,
-      "adjusted_p_value": 0.536983,
+      "adjusted_p_value": 0.401483,
       "verdict": "no_clear_trend"
     },
     {
@@ -6384,7 +6384,7 @@
         0.07885
       ],
       "p_value": 0.378216,
-      "adjusted_p_value": 0.567323,
+      "adjusted_p_value": 0.378216,
       "verdict": "no_clear_trend"
     },
     {
@@ -6396,7 +6396,7 @@
         0.05501
       ],
       "p_value": 0.203553,
-      "adjusted_p_value": 0.305329,
+      "adjusted_p_value": 0.203553,
       "verdict": "no_clear_trend"
     },
     {
@@ -6408,7 +6408,7 @@
         0.035092
       ],
       "p_value": 0.138095,
-      "adjusted_p_value": 0.207143,
+      "adjusted_p_value": 0.138095,
       "verdict": "no_clear_trend"
     },
     {
@@ -6420,7 +6420,7 @@
         0.054855
       ],
       "p_value": 0.293173,
-      "adjusted_p_value": 0.400529,
+      "adjusted_p_value": 0.293173,
       "verdict": "no_clear_trend"
     },
     {
@@ -6432,7 +6432,7 @@
         0.026193
       ],
       "p_value": 0.120544,
-      "adjusted_p_value": 0.271361,
+      "adjusted_p_value": 0.120544,
       "verdict": "no_clear_trend"
     },
     {
@@ -6444,7 +6444,7 @@
         0.02521
       ],
       "p_value": 0.151132,
-      "adjusted_p_value": 0.226698,
+      "adjusted_p_value": 0.151132,
       "verdict": "no_clear_trend"
     },
     {
@@ -6456,7 +6456,7 @@
         0.028133
       ],
       "p_value": 0.222114,
-      "adjusted_p_value": 0.333171,
+      "adjusted_p_value": 0.222114,
       "verdict": "no_clear_trend"
     },
     {
@@ -6528,7 +6528,7 @@
         0.048924
       ],
       "p_value": 0.259936,
-      "adjusted_p_value": 0.389904,
+      "adjusted_p_value": 0.259936,
       "verdict": "no_clear_trend"
     },
     {
@@ -6540,7 +6540,7 @@
         0.048056
       ],
       "p_value": 0.175333,
-      "adjusted_p_value": 0.263,
+      "adjusted_p_value": 0.175333,
       "verdict": "no_clear_trend"
     },
     {
@@ -6552,8 +6552,8 @@
         0.054653
       ],
       "p_value": 0.069827,
-      "adjusted_p_value": 0.164454,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.069827,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2002,
@@ -6564,7 +6564,7 @@
         0.05501
       ],
       "p_value": 0.112943,
-      "adjusted_p_value": 0.169415,
+      "adjusted_p_value": 0.112943,
       "verdict": "no_clear_trend"
     },
     {
@@ -6576,7 +6576,7 @@
         0.054855
       ],
       "p_value": 0.057545,
-      "adjusted_p_value": 0.086317,
+      "adjusted_p_value": 0.057545,
       "verdict": "weak_evidence"
     },
     {
@@ -6588,8 +6588,8 @@
         0.02521
       ],
       "p_value": 0.038868,
-      "adjusted_p_value": 0.058302,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.038868,
+      "verdict": "significant"
     },
     {
       "start": 2002,
@@ -6600,7 +6600,7 @@
         0.035092
       ],
       "p_value": 0.112185,
-      "adjusted_p_value": 0.168277,
+      "adjusted_p_value": 0.112185,
       "verdict": "no_clear_trend"
     },
     {
@@ -6612,8 +6612,8 @@
         0.010761
       ],
       "p_value": 0.041066,
-      "adjusted_p_value": 0.123198,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.041066,
+      "verdict": "significant"
     },
     {
       "start": 2002,
@@ -6624,8 +6624,8 @@
         0.010236
       ],
       "p_value": 0.056666,
-      "adjusted_p_value": 0.15778,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.056666,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2002,
@@ -6636,8 +6636,8 @@
         0.01339
       ],
       "p_value": 0.094684,
-      "adjusted_p_value": 0.202385,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.094684,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2002,
@@ -6648,7 +6648,7 @@
         0.014837
       ],
       "p_value": 0.127562,
-      "adjusted_p_value": 0.191343,
+      "adjusted_p_value": 0.127562,
       "verdict": "no_clear_trend"
     },
     {
@@ -6660,7 +6660,7 @@
         0.023208
       ],
       "p_value": 0.221383,
-      "adjusted_p_value": 0.243693,
+      "adjusted_p_value": 0.221383,
       "verdict": "no_clear_trend"
     },
     {
@@ -6672,7 +6672,7 @@
         0.01786
       ],
       "p_value": 0.263428,
-      "adjusted_p_value": 0.315473,
+      "adjusted_p_value": 0.263428,
       "verdict": "no_clear_trend"
     },
     {
@@ -6708,7 +6708,7 @@
         0.053927
       ],
       "p_value": 0.433294,
-      "adjusted_p_value": 0.649941,
+      "adjusted_p_value": 0.433294,
       "verdict": "no_clear_trend"
     },
     {
@@ -6720,7 +6720,7 @@
         0.052202
       ],
       "p_value": 0.310536,
-      "adjusted_p_value": 0.465804,
+      "adjusted_p_value": 0.310536,
       "verdict": "no_clear_trend"
     },
     {
@@ -6732,7 +6732,7 @@
         0.056264
       ],
       "p_value": 0.134724,
-      "adjusted_p_value": 0.202086,
+      "adjusted_p_value": 0.134724,
       "verdict": "no_clear_trend"
     },
     {
@@ -6744,8 +6744,8 @@
         0.035092
       ],
       "p_value": 0.049624,
-      "adjusted_p_value": 0.099249,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.049624,
+      "verdict": "significant"
     },
     {
       "start": 2003,
@@ -6756,8 +6756,8 @@
         0.02521
       ],
       "p_value": 0.03348,
-      "adjusted_p_value": 0.06696,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.03348,
+      "verdict": "significant"
     },
     {
       "start": 2003,
@@ -6768,7 +6768,7 @@
         0.035092
       ],
       "p_value": 0.112317,
-      "adjusted_p_value": 0.224633,
+      "adjusted_p_value": 0.112317,
       "verdict": "no_clear_trend"
     },
     {
@@ -6780,8 +6780,8 @@
         0.010236
       ],
       "p_value": 0.039104,
-      "adjusted_p_value": 0.156416,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.039104,
+      "verdict": "significant"
     },
     {
       "start": 2003,
@@ -6792,8 +6792,8 @@
         0.005872
       ],
       "p_value": 0.055797,
-      "adjusted_p_value": 0.211687,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.055797,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2003,
@@ -6804,8 +6804,8 @@
         0.028133
       ],
       "p_value": 0.097205,
-      "adjusted_p_value": 0.199236,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.097205,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2003,
@@ -6816,7 +6816,7 @@
         0.02521
       ],
       "p_value": 0.141601,
-      "adjusted_p_value": 0.289325,
+      "adjusted_p_value": 0.141601,
       "verdict": "no_clear_trend"
     },
     {
@@ -6828,7 +6828,7 @@
         0.028133
       ],
       "p_value": 0.244233,
-      "adjusted_p_value": 0.488466,
+      "adjusted_p_value": 0.244233,
       "verdict": "no_clear_trend"
     },
     {
@@ -6840,7 +6840,7 @@
         0.02521
       ],
       "p_value": 0.297318,
-      "adjusted_p_value": 0.764874,
+      "adjusted_p_value": 0.297318,
       "verdict": "no_clear_trend"
     },
     {
@@ -6852,7 +6852,7 @@
         0.034524
       ],
       "p_value": 0.588069,
-      "adjusted_p_value": 0.616159,
+      "adjusted_p_value": 0.588069,
       "verdict": "no_clear_trend"
     },
     {
@@ -6864,7 +6864,7 @@
         0.048056
       ],
       "p_value": 0.868004,
-      "adjusted_p_value": 0.891471,
+      "adjusted_p_value": 0.868004,
       "verdict": "no_clear_trend"
     },
     {
@@ -6876,7 +6876,7 @@
         0.061886
       ],
       "p_value": 0.368351,
-      "adjusted_p_value": 0.748333,
+      "adjusted_p_value": 0.368351,
       "verdict": "no_clear_trend"
     },
     {
@@ -6888,7 +6888,7 @@
         0.061886
       ],
       "p_value": 0.267604,
-      "adjusted_p_value": 0.598907,
+      "adjusted_p_value": 0.267604,
       "verdict": "no_clear_trend"
     },
     {
@@ -6900,7 +6900,7 @@
         0.063562
       ],
       "p_value": 0.110034,
-      "adjusted_p_value": 0.256883,
+      "adjusted_p_value": 0.110034,
       "verdict": "no_clear_trend"
     },
     {
@@ -6912,8 +6912,8 @@
         0.028133
       ],
       "p_value": 0.04723,
-      "adjusted_p_value": 0.09446,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.04723,
+      "verdict": "significant"
     },
     {
       "start": 2004,
@@ -6924,7 +6924,7 @@
         0.072447
       ],
       "p_value": 0.152748,
-      "adjusted_p_value": 0.305497,
+      "adjusted_p_value": 0.152748,
       "verdict": "no_clear_trend"
     },
     {
@@ -6936,8 +6936,8 @@
         0.028133
       ],
       "p_value": 0.054808,
-      "adjusted_p_value": 0.219231,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.054808,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2004,
@@ -6948,8 +6948,8 @@
         0.028133
       ],
       "p_value": 0.076947,
-      "adjusted_p_value": 0.307789,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.076947,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2004,
@@ -6960,7 +6960,7 @@
         0.041853
       ],
       "p_value": 0.131496,
-      "adjusted_p_value": 0.413436,
+      "adjusted_p_value": 0.131496,
       "verdict": "no_clear_trend"
     },
     {
@@ -6972,7 +6972,7 @@
         0.041853
       ],
       "p_value": 0.185103,
-      "adjusted_p_value": 0.491838,
+      "adjusted_p_value": 0.185103,
       "verdict": "no_clear_trend"
     },
     {
@@ -6984,7 +6984,7 @@
         0.041853
       ],
       "p_value": 0.329625,
-      "adjusted_p_value": 0.714661,
+      "adjusted_p_value": 0.329625,
       "verdict": "no_clear_trend"
     },
     {
@@ -6996,7 +6996,7 @@
         0.031655
       ],
       "p_value": 0.417608,
-      "adjusted_p_value": 0.991742,
+      "adjusted_p_value": 0.417608,
       "verdict": "no_clear_trend"
     },
     {
@@ -7008,7 +7008,7 @@
         0.045303
       ],
       "p_value": 0.779282,
-      "adjusted_p_value": 0.87354,
+      "adjusted_p_value": 0.779282,
       "verdict": "no_clear_trend"
     },
     {
@@ -7020,7 +7020,7 @@
         0.059998
       ],
       "p_value": 0.668725,
-      "adjusted_p_value": 0.823485,
+      "adjusted_p_value": 0.668725,
       "verdict": "no_clear_trend"
     },
     {
@@ -7032,7 +7032,7 @@
         0.077107
       ],
       "p_value": 0.238678,
-      "adjusted_p_value": 0.647527,
+      "adjusted_p_value": 0.238678,
       "verdict": "no_clear_trend"
     },
     {
@@ -7044,7 +7044,7 @@
         0.067933
       ],
       "p_value": 0.162712,
-      "adjusted_p_value": 0.416947,
+      "adjusted_p_value": 0.162712,
       "verdict": "no_clear_trend"
     },
     {
@@ -7056,8 +7056,8 @@
         0.072447
       ],
       "p_value": 0.062821,
-      "adjusted_p_value": 0.1451,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.062821,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2005,
@@ -7068,7 +7068,7 @@
         0.072447
       ],
       "p_value": 0.250775,
-      "adjusted_p_value": 0.50155,
+      "adjusted_p_value": 0.250775,
       "verdict": "no_clear_trend"
     },
     {
@@ -7080,8 +7080,8 @@
         0.054855
       ],
       "p_value": 0.095247,
-      "adjusted_p_value": 0.380988,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.095247,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2005,
@@ -7092,7 +7092,7 @@
         0.048056
       ],
       "p_value": 0.140424,
-      "adjusted_p_value": 0.295929,
+      "adjusted_p_value": 0.140424,
       "verdict": "no_clear_trend"
     },
     {
@@ -7104,7 +7104,7 @@
         0.054855
       ],
       "p_value": 0.22987,
-      "adjusted_p_value": 0.435578,
+      "adjusted_p_value": 0.22987,
       "verdict": "no_clear_trend"
     },
     {
@@ -7116,7 +7116,7 @@
         0.054855
       ],
       "p_value": 0.306732,
-      "adjusted_p_value": 0.408976,
+      "adjusted_p_value": 0.306732,
       "verdict": "no_clear_trend"
     },
     {
@@ -7128,7 +7128,7 @@
         0.059998
       ],
       "p_value": 0.51353,
-      "adjusted_p_value": 0.684707,
+      "adjusted_p_value": 0.51353,
       "verdict": "no_clear_trend"
     },
     {
@@ -7140,7 +7140,7 @@
         0.041853
       ],
       "p_value": 0.615989,
-      "adjusted_p_value": 0.925635,
+      "adjusted_p_value": 0.615989,
       "verdict": "no_clear_trend"
     },
     {
@@ -7164,7 +7164,7 @@
         0.063511
       ],
       "p_value": 0.485764,
-      "adjusted_p_value": 0.759961,
+      "adjusted_p_value": 0.485764,
       "verdict": "no_clear_trend"
     },
     {
@@ -7176,7 +7176,7 @@
         0.079798
       ],
       "p_value": 0.150438,
-      "adjusted_p_value": 0.601752,
+      "adjusted_p_value": 0.150438,
       "verdict": "no_clear_trend"
     },
     {
@@ -7188,7 +7188,7 @@
         0.077107
       ],
       "p_value": 0.103126,
-      "adjusted_p_value": 0.412506,
+      "adjusted_p_value": 0.103126,
       "verdict": "no_clear_trend"
     },
     {
@@ -7200,8 +7200,8 @@
         0.078908
       ],
       "p_value": 0.038408,
-      "adjusted_p_value": 0.145326,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.038408,
+      "verdict": "significant"
     },
     {
       "start": 2006,
@@ -7212,7 +7212,7 @@
         0.072447
       ],
       "p_value": 0.181522,
-      "adjusted_p_value": 0.578412,
+      "adjusted_p_value": 0.181522,
       "verdict": "no_clear_trend"
     },
     {
@@ -7224,7 +7224,7 @@
         0.072447
       ],
       "p_value": 0.284933,
-      "adjusted_p_value": 0.379911,
+      "adjusted_p_value": 0.284933,
       "verdict": "no_clear_trend"
     },
     {
@@ -7236,7 +7236,7 @@
         0.079798
       ],
       "p_value": 0.442518,
-      "adjusted_p_value": 0.590024,
+      "adjusted_p_value": 0.442518,
       "verdict": "no_clear_trend"
     },
     {
@@ -7248,7 +7248,7 @@
         0.079798
       ],
       "p_value": 0.543041,
-      "adjusted_p_value": 0.724054,
+      "adjusted_p_value": 0.543041,
       "verdict": "no_clear_trend"
     },
     {
@@ -7272,7 +7272,7 @@
         0.062292
       ],
       "p_value": 0.934172,
-      "adjusted_p_value": 0.977874,
+      "adjusted_p_value": 0.934172,
       "verdict": "no_clear_trend"
     },
     {
@@ -7284,7 +7284,7 @@
         0.072447
       ],
       "p_value": 0.696749,
-      "adjusted_p_value": 0.844337,
+      "adjusted_p_value": 0.696749,
       "verdict": "no_clear_trend"
     },
     {
@@ -7296,7 +7296,7 @@
         0.081011
       ],
       "p_value": 0.275644,
-      "adjusted_p_value": 0.551287,
+      "adjusted_p_value": 0.275644,
       "verdict": "no_clear_trend"
     },
     {
@@ -7308,8 +7308,8 @@
         0.088871
       ],
       "p_value": 0.068731,
-      "adjusted_p_value": 0.274922,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.068731,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2006,
@@ -7320,8 +7320,8 @@
         0.081432
       ],
       "p_value": 0.04413,
-      "adjusted_p_value": 0.176521,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.04413,
+      "verdict": "significant"
     },
     {
       "start": 2006,
@@ -7332,8 +7332,8 @@
         0.08685
       ],
       "p_value": 0.015909,
-      "adjusted_p_value": 0.063636,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.015909,
+      "verdict": "significant"
     },
     {
       "start": 2007,
@@ -7344,7 +7344,7 @@
         0.08685
       ],
       "p_value": 0.535725,
-      "adjusted_p_value": 0.578102,
+      "adjusted_p_value": 0.535725,
       "verdict": "no_clear_trend"
     },
     {
@@ -7356,7 +7356,7 @@
         0.097189
       ],
       "p_value": 0.759817,
-      "adjusted_p_value": 0.777377,
+      "adjusted_p_value": 0.759817,
       "verdict": "no_clear_trend"
     },
     {
@@ -7368,7 +7368,7 @@
         0.08685
       ],
       "p_value": 0.849829,
-      "adjusted_p_value": 0.990397,
+      "adjusted_p_value": 0.849829,
       "verdict": "no_clear_trend"
     },
     {
@@ -7380,7 +7380,7 @@
         0.082225
       ],
       "p_value": 0.865583,
-      "adjusted_p_value": 1.0,
+      "adjusted_p_value": 0.865583,
       "verdict": "no_clear_trend"
     },
     {
@@ -7392,7 +7392,7 @@
         0.079798
       ],
       "p_value": 0.781102,
-      "adjusted_p_value": 0.989204,
+      "adjusted_p_value": 0.781102,
       "verdict": "no_clear_trend"
     },
     {
@@ -7404,7 +7404,7 @@
         0.081432
       ],
       "p_value": 0.444269,
-      "adjusted_p_value": 0.888538,
+      "adjusted_p_value": 0.444269,
       "verdict": "no_clear_trend"
     },
     {
@@ -7416,7 +7416,7 @@
         0.088871
       ],
       "p_value": 0.138124,
-      "adjusted_p_value": 0.424159,
+      "adjusted_p_value": 0.138124,
       "verdict": "no_clear_trend"
     },
     {
@@ -7428,8 +7428,8 @@
         0.098163
       ],
       "p_value": 0.028664,
-      "adjusted_p_value": 0.114658,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.028664,
+      "verdict": "significant"
     },
     {
       "start": 2007,
@@ -7440,8 +7440,8 @@
         0.096452
       ],
       "p_value": 0.01826,
-      "adjusted_p_value": 0.073041,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.01826,
+      "verdict": "significant"
     },
     {
       "start": 2007,
@@ -7452,7 +7452,7 @@
         0.097607
       ],
       "p_value": 0.005974,
-      "adjusted_p_value": 0.023897,
+      "adjusted_p_value": 0.005974,
       "verdict": "significant"
     },
     {
@@ -7488,7 +7488,7 @@
         0.097189
       ],
       "p_value": 0.376152,
-      "adjusted_p_value": 0.506577,
+      "adjusted_p_value": 0.376152,
       "verdict": "no_clear_trend"
     },
     {
@@ -7500,7 +7500,7 @@
         0.08685
       ],
       "p_value": 0.302035,
-      "adjusted_p_value": 0.609931,
+      "adjusted_p_value": 0.302035,
       "verdict": "no_clear_trend"
     },
     {
@@ -7512,7 +7512,7 @@
         0.092741
       ],
       "p_value": 0.131017,
-      "adjusted_p_value": 0.524069,
+      "adjusted_p_value": 0.131017,
       "verdict": "no_clear_trend"
     },
     {
@@ -7524,8 +7524,8 @@
         0.100506
       ],
       "p_value": 0.029051,
-      "adjusted_p_value": 0.116205,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.029051,
+      "verdict": "significant"
     },
     {
       "start": 2008,
@@ -7536,7 +7536,7 @@
         0.11377
       ],
       "p_value": 0.004081,
-      "adjusted_p_value": 0.016323,
+      "adjusted_p_value": 0.004081,
       "verdict": "significant"
     },
     {
@@ -7548,7 +7548,7 @@
         0.100771
       ],
       "p_value": 0.002612,
-      "adjusted_p_value": 0.010448,
+      "adjusted_p_value": 0.002612,
       "verdict": "significant"
     },
     {
@@ -7560,7 +7560,7 @@
         0.108432
       ],
       "p_value": 0.00076,
-      "adjusted_p_value": 0.003039,
+      "adjusted_p_value": 0.00076,
       "verdict": "significant"
     },
     {
@@ -7572,7 +7572,7 @@
         0.158009
       ],
       "p_value": 0.500774,
-      "adjusted_p_value": 0.667698,
+      "adjusted_p_value": 0.500774,
       "verdict": "no_clear_trend"
     },
     {
@@ -7584,7 +7584,7 @@
         0.133279
       ],
       "p_value": 0.308536,
-      "adjusted_p_value": 0.617072,
+      "adjusted_p_value": 0.308536,
       "verdict": "no_clear_trend"
     },
     {
@@ -7596,7 +7596,7 @@
         0.100771
       ],
       "p_value": 0.252593,
-      "adjusted_p_value": 0.505186,
+      "adjusted_p_value": 0.252593,
       "verdict": "no_clear_trend"
     },
     {
@@ -7608,7 +7608,7 @@
         0.111588
       ],
       "p_value": 0.1112,
-      "adjusted_p_value": 0.444802,
+      "adjusted_p_value": 0.1112,
       "verdict": "no_clear_trend"
     },
     {
@@ -7620,8 +7620,8 @@
         0.124032
       ],
       "p_value": 0.023504,
-      "adjusted_p_value": 0.094016,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.023504,
+      "verdict": "significant"
     },
     {
       "start": 2009,
@@ -7632,7 +7632,7 @@
         0.129673
       ],
       "p_value": 0.003444,
-      "adjusted_p_value": 0.013778,
+      "adjusted_p_value": 0.003444,
       "verdict": "significant"
     },
     {
@@ -7644,7 +7644,7 @@
         0.11377
       ],
       "p_value": 0.002467,
-      "adjusted_p_value": 0.009866,
+      "adjusted_p_value": 0.002467,
       "verdict": "significant"
     },
     {
@@ -7656,7 +7656,7 @@
         0.115446
       ],
       "p_value": 0.000813,
-      "adjusted_p_value": 0.003252,
+      "adjusted_p_value": 0.000813,
       "verdict": "significant"
     },
     {
@@ -7668,7 +7668,7 @@
         0.158009
       ],
       "p_value": 0.229632,
-      "adjusted_p_value": 0.392471,
+      "adjusted_p_value": 0.229632,
       "verdict": "no_clear_trend"
     },
     {
@@ -7680,7 +7680,7 @@
         0.133279
       ],
       "p_value": 0.204189,
-      "adjusted_p_value": 0.272252,
+      "adjusted_p_value": 0.204189,
       "verdict": "no_clear_trend"
     },
     {
@@ -7692,8 +7692,8 @@
         0.127928
       ],
       "p_value": 0.086581,
-      "adjusted_p_value": 0.224064,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.086581,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2010,
@@ -7704,8 +7704,8 @@
         0.133279
       ],
       "p_value": 0.018933,
-      "adjusted_p_value": 0.075731,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.018933,
+      "verdict": "significant"
     },
     {
       "start": 2010,
@@ -7716,7 +7716,7 @@
         0.138234
       ],
       "p_value": 0.002694,
-      "adjusted_p_value": 0.010778,
+      "adjusted_p_value": 0.002694,
       "verdict": "significant"
     },
     {
@@ -7728,7 +7728,7 @@
         0.129673
       ],
       "p_value": 0.0022,
-      "adjusted_p_value": 0.0088,
+      "adjusted_p_value": 0.0022,
       "verdict": "significant"
     },
     {
@@ -7740,7 +7740,7 @@
         0.124741
       ],
       "p_value": 0.000825,
-      "adjusted_p_value": 0.003301,
+      "adjusted_p_value": 0.000825,
       "verdict": "significant"
     },
     {
@@ -7752,7 +7752,7 @@
         0.088871
       ],
       "p_value": 0.432161,
-      "adjusted_p_value": 0.611937,
+      "adjusted_p_value": 0.432161,
       "verdict": "no_clear_trend"
     },
     {
@@ -7764,7 +7764,7 @@
         0.097189
       ],
       "p_value": 0.184416,
-      "adjusted_p_value": 0.668411,
+      "adjusted_p_value": 0.184416,
       "verdict": "no_clear_trend"
     },
     {
@@ -7776,8 +7776,8 @@
         0.11377
       ],
       "p_value": 0.041067,
-      "adjusted_p_value": 0.16427,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.041067,
+      "verdict": "significant"
     },
     {
       "start": 2011,
@@ -7788,7 +7788,7 @@
         0.133279
       ],
       "p_value": 0.005564,
-      "adjusted_p_value": 0.022256,
+      "adjusted_p_value": 0.005564,
       "verdict": "significant"
     },
     {
@@ -7800,7 +7800,7 @@
         0.11377
       ],
       "p_value": 0.004627,
-      "adjusted_p_value": 0.018506,
+      "adjusted_p_value": 0.004627,
       "verdict": "significant"
     },
     {
@@ -7812,7 +7812,7 @@
         0.115446
       ],
       "p_value": 0.001728,
-      "adjusted_p_value": 0.006911,
+      "adjusted_p_value": 0.001728,
       "verdict": "significant"
     },
     {
@@ -7824,7 +7824,7 @@
         0.127928
       ],
       "p_value": 0.158837,
-      "adjusted_p_value": 0.63535,
+      "adjusted_p_value": 0.158837,
       "verdict": "no_clear_trend"
     },
     {
@@ -7836,8 +7836,8 @@
         0.134799
       ],
       "p_value": 0.035925,
-      "adjusted_p_value": 0.1437,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.035925,
+      "verdict": "significant"
     },
     {
       "start": 2012,
@@ -7848,7 +7848,7 @@
         0.154193
       ],
       "p_value": 0.005213,
-      "adjusted_p_value": 0.020851,
+      "adjusted_p_value": 0.005213,
       "verdict": "significant"
     },
     {
@@ -7860,7 +7860,7 @@
         0.133279
       ],
       "p_value": 0.004824,
-      "adjusted_p_value": 0.019295,
+      "adjusted_p_value": 0.004824,
       "verdict": "significant"
     },
     {
@@ -7872,7 +7872,7 @@
         0.127928
       ],
       "p_value": 0.001742,
-      "adjusted_p_value": 0.006967,
+      "adjusted_p_value": 0.001742,
       "verdict": "significant"
     },
     {
@@ -7884,8 +7884,8 @@
         0.154193
       ],
       "p_value": 0.051538,
-      "adjusted_p_value": 0.206151,
-      "verdict": "no_clear_trend"
+      "adjusted_p_value": 0.051538,
+      "verdict": "weak_evidence"
     },
     {
       "start": 2013,
@@ -7896,7 +7896,7 @@
         0.168081
       ],
       "p_value": 0.007673,
-      "adjusted_p_value": 0.030693,
+      "adjusted_p_value": 0.007673,
       "verdict": "significant"
     },
     {
@@ -7908,7 +7908,7 @@
         0.148341
       ],
       "p_value": 0.008168,
-      "adjusted_p_value": 0.032673,
+      "adjusted_p_value": 0.008168,
       "verdict": "significant"
     },
     {
@@ -7920,7 +7920,7 @@
         0.134799
       ],
       "p_value": 0.002911,
-      "adjusted_p_value": 0.011643,
+      "adjusted_p_value": 0.002911,
       "verdict": "significant"
     },
     {
@@ -7932,8 +7932,8 @@
         0.179287
       ],
       "p_value": 0.014536,
-      "adjusted_p_value": 0.058145,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.014536,
+      "verdict": "significant"
     },
     {
       "start": 2014,
@@ -7944,8 +7944,8 @@
         0.158009
       ],
       "p_value": 0.013508,
-      "adjusted_p_value": 0.054032,
-      "verdict": "weak_evidence"
+      "adjusted_p_value": 0.013508,
+      "verdict": "significant"
     },
     {
       "start": 2014,
@@ -7956,7 +7956,7 @@
         0.154193
       ],
       "p_value": 0.004422,
-      "adjusted_p_value": 0.017689,
+      "adjusted_p_value": 0.004422,
       "verdict": "significant"
     },
     {
@@ -7968,7 +7968,7 @@
         0.179287
       ],
       "p_value": 0.005005,
-      "adjusted_p_value": 0.020021,
+      "adjusted_p_value": 0.005005,
       "verdict": "significant"
     },
     {
@@ -7980,7 +7980,7 @@
         0.168081
       ],
       "p_value": 0.001946,
-      "adjusted_p_value": 0.007784,
+      "adjusted_p_value": 0.001946,
       "verdict": "significant"
     },
     {
@@ -7992,7 +7992,7 @@
         0.174125
       ],
       "p_value": 0.006295,
-      "adjusted_p_value": 0.025181,
+      "adjusted_p_value": 0.006295,
       "verdict": "significant"
     }
   ]
