@@ -34,7 +34,7 @@
     "ireland": {
       "region_id": "ireland",
       "requested_box": "-10.5,51.4,-6.0,55.4",
-      "analyzable_region": "",
+      "analyzable_region": "-10.38,51.62,-6.12,55.38",
       "period_start": "2000-01-01",
       "period_end": "2025-12-01",
       "giovanni_variable_id": "SoilMoi0_10cm_inst",
@@ -50,13 +50,14 @@
         "missing months kept as null rows (0 in this series)",
         "series covers the full registered window",
         "mapped to the doc 04 processed-series columns",
-        "anomaly left null: climatology and anomalies belong to analysis/"
+        "anomaly left null: climatology and anomalies belong to analysis/",
+        "analyzable_region recomputed with the deterministic 0.25 degree centre-in-box rule"
       ]
     },
     "sahel": {
       "region_id": "sahel",
       "requested_box": "0.0,12.0,20.0,18.0",
-      "analyzable_region": "",
+      "analyzable_region": "0.12,12.12,19.88,17.88",
       "period_start": "2000-01-01",
       "period_end": "2025-12-01",
       "giovanni_variable_id": "SoilMoi0_10cm_inst",
@@ -72,13 +73,14 @@
         "missing months kept as null rows (0 in this series)",
         "series covers the full registered window",
         "mapped to the doc 04 processed-series columns",
-        "anomaly left null: climatology and anomalies belong to analysis/"
+        "anomaly left null: climatology and anomalies belong to analysis/",
+        "analyzable_region recomputed with the deterministic 0.25 degree centre-in-box rule"
       ]
     },
     "us_southwest": {
       "region_id": "us_southwest",
       "requested_box": "-115.0,31.0,-105.0,38.0",
-      "analyzable_region": "",
+      "analyzable_region": "-114.88,31.12,-105.12,37.88",
       "period_start": "2000-01-01",
       "period_end": "2025-12-01",
       "giovanni_variable_id": "SoilMoi0_10cm_inst",
@@ -94,7 +96,8 @@
         "missing months kept as null rows (0 in this series)",
         "series covers the full registered window",
         "mapped to the doc 04 processed-series columns",
-        "anomaly left null: climatology and anomalies belong to analysis/"
+        "anomaly left null: climatology and anomalies belong to analysis/",
+        "analyzable_region recomputed with the deterministic 0.25 degree centre-in-box rule"
       ]
     },
     "iberia": {
