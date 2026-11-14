@@ -1,0 +1,5 @@
+export { default as CaseFilesPage } from './CaseFilesPage.jsx'
+export { default as ComparePage } from './ComparePage.jsx'
+export { default as ExplorePage } from './ExplorePage.jsx'
+export { default as HomePage } from './HomePage.jsx'
+export { default as VariableDetailPage } from './VariableDetailPage.jsx'
