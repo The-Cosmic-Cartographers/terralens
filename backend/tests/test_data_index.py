@@ -44,7 +44,6 @@ def test_a_dataset_is_ready_only_when_it_covers_every_app_region(index):
     client, _ = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
     assert len(items) == len(VARIABLES)
-    missing = set()
     for spec in VARIABLES.values():
         expected = "ready" if has_all_app_regions(spec.dataset_id) else "coming_soon"
         assert items[spec.dataset_id] == expected, spec.dataset_id
