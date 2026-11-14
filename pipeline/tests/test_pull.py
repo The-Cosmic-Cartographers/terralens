@@ -9,8 +9,10 @@ and the CSV the builder receives.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from pipeline import pull
@@ -96,9 +98,9 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
 def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
     work, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
-    assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration"}
-    # IMERG has no Harmony coverage; T2M stays on its committed Giovanni series.
-    assert {variable for variable, _region, _reason in blocked} == {"precipitation", "t2m"}
+    assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration", "precipitation"}
+    # T2M stays on its committed Giovanni series rather than being overwritten.
+    assert {variable for variable, _region, _reason in blocked} == {"t2m"}
     assert all(reason for _v, _r, reason in blocked)
 
 
@@ -163,6 +165,39 @@ def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
     resumed = _series()
     resumed.load()
     assert resumed.extent == "51.40,55.40,-10.50,-6.00"
+
+def test_precipitation_is_a_real_route_and_not_a_blocked_row() -> None:
+    """IMERG is pulled from GES DISC directly, since Harmony has no coverage for it."""
+    work, blocked = pull.plan(["precipitation"], ["ireland"])
+    assert not blocked
+    route = work[0][2]
+    assert route is pull.IMERG_ROUTE
+    assert route.collection == "C2723754851-GES_DISC"
+    assert route.unit == "mm/month"
+    assert route.access_route.startswith("NASA GES DISC direct")
+
+
+def test_regional_mean_weights_cells_by_the_cosine_of_latitude() -> None:
+    field = pd.DataFrame({"lat": [0.5, 60.5], "lon": [0.5, 0.5], "value": [10.0, 20.0]})
+    mean = pull.regional_mean(field, (0.0, 0.0, 1.0, 61.0))
+    low = math.cos(math.radians(0.5))
+    high = math.cos(math.radians(60.5))
+    assert mean == pytest.approx((10.0 * low + 20.0 * high) / (low + high))
+    # a plain mean would be 15.0; the tropical cell must count for more
+    assert mean < 14.0
+
+
+def test_regional_mean_refuses_a_month_that_is_mostly_empty() -> None:
+    field = pd.DataFrame({"lat": [0.5, 60.5], "lon": [0.5, 0.5], "value": [float("nan"), 20.0]})
+    assert pull.regional_mean(field, (0.0, 0.0, 1.0, 61.0)) is None
+
+
+def test_the_csv_records_which_route_produced_it() -> None:
+    series = _series()
+    series.months = {"2001-01": 50.0}
+    pull.write_csv(series, pull.IMERG_ROUTE)
+    meta = json.loads((pull.RAW / "t2m_ireland.meta.json").read_text(encoding="utf-8"))
+    assert meta["access_route"].startswith("NASA GES DISC direct")
 
 
 def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
@@ -366,5 +401,5 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     assert pull.main(["--all", "--dry-run"]) == pull.EXIT_OK
     output = capsys.readouterr().out
     assert "aerosol/ireland <- Harmony" in output
-    assert "precipitation/ireland <- BLOCKED" in output
+    assert "precipitation/ireland <- GES DISC direct" in output
     assert "t2m/ireland <- BLOCKED" in output

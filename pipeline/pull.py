@@ -10,7 +10,8 @@ of per run:
 * **T2M stays on Giovanni.** Harmony can subset M2TMNXSLV, but its output would
   land on the same `data/raw/t2m_<region>.csv` the published series came from, so
   the pull refuses that row instead of silently replacing a Giovanni source.
-* **Giovanni** stays the route for IMERG, which Harmony does not serve: no
+* **GES DISC direct** is the route for IMERG, which Harmony does not serve: the
+  monthly HDF5 is downloaded whole and reduced to a 1-degree field here: no
   coverage is registered for the collection, so a Harmony job is rejected before
   it starts. The pull refuses to invent a substitute and reports the series as
   blocked instead.
@@ -42,6 +43,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import requests
 import xarray as xr
 from requests.adapters import HTTPAdapter
@@ -61,6 +63,12 @@ POLL_TRIES = 40
 EXIT_OK, EXIT_CONFIG, EXIT_TIME, EXIT_FAILED = 0, 2, 3, 4
 
 
+HARMONY_ACCESS = "NASA Harmony (GES DISC subset)"
+IMERG_COLLECTION = "C2723754851-GES_DISC"
+IMERG_FIRST_MONTH = "2000-06"
+IMERG_COVERAGE = 0.5
+
+
 @dataclass(frozen=True)
 class Route:
     """Where one variable's months come from, and under what name."""
@@ -69,6 +77,8 @@ class Route:
     field: str
     unit: str
     note: str = ""
+    access_route: str = HARMONY_ACCESS
+    permalink: str = ""
 
 
 # Verified against CMR on 2026-11-14; the collection ids are pinned rather than
@@ -95,11 +105,19 @@ GIOVANNI_ONLY: dict[str, str] = {
     ),
 }
 
+# IMERG has no Harmony coverage and its OPeNDAP endpoints answer 410/404, so the
+# monthly HDF5 files are fetched straight from GES DISC (303 -> presigned URL) and
+# reduced to a 1-degree field, from which each region box is averaged.
+IMERG_ROUTE = Route(
+    collection=IMERG_COLLECTION,
+    field="precipitation",
+    unit="mm/month",
+    note="GPM IMERG Final V07B, one HDF5 per month, reduced to 1 degree locally",
+    access_route="NASA GES DISC direct HDF5 download, 1-degree area mean",
+    permalink="https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
+)
+
 NO_ROUTE: dict[str, str] = {
-    "precipitation": (
-        "Harmony registers no coverage for GPM_3IMERGM (C2723754851-GES_DISC); "
-        "Giovanni in 13-year windows is the working route, so export the CSV there"
-    ),
     "no2": (
         "OMNO2d (C3333493715-GES_DISC) exists in CMR but no route through this "
         "pipeline has been verified yet; do not guess a variable name for it"
@@ -346,8 +364,13 @@ def write_csv(series: Series, route: Route) -> Path:
     rows = [f"{month},{series.months[month]:.6g}" for month in sorted(series.months)]
     west, south, east, north = series.box
     out = RAW / f"{series.variable.variable_id}_{series.region_id}.csv"
+    source_line = (
+        f"# NASA Harmony subset of {route.collection} ({route.field}), area mean"
+        if route.access_route == HARMONY_ACCESS
+        else f"# {route.access_route} of {route.collection} ({route.field})"
+    )
     header = [
-        f"# NASA Harmony subset of {route.collection} ({route.field}), area mean",
+        source_line,
         f"# region {series.region_id} box {west},{south},{east},{north} | {len(rows)} months",
         f"Parameter,{route.field}",
         f"Unit,{route.unit}",
@@ -367,7 +390,7 @@ def write_csv(series: Series, route: Route) -> Path:
                 "last": rows[-1].split(",")[0],
                 "jobs": sorted(set(series.jobs)),
                 "analyzable_region": series.extent,
-                "access_route": "NASA Harmony (GES DISC subset)",
+                "access_route": route.access_route,
             },
             indent=2,
         )
@@ -400,14 +423,16 @@ def build_series(series: Series, route: Route, csv_path: Path, out_root: Path) -
             }
         ),
         analyzable_region=series.extent,
-        permalink=f"https://harmony.earthdata.nasa.gov/jobs/{series.jobs[-1]}"
-        if series.jobs
-        else None,
+        permalink=(
+            f"https://harmony.earthdata.nasa.gov/jobs/{series.jobs[-1]}"
+            if series.jobs
+            else (route.permalink or None)
+        ),
         access_date=dt.date.today().isoformat(),
         start_year=None,
         end_year=None,
         out_root=out_root,
-        access_route="NASA Harmony (GES DISC subset)",
+        access_route=route.access_route,
     )
     return parquet
 
@@ -470,6 +495,210 @@ def pull_series(
         say(f"  {series.label}: {len(series.missing())} months missing, round {round_number + 2}")
 
 
+def _http_get(
+    session: requests.Session, url: str, *, attempts: int = 4, **kwargs: object
+) -> requests.Response:
+    """A GET that retries transient failures; this network resets connections often."""
+    last: Exception | None = None
+    for attempt in range(attempts):
+        try:
+            return session.get(url, timeout=120, **kwargs)
+        except requests.RequestException as error:
+            last = error
+            time.sleep(min(2**attempt, 20))
+    assert last is not None
+    raise last
+
+
+def imerg_granules(session: requests.Session, *, attempts: int = 4) -> dict[str, str]:
+    """Month -> HDF5 URL, from CMR, oldest first.
+
+    The collection also carries 1998 test granules, so anything before Final's
+    2000-06 start is dropped rather than allowed into a series.
+    """
+    found: dict[str, str] = {}
+    page = 1
+    while True:
+        response = _http_get(
+            session,
+            "https://cmr.earthdata.nasa.gov/search/granules.json",
+            attempts=attempts,
+            params={
+                "collection_concept_id": IMERG_COLLECTION,
+                "page_size": 500,
+                "page_num": page,
+            },
+        )
+        response.raise_for_status()
+        entries = response.json()["feed"]["entry"]
+        if not entries:
+            break
+        for entry in entries:
+            stamp = entry["title"].split(":")[-1].split("-S")[0]
+            day = stamp[-8:]
+            if not day.isdigit():
+                continue
+            month = f"{day[:4]}-{day[4:6]}"
+            links = [
+                link["href"]
+                for link in entry.get("links", [])
+                if link.get("rel", "").startswith("http") and link["href"].endswith(".HDF5")
+            ]
+            if links and month >= IMERG_FIRST_MONTH:
+                found.setdefault(month, links[0])
+        if len(entries) < 500:
+            break
+        page += 1
+    return dict(sorted(found.items()))
+
+
+def download_imerg(
+    session: requests.Session, url: str, dest: Path, *, token: str, attempts: int = 4
+) -> Path:
+    """Fetch one granule via GES DISC's 303 to a presigned URL.
+
+    The signed target must be fetched **without** an Authorization header: S3
+    rejects a request carrying both a signature and a bearer token, which is what
+    returns the Earthdata login page instead of the HDF5.
+    """
+    headers = {"Authorization": f"Bearer {token}"}
+    for attempt in range(attempts):
+        try:
+            first = _http_get(session, url, attempts=1, headers=headers, allow_redirects=False)
+            if first.status_code in (301, 302, 303, 307, 308) and first.headers.get("Location"):
+                target, target_headers = first.headers["Location"], {}
+            elif first.status_code == 200:
+                target, target_headers = url, headers
+            else:
+                raise requests.HTTPError(f"HTTP {first.status_code} for {url[:110]}")
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            with session.get(target, headers=target_headers, stream=True, timeout=300) as response:
+                response.raise_for_status()
+                with dest.open("wb") as handle:
+                    for chunk in response.iter_content(1 << 18):
+                        handle.write(chunk)
+            with dest.open("rb") as handle:
+                if handle.read(4) != b"\x89HDF":
+                    raise ValueError(f"{dest.name} is not HDF5 (login page?)")
+            return dest
+        except Exception:  # noqa: BLE001 - retried, then reported by the caller
+            if attempt == attempts - 1:
+                raise
+            time.sleep(min(2**attempt, 20))
+    raise RuntimeError(f"could not download {url}")
+
+
+def reduce_hdf5(path: Path, month: str) -> pd.DataFrame:
+    """IMERG month (mm/hr at 0.1 degree) -> mm/month on a 1 degree grid."""
+    import h5py
+
+    with h5py.File(path, "r") as handle:
+        group = handle["Grid"]
+        # stored as (time, lon, lat); one month, so take time 0 and transpose.
+        precip = group["precipitation"][0].astype("float32").T
+        lat = group["lat"][()].astype("float32")
+        lon = group["lon"][()].astype("float32")
+    precip = np.where(precip < 0, np.nan, precip)  # fill is -9999.9
+    monthly = precip * 24.0 * pd.Period(month, freq="M").days_in_month
+
+    lat_edges = np.arange(-90.0, 91.0, 1.0)
+    lon_edges = np.arange(-180.0, 181.0, 1.0)
+    lat_idx = np.clip(np.digitize(lat, lat_edges) - 1, 0, len(lat_edges) - 2)
+    lon_idx = np.clip(np.digitize(lon, lon_edges) - 1, 0, len(lon_edges) - 2)
+    lat_centres = (lat_edges[:-1] + lat_edges[1:]) / 2
+    lon_centres = (lon_edges[:-1] + lon_edges[1:]) / 2
+
+    # accumulate into zeros: adding onto NaN would keep every cell NaN
+    total = np.zeros((len(lat_centres), len(lon_centres)), dtype="float32")
+    counts = np.zeros_like(total)
+    np.add.at(total, (lat_idx[:, None], lon_idx[None, :]), np.nan_to_num(monthly))
+    np.add.at(counts, (lat_idx[:, None], lon_idx[None, :]), np.isfinite(monthly))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        field = np.where(counts > 0, total / counts, np.nan)
+
+    return pd.DataFrame(
+        {
+            "lat": np.repeat(lat_centres, len(lon_centres)),
+            "lon": np.tile(lon_centres, len(lat_centres)),
+            "value": field.ravel(),
+        }
+    )
+
+
+def regional_mean(
+    field: pd.DataFrame,
+    box: tuple[float, float, float, float],
+    *,
+    minimum_coverage: float = IMERG_COVERAGE,
+) -> float | None:
+    """Cosine-latitude mean over cells whose centre is in the box.
+
+    Returns None when too little of the box has data, so a half-empty month is
+    recorded as missing rather than averaged over the part that happens to exist.
+    """
+    west, south, east, north = box
+    inside = field[
+        (field["lon"] >= west)
+        & (field["lon"] <= east)
+        & (field["lat"] >= south)
+        & (field["lat"] <= north)
+    ]
+    if inside.empty:
+        raise ValueError(f"no 1-degree cells inside {box}")
+    weight = np.cos(np.deg2rad(inside["lat"].to_numpy()))
+    valid = inside["value"].notna().to_numpy()
+    coverage = weight[valid].sum() / weight.sum()
+    if not valid.any() or coverage < minimum_coverage:
+        return None
+    return float(np.average(inside["value"].to_numpy()[valid], weights=weight[valid]))
+
+
+def pull_precipitation(
+    series_list: list[Series],
+    *,
+    token: str,
+    attempts: int,
+    deadline: Deadline,
+    scratch: Path,
+) -> None:
+    """Fill every region's months from one pass over the global IMERG field."""
+    months: set[str] = set()
+    for series in series_list:
+        series.load()
+        months.update(series.missing())
+    if not months:
+        return
+
+    session = requests.Session()
+    adapter = HTTPAdapter(pool_connections=8, pool_maxsize=8, max_retries=0)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+    granules = imerg_granules(session, attempts=attempts)
+    usable = [month for month in sorted(months) if month in granules]
+    print(f"  precipitation: {len(usable)} months to fetch from {IMERG_COLLECTION}")
+    scratch.mkdir(parents=True, exist_ok=True)
+    for month in usable:
+        deadline.check()
+        path = scratch / f"imerg_{month}.HDF5"
+        try:
+            download_imerg(session, granules[month], path, token=token, attempts=attempts)
+            field = reduce_hdf5(path, month)
+        except Exception as error:  # noqa: BLE001 - one month must not end the run
+            print(f"  precipitation {month}: {type(error).__name__} {str(error)[:90]}")
+            path.unlink(missing_ok=True)
+            continue
+        path.unlink(missing_ok=True)
+        for series in series_list:
+            if month in series.months:
+                continue
+            value = regional_mean(field, series.box)
+            if value is not None:
+                series.months[month] = value
+        for series in series_list:
+            series.save()
+
+
 # NO2 is a two-city row (doc 11), not a fifth Lineup column: its boxes are the
 # Dublin and Delhi city points, and no other variable is defined over them.
 NO2_REGIONS = ("dublin_no2", "delhi_no2")
@@ -502,6 +731,8 @@ def plan(
                 blocked.append((variable_id, region_id, GIOVANNI_ONLY[variable_id]))
                 continue
             route = HARMONY_ROUTES.get(variable_id)
+            if route is None and variable_id == "precipitation":
+                route = IMERG_ROUTE
             if route is None:
                 blocked.append((variable_id, region_id, NO_ROUTE.get(variable_id, "no route")))
             else:
@@ -547,7 +778,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.dry_run:
         for spec, region_id, route in work:
-            print(f"{spec.variable_id}/{region_id} <- Harmony {route.collection} ({route.field})")
+            via = "GES DISC direct" if route is IMERG_ROUTE else "Harmony"
+            print(f"{spec.variable_id}/{region_id} <- {via} {route.collection} ({route.field})")
         for variable_id, region_id, reason in blocked:
             print(f"{variable_id}/{region_id} <- BLOCKED: {reason}")
         return EXIT_OK
@@ -564,7 +796,46 @@ def main(argv: list[str] | None = None) -> int:
     regions = load_regions()
 
     failures: list[str] = []
+    precip_work = [item for item in work if item[2] is IMERG_ROUTE]
+    if precip_work:
+        regions_by_id = regions
+        print(f"== precipitation (GPM IMERG Final V07B, {len(precip_work)} regions)")
+        precip_series = [
+            Series(
+                variable=spec,
+                region_id=region_id,
+                box=(
+                    float(regions_by_id[region_id]["west"]),
+                    float(regions_by_id[region_id]["south"]),
+                    float(regions_by_id[region_id]["east"]),
+                    float(regions_by_id[region_id]["north"]),
+                ),
+            )
+            for spec, region_id, _route in precip_work
+        ]
+        try:
+            pull_precipitation(
+                precip_series,
+                token=token,
+                attempts=args.attempts,
+                deadline=deadline,
+                scratch=scratch,
+            )
+        except TimeLimitReached as stop:
+            print(f"!! {stop}; rerun the same command to resume from checkpoints")
+            return EXIT_TIME
+        for series in precip_series:
+            if series.missing():
+                failures.append(f"{series.label}: {len(series.missing())} months missing")
+                continue
+            csv_path = write_csv(series, IMERG_ROUTE)
+            if not args.no_build:
+                build_series(series, IMERG_ROUTE, csv_path, args.out)
+            print(f"  {series.label}: {len(series.months)} months -> {csv_path}")
+
     for spec, region_id, route in work:
+        if route is IMERG_ROUTE:
+            continue
         region = regions[region_id]
         series = Series(
             variable=spec,

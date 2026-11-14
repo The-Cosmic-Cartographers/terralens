@@ -27,7 +27,7 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 | aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
 | soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
 | evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
-| precipitation | **Giovanni only** | Harmony registers no coverage for `GPM_3IMERGM`; export the CSV in ≤13-year windows |
+| precipitation | **GES DISC direct** | GPM IMERG Final V07B `GPM_3IMERGM` (`C2723754851-GES_DISC`): one HDF5 per month listed from CMR, fetched through GES DISC's 303 to a presigned URL, reduced to a 1° field and cosine-averaged over the box. Harmony has no coverage for this collection and its OPeNDAP endpoints answer 410/404 |
 | NO₂ | **no verified route** | `OMNO2d` exists in CMR but no field name has been proven from this pipeline |
 
 A blocked series is reported by name and exit code, never filled with a substitute or a different
