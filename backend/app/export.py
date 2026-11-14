@@ -5,7 +5,7 @@ the same DataStore as the API, so the files cannot drift from the API shapes.
 
     PYTHONPATH=backend uv run python -m app.export
 
-    data_dir/ ---> frontend/public/data/
+    data_dir/ ---> frontend/nasa-earth-trends/public/data/
         health.json                       data_version (drives the SAMPLE banner)
         catalogue.json, regions.json
         metadata/<dataset_id>.json
@@ -125,7 +125,10 @@ def main(argv: list[str] | None = None) -> int:
         "--data-dir", type=Path, default=data_dir(), help="data root (default ./data)"
     )
     parser.add_argument(
-        "--out", type=Path, default=repo_root / "frontend" / "public" / "data", help="output folder"
+        "--out",
+        type=Path,
+        default=repo_root / "frontend" / "nasa-earth-trends" / "public" / "data",
+        help="output folder",
     )
     parser.add_argument(
         "--allow-sample", action="store_true", help="allow SAMPLE data (local development only)"
