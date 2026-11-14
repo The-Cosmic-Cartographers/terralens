@@ -11,8 +11,7 @@ the same DataStore as the API, so the files cannot drift from the API shapes.
         metadata/<dataset_id>.json
         lineup/<region_id>.json
         series|trend|windows/<dataset_id>/<region_id>.json
-
-(compare/<dataset_id>.json arrives with NAS-23.)
+        compare/<dataset_id>.json
 """
 
 import argparse
@@ -39,6 +38,7 @@ GENERATED = (
     "series",
     "trend",
     "windows",
+    "compare",
 )
 
 
@@ -82,6 +82,7 @@ def build_files(store: DataStore, allow_sample: bool) -> dict[Path, str]:
             Path("metadata") / f"{item.dataset_id}.json",
             lambda i=item: store.metadata(i.dataset_id),
         )
+        add(Path("compare") / f"{item.dataset_id}.json", lambda i=item: store.compare(i.dataset_id))
         for region in regions:
             name = Path(item.dataset_id) / f"{region.region_id}.json"
             ids = (region.region_id, item.dataset_id)
