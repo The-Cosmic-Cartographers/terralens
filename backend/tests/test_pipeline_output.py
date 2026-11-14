@@ -39,6 +39,10 @@ def test_pipeline_output_is_served_by_the_api(client_and_root):
             "--dataset-id", "sample_t2m",
             "--analyzable-region", "n/a (test)",
             "--permalink", "https://example.invalid/sample",
+            # The sample is two years; name that window explicitly so the
+            # full-coverage guard is satisfied rather than bypassed.
+            "--start-year", "1981",
+            "--end-year", "1982",
             "--out", str(root / "processed"),
         ]
     )  # fmt: skip
