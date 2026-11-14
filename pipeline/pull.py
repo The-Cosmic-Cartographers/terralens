@@ -277,7 +277,7 @@ def centre_mask(
 def slice_extent(
     payload: bytes, scratch: Path, *, box: tuple[float, float, float, float] | None = None
 ) -> str | None:
-    """The S,N,W,E extent of the cells a slice actually averages, for provenance.
+    """The W,S,E,N extent of the cells a slice actually averages, for provenance.
 
     A caller cannot infer this from the requested box: the mask drops edge cells, so
     the averaged footprint is usually one cell narrower on each side.
@@ -296,7 +296,8 @@ def slice_extent(
                 lon = lon[inside.any(axis=0)]
             if not len(lat) or not len(lon):
                 return None
-            return f"{lat.min():.2f},{lat.max():.2f},{lon.min():.2f},{lon.max():.2f}"
+            # same W,S,E,N order as requested_box, so the two can be read side by side
+            return f"{lon.min():.2f},{lat.min():.2f},{lon.max():.2f},{lat.max():.2f}"
     finally:
         path.unlink(missing_ok=True)
 
