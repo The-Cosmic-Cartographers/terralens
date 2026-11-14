@@ -134,7 +134,6 @@ function App() {
               </span>
             </button>
             <span className="chip">Window 1981–2025</span>
-            <span className="chip">Precomputed results</span>
           </div>
         </header>
 
