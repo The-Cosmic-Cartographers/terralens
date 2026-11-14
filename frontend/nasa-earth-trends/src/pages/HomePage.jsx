@@ -7,6 +7,7 @@ import KpiTile from '../components/KpiTile.jsx'
 import Panel from '../components/Panel.jsx'
 import RegionExplorer from '../components/RegionExplorer.jsx'
 import SampleDataWarning from '../components/SampleDataWarning.jsx'
+import { regions as regionOptions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
 
 function HomePage() {
@@ -47,7 +48,7 @@ function HomePage() {
         <KpiTile
           label="Study regions"
           value={regions ? regions.length : '—'}
-          note="Ireland, Sahel, US Southwest, Iberia, Northwest India"
+          note={regionOptions.map((region) => region.name).join(', ')}
         />
         <KpiTile
           label="Analysis window"

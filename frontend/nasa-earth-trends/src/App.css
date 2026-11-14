@@ -2084,7 +2084,7 @@ body {
 }
 
 .kpi-value {
-  color: var(--navy-800);
+  color: var(--text);
 }
 
 .button {
