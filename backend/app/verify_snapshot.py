@@ -109,7 +109,9 @@ def verify(root: Path, allow_sample: bool = False) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    default = Path(__file__).resolve().parents[2] / "frontend" / "public" / "data"
+    default = (
+        Path(__file__).resolve().parents[2] / "frontend" / "nasa-earth-trends" / "public" / "data"
+    )
     parser = argparse.ArgumentParser(description="Verify a static snapshot before it ships.")
     parser.add_argument("folder", nargs="?", type=Path, default=default)
     parser.add_argument("--allow-sample", action="store_true", help="development snapshots only")
