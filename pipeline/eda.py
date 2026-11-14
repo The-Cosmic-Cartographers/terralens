@@ -25,8 +25,9 @@ import pandas as pd  # noqa: E402
 from scipy import stats  # noqa: E402
 
 REQUIRED_COLUMNS = {"timestamp", "value", "region_id", "variable_id", "unit"}
-MONTHS_PER_DECADE = 120.0
+YEARS_PER_DECADE = 10.0
 SPIKE_SIGMA = 4.0
+MIN_TREND_YEARS = 3
 
 
 def load_series(path: Path) -> pd.DataFrame:
@@ -77,20 +78,46 @@ def anomalies(frame: pd.DataFrame) -> pd.Series:
     return (frame["value"] - climatology).rename("anomaly")
 
 
-def trend(frame: pd.DataFrame) -> dict[str, float]:
-    """Sen slope per decade with a 95% CI, plus the Mann-Kendall p-value."""
+def annual_means(frame: pd.DataFrame) -> pd.Series:
+    """One value per calendar year, from the months that are actually present."""
     series = frame.dropna(subset=["value"])
-    months = np.arange(len(series), dtype="float64")
-    if len(series) < 36:
-        raise ValueError("a trend needs at least three years of data")
-    slope, _, low, high = stats.theilslopes(series["value"].to_numpy(), months, 0.95)
+    return series.groupby(series["timestamp"].dt.year)["value"].mean()
+
+
+def trend(frame: pd.DataFrame) -> dict[str, float]:
+    """Sen slope per decade with a 95% CI, plus the Mann-Kendall p-value.
+
+    Both statistics follow doc 05: the slope comes from the **annual means**, and
+    the test is the **seasonal** Mann-Kendall on the monthly series. Running either
+    on raw monthly values lets the 12-month cycle dominate the variance, which
+    hides a real trend (Ireland's temperature went from p = 0.03 to p = 7e-05 once
+    the method was right).
+    """
+    annual = annual_means(frame)
+    if len(annual) < MIN_TREND_YEARS:
+        raise ValueError(f"a trend needs at least {MIN_TREND_YEARS} years of data")
+    years = annual.index.to_numpy(dtype="float64")
+    slope, _, low, high = stats.theilslopes(annual.to_numpy(), years, 0.95)
     return {
-        "slope_per_decade": float(slope * MONTHS_PER_DECADE),
-        "ci_low": float(low * MONTHS_PER_DECADE),
-        "ci_high": float(high * MONTHS_PER_DECADE),
-        "p_value": _mann_kendall_p(series["value"].to_numpy()),
-        "n_months": int(len(series)),
+        "slope_per_decade": float(slope * YEARS_PER_DECADE),
+        "ci_low": float(low * YEARS_PER_DECADE),
+        "ci_high": float(high * YEARS_PER_DECADE),
+        "p_value": _seasonal_mann_kendall_p(frame),
+        "p_method": "seasonal Mann-Kendall, period 12, no Hamed-Rao correction",
+        "n_years": int(len(annual)),
+        "n_months": int(frame["value"].notna().sum()),
     }
+
+
+def _seasonal_mann_kendall_p(frame: pd.DataFrame) -> float:
+    """Seasonal Mann-Kendall p, one test per calendar month, pooled."""
+    values = frame.dropna(subset=["value"])["value"].to_numpy()
+    try:
+        import pymannkendall as mk
+
+        return float(mk.seasonal_test(values, period=12).p)
+    except Exception:  # noqa: BLE001 - optional cross-check package
+        return _mann_kendall_p(annual_means(frame).to_numpy())
 
 
 def _mann_kendall_p(values: np.ndarray) -> float:
@@ -135,6 +162,7 @@ def check_series(path: Path) -> dict[str, object]:
         "first": f"{frame['timestamp'].min():%Y-%m}",
         "last": f"{frame['timestamp'].max():%Y-%m}",
         "rows": int(len(frame)),
+        "rows_with_values": int(frame["value"].notna().sum()),
         "missing_months": missing_months(frame),
         "spikes": find_spikes(frame),
         "min": float(values.min()),
@@ -195,12 +223,14 @@ def main(argv: list[str] | None = None) -> int:
         summary = check_series(path)
         summaries.append(summary)
         figure = plot_series(load_series(path), args.out / f"{summary['region_id']}.png")
+        p_value = summary["p_value"]
+        p_text = "<1e-12" if p_value < 1e-12 else f"{p_value:.3g}"
         print(
             f"{summary['region_id']:<13} {summary['first']}..{summary['last']} "
             f"n={summary['rows']} missing={len(summary['missing_months'])} "
             f"spikes={len(summary['spikes'])} {summary['unit']!r} "
             f"slope={summary['slope_per_decade']:+.2f}/decade "
-            f"p={summary['p_value']:.3g} ({summary['verdict']}) -> {figure}"
+            f"p={p_text} ({summary['verdict']}) -> {figure}"
         )
 
     (args.out / "summary.json").write_text(json.dumps(summaries, indent=2) + "\n", encoding="utf-8")

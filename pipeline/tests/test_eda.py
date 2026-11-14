@@ -90,7 +90,21 @@ def test_trend_recovers_a_known_slope() -> None:
     assert result["slope_per_decade"] == pytest.approx(5.0, abs=0.3)
     assert result["ci_low"] < result["slope_per_decade"] < result["ci_high"]
     assert result["ci_low"] < 5.0 < result["ci_high"], "the interval must cover the true slope"
-    assert result["p_value"] < 0.01
+    assert result["p_value"] < 0.01, "a 0.5 degC/year ramp must survive a 3 degC seasonal cycle"
+    assert result["n_years"] == 30
+
+
+def test_a_seasonal_cycle_alone_is_not_a_trend() -> None:
+    """The regression this method exists for: 12-month cycles hide real trends.
+
+    Testing raw monthly values let the seasonal cycle dominate the variance, so a
+    genuine warming trend came out as p = 0.35 on the Sahel. A series with the
+    cycle but no trend must stay non-significant either way.
+    """
+    result = trend(_frame(years=45, slope_per_year=0.0, jitter=0.3))
+
+    assert result["p_value"] > 0.10
+    assert abs(result["slope_per_decade"]) < 0.2
 
 
 def test_trend_rejects_a_series_shorter_than_three_years() -> None:
@@ -114,6 +128,8 @@ def test_check_series_summarises_a_file(tmp_path: Path) -> None:
     assert summary["region_id"] == "ireland"
     assert summary["first"] == "1981-01"
     assert summary["rows"] == 60
+    assert summary["rows_with_values"] == 60
+    assert summary["n_years"] == 5
     assert summary["missing_months"] == []
     assert summary["unit"] == "°C"
     assert summary["slope_per_decade"] > 0
