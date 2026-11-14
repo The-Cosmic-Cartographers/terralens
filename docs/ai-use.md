@@ -43,6 +43,8 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-60: centre-in-box footprint in `month_means` so a Harmony pull averages Giovanni's cells (T2M Ireland went from 0.88 °C to 0.0005 °C against Giovanni), `slice_extent` writing the averaged footprint into provenance as `analyzable_region`, and the checkpoint carrying it across runs; tests for the mask, the extent and the hand-off | `pipeline/pull.py`, `pipeline/tests/test_pull.py`, `pipeline/README.md` |
 
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-41: `pipeline.qa` — checks units, contract columns, window coverage, provenance boxes and source hashes, and can rebuild every series from raw and compare it; it found the three T2M provenance defects reported on NAS-60 | `pipeline/qa.py`, `pipeline/tests/test_qa.py`, `pipeline/README.md` |
+
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.
