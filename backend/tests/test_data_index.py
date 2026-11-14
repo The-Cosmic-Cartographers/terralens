@@ -58,7 +58,9 @@ def test_real_series_and_metadata_are_served(index):
     assert len(series.json()["rows"]) == 540
     meta = client.get("/api/v1/metadata", params={"dataset_id": "merra2_m2tmnxslv"})
     assert meta.status_code == 200
-    assert set(meta.json()["provenance"]["regions"]) == {"ireland", "sahel", "us_southwest"}
+    served = set(meta.json()["provenance"]["regions"])
+    on_disk = {path.stem for path in (PROCESSED / "merra2_m2tmnxslv").glob("*.parquet")}
+    assert served == on_disk
 
 
 def test_data_version_is_not_sample(index):
