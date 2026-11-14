@@ -1,13 +1,16 @@
 import os
 from pathlib import Path
 
-DATA_DIR = Path(os.environ.get("TERRALENS_DATA_DIR", "./data"))
-
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get("TERRALENS_CORS_ORIGINS", "http://localhost:3000").split(",")
     if origin.strip()
 ]
 
-# Replaced by the export step once real processed data exists.
-DATA_VERSION = "unversioned"
+# Reported by /health when the data folder has no data_version.txt.
+DATA_VERSION_FALLBACK = "unversioned"
+
+
+def data_dir() -> Path:
+    """The data root: ./data by default, ./data/fixtures for SAMPLE data."""
+    return Path(os.environ.get("TERRALENS_DATA_DIR", "./data"))
