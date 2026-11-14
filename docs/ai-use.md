@@ -46,6 +46,8 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 
 | 2026-11-14 | Parth | Codebuff (Buffy) | NAS-25: built and verified the soil-moisture, evapotranspiration and aerosol series for Ireland, Sahel and US Southwest from the raw CSV extracts, with provenance (route, box, sha256, job links) and a row-by-row reproducibility check | `data/processed/gldas_noah025_m21_soilmoi0_10/`, `data/processed/gldas_noah025_m21_evap/`, `data/processed/merra2_m2tmnxaer_v5_12_4/`, `backend/tests/test_data_index.py` |
 
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-41: `pipeline.qa` — checks units, contract columns, window coverage, provenance boxes and source hashes, and can rebuild every series from raw and compare it; it found the three T2M provenance defects reported on NAS-60 | `pipeline/qa.py`, `pipeline/tests/test_qa.py`, `pipeline/README.md` |
+
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.

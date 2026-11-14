@@ -96,3 +96,27 @@ subsetter cannot read the granule's DMR++
 alone (`…​.dmr.xml`) returns 200, so the collection and our token are fine. Until OPeNDAP
 serves those granule sidecars again, Harmony and direct OPeNDAP `.dods` both fail; the pull
 reports it per series and the rerun resumes.
+
+## Checking the processed data (NAS-41)
+
+`python -m pipeline.qa` reads every folder in `data/processed/` and checks it against
+`pipeline/registry.py` and its own `provenance.json`:
+
+- contract columns, with anything outside the contract reported as a warning;
+- the unit stored in the file equals the registry's output unit, and the provenance
+  `output_unit` and `version` agree with the registry;
+- every month of the registered window is present exactly once;
+- the provenance period matches the file, and `requested_box` parses as W,S,E,N inside
+  valid coordinates (a box that differs from `pipeline/regions.json` is a warning);
+- the sha256 of the export the series was built from matches the hash in provenance. A file
+  with the recorded name but different bytes is an error (it is a different pull); an export
+  that is simply absent is a warning, because `data/raw` is not committed and the recorded
+  export may live elsewhere. A provenance with no hash at all is an error;
+- provenance regions and parquet files are one-to-one, and an empty permalink is only a
+  warning (the two Ireland GLDAS pulls never logged a job id).
+
+`python -m pipeline.qa --regenerate` additionally rebuilds each series from its raw CSV into
+a temporary directory and compares values and timestamps row by row.
+
+Exit codes: `0` clean (warnings allowed), `1` errors found, `2` errors found while
+regenerating.
