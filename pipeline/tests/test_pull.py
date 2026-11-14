@@ -387,12 +387,35 @@ def test_build_is_handed_the_footprint_as_analyzable_region(
     monkeypatch.setattr(pull.build_module, "build", fake_build)
     series = _series()
     series.months = {"2001-01": 280.0}
+    series.extent = "-10.50,51.50,-6.50,55.00"
+    csv_path = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
+
+    pull.build_series(series, pull.HARMONY_ROUTES["t2m"], csv_path, Path("processed"))
+
+    assert captured["analyzable_region"] == "-10.50,51.50,-6.50,55.00"
+
+
+def test_a_stale_s_n_w_e_extent_is_rebuilt_before_the_build(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The old checkpoint wrote S,N,W,E; the build must not pass that through."""
+    captured: dict[str, object] = {}
+
+    def fake_build(csv_path: Path, **kwargs: object) -> tuple[Path, Path]:
+        captured.update(kwargs)
+        return Path("out.parquet"), Path("provenance.json")
+
+    monkeypatch.setattr(pull.build_module, "build", fake_build)
+    series = _series()
+    series.months = {"2001-01": 280.0}
     series.extent = "51.50,55.00,-10.50,-6.50"
     csv_path = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
 
     pull.build_series(series, pull.HARMONY_ROUTES["t2m"], csv_path, Path("processed"))
 
-    assert captured["analyzable_region"] == "51.50,55.00,-10.50,-6.50"
+    passed = str(captured["analyzable_region"])
+    assert pull.parse_extent(passed) is not None
+    assert passed == pull.grid_extent(series.box)
 
 
 def test_dry_run_prints_the_plan_and_never_needs_a_token(
@@ -404,3 +427,28 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     assert "aerosol/ireland <- Harmony" in output
     assert "precipitation/ireland <- GES DISC direct" in output
     assert "t2m/ireland <- BLOCKED" in output
+
+
+def test_grid_extent_reproduces_the_centre_in_box_footprint() -> None:
+    """The deterministic fallback must agree with what a payload would have measured."""
+    assert pull.grid_extent((-10.0, 36.0, 3.5, 44.0)) == "-9.88,36.12,3.38,43.88"
+    assert pull.grid_extent((68.0, 22.0, 78.0, 32.0)) == "68.12,22.12,77.88,31.88"
+
+
+def test_an_extent_in_the_wrong_order_is_refused() -> None:
+    """S,N,W,E from the old bug is not a W,S,E,N footprint and must not pass."""
+    assert pull.parse_extent("-6.38,53.38,-6.12,53.38") is not None
+    assert pull.parse_extent("53.38,53.38,-6.38,-6.12") is None
+    assert pull.parse_extent("") is None
+    assert pull.parse_extent("1,2,3") is None
+
+
+def test_harmony_t2m_is_allowed_only_for_the_two_new_regions() -> None:
+    """Kevin's exception on NAS-64: new regions yes, the committed three no."""
+    work, blocked = pull.plan(["t2m"], ["iberia"])
+    assert [spec.variable_id for spec, _region, _route in work] == ["t2m"]
+    assert blocked == []
+
+    work_old, blocked_old = pull.plan(["t2m"], ["ireland"])
+    assert work_old == []
+    assert blocked_old and blocked_old[0][0] == "t2m"
