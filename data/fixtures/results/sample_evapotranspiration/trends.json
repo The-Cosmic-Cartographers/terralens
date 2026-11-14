@@ -1,0 +1,68 @@
+[
+  {
+    "dataset_id": "sample_evapotranspiration",
+    "variable_id": "evapotranspiration",
+    "region_id": "ireland",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.000361,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      -0.00265,
+      0.004102
+    ],
+    "p_value": 0.827301,
+    "adjusted_p_value": 0.827301,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 312,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 0.9909,
+    "method": "SAMPLE: Mann–Kendall on annual means + Theil–Sen (fixture generator)",
+    "serial_correlation_note": "SAMPLE — NOT NASA DATA: not assessed",
+    "caveats": [
+      "SAMPLE — NOT NASA DATA"
+    ],
+    "withheld_reason": null,
+    "product_type": "land_model",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.14,
+    "detect_years": 153.6
+  },
+  {
+    "dataset_id": "sample_evapotranspiration",
+    "variable_id": "evapotranspiration",
+    "region_id": "iberia",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.003789,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      -0.001662,
+      0.008454
+    ],
+    "p_value": 0.134925,
+    "adjusted_p_value": 0.26985,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 312,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 0.9778,
+    "method": "SAMPLE: Mann–Kendall on annual means + Theil–Sen (fixture generator)",
+    "serial_correlation_note": "SAMPLE — NOT NASA DATA: not assessed",
+    "caveats": [
+      "SAMPLE — NOT NASA DATA"
+    ],
+    "withheld_reason": null,
+    "product_type": "land_model",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 1.15,
+    "detect_years": 40.5
+  }
+]

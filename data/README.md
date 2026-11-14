@@ -7,6 +7,6 @@
 | `results/` | `trends.json`, lineup and Time Machine window files | Yes |
 | `fixtures/` | SAMPLE data for development, in the same schemas | Yes |
 
-**Fixtures are never findings.** Every fixture row carries `"source": "SAMPLE — NOT NASA DATA"`, the UI shows a SAMPLE DATA banner whenever it sees that, and fixtures are removed from the deployed demo before Sunday 16:00.
+**Fixtures are never findings.** Every fixture row carries `"source": "SAMPLE — NOT NASA DATA"`, the UI shows a SAMPLE DATA banner whenever it sees that, and fixtures are removed from the deployed demo before Sunday 16:00 (milestone M5).
 
 Files over about 20 MB: discuss before committing.

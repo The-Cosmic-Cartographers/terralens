@@ -1,0 +1,8 @@
+{
+  "methodology": "SAMPLE — NOT NASA DATA. Synthetic series; trend by Kendall's tau and Theil-Sen on annual means.",
+  "limitations": [
+    "SAMPLE — NOT NASA DATA",
+    "Illustrates the UI states only; no scientific meaning."
+  ],
+  "attribution": "SAMPLE — NOT NASA DATA"
+}

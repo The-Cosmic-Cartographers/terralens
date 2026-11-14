@@ -1,0 +1,27 @@
+{
+  "dataset_id": "sample_evapotranspiration",
+  "product": "SAMPLE — NOT NASA DATA",
+  "version": "sample",
+  "doi_or_url": "https://example.invalid/sample",
+  "access_date": "2026-11-14",
+  "access_route": "sample (generated, not downloaded)",
+  "variable_field": "evapotranspiration",
+  "scale_factor": 1.0,
+  "native_unit": "mm/day",
+  "output_unit": "mm/day",
+  "spatial_resolution": "sample",
+  "period_start": "2000-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "none: synthetic data"
+  ],
+  "region_source": "sample boxes from Linear doc 01",
+  "requested_box": "ireland: -10.5,51.4,-6.0,55.4; iberia: -10.0,36.0,0.0,44.0",
+  "analyzable_region": "n/a (synthetic)",
+  "giovanni_variable_id": "n/a",
+  "giovanni_permalink": "https://example.invalid/sample",
+  "citation": "SAMPLE — NOT NASA DATA",
+  "transformations": [
+    "synthetic series with a known trend"
+  ]
+}

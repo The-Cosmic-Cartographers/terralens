@@ -1,0 +1,56 @@
+[
+  {
+    "dataset_id": "sample_t2m",
+    "variable_id": "t2m",
+    "label": "Air temperature (2 m)",
+    "unit": "°C",
+    "period_start": "1981-01-01",
+    "period_end": "2025-12-01",
+    "status": "ready"
+  },
+  {
+    "dataset_id": "sample_soil_moisture_0_10cm",
+    "variable_id": "soil_moisture_0_10cm",
+    "label": "Soil moisture (0–10 cm)",
+    "unit": "kg/m²",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "status": "ready"
+  },
+  {
+    "dataset_id": "sample_evapotranspiration",
+    "variable_id": "evapotranspiration",
+    "label": "Evapotranspiration",
+    "unit": "mm/day",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "status": "ready"
+  },
+  {
+    "dataset_id": "sample_precipitation",
+    "variable_id": "precipitation",
+    "label": "Precipitation",
+    "unit": "mm/month",
+    "period_start": "2001-01-01",
+    "period_end": "2024-12-01",
+    "status": "ready"
+  },
+  {
+    "dataset_id": "sample_aerosol",
+    "variable_id": "aerosol_optical_depth",
+    "label": "Aerosol optical depth",
+    "unit": "unitless",
+    "period_start": "2003-01-01",
+    "period_end": "2025-12-01",
+    "status": "ready"
+  },
+  {
+    "dataset_id": "sample_ndvi",
+    "variable_id": "ndvi",
+    "label": "Vegetation greenness (NDVI)",
+    "unit": "unitless",
+    "period_start": "2001-01-01",
+    "period_end": "2025-12-01",
+    "status": "coming_soon"
+  }
+]

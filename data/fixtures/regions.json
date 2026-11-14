@@ -1,0 +1,72 @@
+[
+  {
+    "region_id": "ireland",
+    "name": "Ireland",
+    "description": "SAMPLE — NOT NASA DATA: sample region box.",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -10.5,
+            51.4
+          ],
+          [
+            -6.0,
+            51.4
+          ],
+          [
+            -6.0,
+            55.4
+          ],
+          [
+            -10.5,
+            55.4
+          ],
+          [
+            -10.5,
+            51.4
+          ]
+        ]
+      ]
+    },
+    "geometry_url": null,
+    "source": "sample boxes from Linear doc 01",
+    "licence": "n/a (sample)"
+  },
+  {
+    "region_id": "iberia",
+    "name": "Iberia",
+    "description": "SAMPLE — NOT NASA DATA: sample region box.",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -10.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            44.0
+          ],
+          [
+            -10.0,
+            44.0
+          ],
+          [
+            -10.0,
+            36.0
+          ]
+        ]
+      ]
+    },
+    "geometry_url": null,
+    "source": "sample boxes from Linear doc 01",
+    "licence": "n/a (sample)"
+  }
+]
