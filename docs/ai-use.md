@@ -11,3 +11,4 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | API v1 part B: series, trend, lineup, windows endpoints, region 404 and tests (NAS-20) | `backend/app/api/v1.py`, `backend/app/services/store.py`, `backend/app/errors.py`, `backend/tests/test_api_regions.py` |
 
 AI-generated images or video must carry a visible "AI-generated" watermark. No NASA logos or branding in AI-generated output.
+| 2026-11-14 | Kevin | Claude Code | Static JSON export `app.export` and tests (NAS-21) | `backend/app/export.py`, `backend/tests/test_export.py`, `backend/README.md` |
