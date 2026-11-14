@@ -1,0 +1,140 @@
+[
+  {
+    "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
+    "variable_id": "evapotranspiration",
+    "region_id": "ireland",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "increasing",
+    "sen_slope_per_year": 0.00169237285714287,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      0.0004806596571428631,
+      0.0029885532631579214
+    ],
+    "p_value": 0.005635655647923787,
+    "adjusted_p_value": 0.014121730012087497,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": true,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.12; Hamed\u2013Rao variance factor 1.27; raw seasonal MK p = 0.0018",
+    "caveats": [],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "significant",
+    "effect_size_swings": 1.387261124170419,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2012,
+      "K": 233.0,
+      "p_value": 0.07561191511559291,
+      "mean_before": 1.9184261825454545,
+      "mean_after": 1.973014942153846,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 6.799015384615525e-05,
+      "MAM": 0.0019141780645161234,
+      "JJA": 0.003175069090909077,
+      "SON": 0.0010629526153846122
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
+    "variable_id": "evapotranspiration",
+    "region_id": "sahel",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.003738173999999974,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      0.0004084199999999996,
+      0.006653209499999993
+    ],
+    "p_value": 0.12239433786677933,
+    "adjusted_p_value": 0.12239433786677933,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.78; Hamed\u2013Rao variance factor 7.92; raw seasonal MK p = 0.0000",
+    "caveats": [
+      "sensitive_to_serial_correlation",
+      "level_shift_detected"
+    ],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 1.2386106729601158,
+    "detect_years": 67.43742495797517,
+    "change_point": {
+      "change_point_year": 2009,
+      "K": 282.0,
+      "p_value": 0.01649687370522844,
+      "mean_before": 0.7463246299199999,
+      "mean_after": 0.89122502115,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 0.002540002909090909,
+      "MAM": -0.0008103266341463414,
+      "JJA": 0.0004473170526315781,
+      "SON": 0.011938233599999999
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
+    "variable_id": "evapotranspiration",
+    "region_id": "us_southwest",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "decreasing",
+    "sen_slope_per_year": -0.004953550153846161,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      -0.007844138526315783,
+      -0.0019331760000000078
+    ],
+    "p_value": 0.009414486674724998,
+    "adjusted_p_value": 0.014121730012087497,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": true,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.72; Hamed\u2013Rao variance factor 6.20; raw seasonal MK p = 0.0000",
+    "caveats": [],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "significant",
+    "effect_size_swings": 1.6271798369820347,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 1999,
+      "K": 338.0,
+      "p_value": 0.0020309264139426408,
+      "mean_before": 0.9155323079999999,
+      "mean_after": 0.7607006003076925,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": -0.0025675039999999995,
+      "MAM": -0.009033300000000008,
+      "JJA": -0.0052510239999999965,
+      "SON": -0.0042858377142857155
+    }
+  }
+]

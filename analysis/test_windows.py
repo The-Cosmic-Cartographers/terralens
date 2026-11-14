@@ -133,7 +133,7 @@ def test_bh_runs_within_a_window_and_sets_verdicts():
         {
             "start": 1981,
             "end": 2025,
-            "variable_id": "soil_moisture_0_10",
+            "variable_id": "soil_moisture_0_5",
             "p_value": 0.30,
             "sen_slope_per_year": 0.0,
             "confidence_interval_95": [-0.1, 0.1],

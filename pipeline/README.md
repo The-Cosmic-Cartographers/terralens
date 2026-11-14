@@ -25,13 +25,17 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 | -- | -- | -- |
 | T2M | **Giovanni only** (kept) | the committed series is a Giovanni export; Harmony can subset `M2TMNXSLV` but would overwrite the same raw file, so the pull refuses this row and says so |
 | aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
-| soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
-| evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
-| precipitation | **GES DISC direct** | GPM IMERG Final V07B `GPM_3IMERGM` (`C2723754851-GES_DISC`): one HDF5 per month listed from CMR, fetched through GES DISC's 303 to a presigned URL, reduced to a 1° field and cosine-averaged over the box. Harmony has no coverage for this collection and its OPeNDAP endpoints answer 410/404 |
+| soil moisture 0–5 | Harmony | MERRA-2 `M2TMNXLND` (`C1276812856-GES_DISC`), field `SFMC` (volumetric, m³/m³) |
+| evapotranspiration | Harmony | same land collection, field `EVLAND` (kg m⁻² s⁻¹, stored as mm/day) |
+| precipitation | Harmony | MERRA-2 `M2TMNXFLX` (`C1276812868-GES_DISC`), field `PRECTOTCORR` (bias-corrected, kg m⁻² s⁻¹, stored as mm/month) |
 | NO₂ | **OPeNDAP daily granule subset** | `OMNO2d` V004 (`C3333493715-GES_DISC`), field `ColumnAmountNO2TropCloudScreened`, one subset per city per day from `pipeline.no2` |
 
 A blocked series is reported by name and exit code, never filled with a substitute or a different
 product. `--dry-run` shows which is which before anything runs.
+
+### Why the long record is MERRA-2 throughout
+
+A 40-year record needs one product that starts in 1980. GLDAS-2.1 starts in 2000 and IMERG Final in mid-2000, so the soil moisture, evapotranspiration, precipitation and aerosol rows come from MERRA-2 (1980–2025); T2M keeps its verified Giovanni series (1981–2025). The replaced series are in `data/archive/`. The cost: soil moisture is the 0–5 cm layer, precipitation and land evaporation are model output, and the land fields are not weighted by land fraction (`FRLAND`).
 
 ### The footprint rule
 

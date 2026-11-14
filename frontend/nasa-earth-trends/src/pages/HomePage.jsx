@@ -52,7 +52,7 @@ function HomePage() {
         />
         <KpiTile
           label="Analysis window"
-          value="1981–2025"
+          value="1980–2025"
           note="Monthly, precomputed"
         />
         <KpiTile
