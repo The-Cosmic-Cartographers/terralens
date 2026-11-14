@@ -2,17 +2,28 @@ import { useEffect, useState } from 'react'
 
 import { dataClient } from '../services/dataClient.js'
 
-export function useData(resource, params) {
+export function useData(resource, params = {}) {
   const [state, setState] = useState({
     data: null,
     loading: true,
     error: null,
   })
-  const paramsKey = JSON.stringify(params || {})
+  const paramsKey = JSON.stringify(params)
 
   useEffect(() => {
     let active = true
     const loader = dataClient[resource]
+    const requestParams = JSON.parse(paramsKey)
+
+    if (Object.values(requestParams).some((value) => value == null || value === '')) {
+      Promise.resolve().then(() => {
+        if (active) setState({ data: null, loading: false, error: null })
+      })
+
+      return () => {
+        active = false
+      }
+    }
 
     if (!loader) {
       Promise.resolve().then(() => {
@@ -30,7 +41,7 @@ export function useData(resource, params) {
       }
     }
 
-    loader(params)
+    loader(requestParams)
       .then((data) => {
         if (active) {
           setState({ data, loading: false, error: null })
@@ -45,7 +56,7 @@ export function useData(resource, params) {
     return () => {
       active = false
     }
-  }, [resource, paramsKey, params])
+  }, [resource, paramsKey])
 
   return {
     ...state,

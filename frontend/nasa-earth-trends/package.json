@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "maplibre-gl": "^5.15.0",
     "react-router-dom": "^7.9.5",
     "recharts": "^3.4.1"
   },
