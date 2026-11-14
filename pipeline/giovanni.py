@@ -74,7 +74,7 @@ def parse_giovanni_csv(text: str) -> pd.DataFrame:
         cells = _cells(line)
         if len(cells) <= value_column:
             continue
-        match = MONTH_RE.match(cells[date_column].replace(" ", ""))
+        match = MONTH_RE.match(cells[date_column])
         if not match:
             continue  # a unit row, a note, or a footer
         year, month = int(match.group(1)), int(match.group(2))
