@@ -8,7 +8,9 @@ Places come in contrasting pairs, so one variable can be seen trending in opposi
 
 TerraLens describes what the data shows over the period measured. It makes no forecasts and no claims about causes.
 
-> **Status:** under development during the hackathon (14–15 Nov 2026). The backend, API, fixtures and static export work against SAMPLE data. Real NASA series and results, and the web app, are still landing. The live URL will be added here once it exists.
+> **Status:** under development during the hackathon (14–15 Nov 2026). Real MERRA-2 air temperature for Ireland, Sahel and US Southwest is processed, tested and served as a static snapshot. The other four variables and the finished web pages are still landing, so every verdict is provisional.
+>
+> **Live (hosting preview):** https://terralens.kevin-henry-333.workers.dev
 
 ## What you can do with it
 
@@ -67,7 +69,7 @@ Everything the app shows is computed before deployment, so the judged site needs
 | `pipeline/` | Retrieval and regional aggregation |
 | `analysis/` | Statistics |
 | `backend/` | API and static export |
-| `frontend/` | Web app |
+| `frontend/nasa-earth-trends/` | Web app (Vite + React) |
 | `geo/regions/` | Place boxes (GeoJSON) |
 | `data/` | Processed series, results, SAMPLE fixtures (raw files are never committed) |
 | `docs/` | The AI-use log |
@@ -99,7 +101,7 @@ PYTHONPATH=backend uv run python -m app.export
 PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --allow-sample
 ```
 
-Frontend (once `frontend/` is scaffolded): `cd frontend && npm install && npm run dev` (Vite serves http://localhost:5173).
+Frontend: `cd frontend/nasa-earth-trends && npm install && npm run dev` (Vite serves http://localhost:5173). To develop against the SAMPLE data, write the snapshot where its `.env.example` expects it: `PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --out frontend/nasa-earth-trends/public/data/fixtures --allow-sample`.
 
 Copy `.env.example` to `.env` for local settings. Never commit credentials. NASA Earthdata credentials go in `~/.netrc` or environment variables. More detail is in [`backend/README.md`](backend/README.md) and [`data/README.md`](data/README.md).
 

@@ -42,6 +42,7 @@ CONTRACT_COLUMNS = [
     "valid_cell_count",
     "total_cell_count",
     "coverage_fraction",
+    "n_valid_days",
     "quality_summary",
     "source",
 ]
@@ -139,6 +140,7 @@ def contract_frame(
             "valid_cell_count": pd.array([pd.NA] * count, dtype="Int64"),
             "total_cell_count": pd.array([pd.NA] * count, dtype="Int64"),
             "coverage_fraction": pd.array([pd.NA] * count, dtype="Float64"),
+            "n_valid_days": pd.array([pd.NA] * count, dtype="Int64"),
             "quality_summary": [COVERAGE_NOTE] * count,
             "source": [source] * count,
         }

@@ -39,7 +39,7 @@ PYTHONPATH=backend uv run python -m app.export
 PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --allow-sample
 ```
 
-Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (default `frontend/public/data`), `--allow-sample`.
+Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (default `frontend/nasa-earth-trends/public/data`), `--allow-sample`.
 
 - Writes `health.json` (carries `data_version`), `catalogue.json`, `regions.json`, `metadata/`, `lineup/`, `series/`, `trend/`, `windows/`, `compare/`.
 - All files are checked first; if any ready dataset × region is missing or invalid it exits 1 and writes nothing.
@@ -49,7 +49,7 @@ Options: `--data-dir` (default `TERRALENS_DATA_DIR` or `./data`), `--out` (defau
 ## Checking a snapshot before it ships (NAS-37)
 
 ```bash
-PYTHONPATH=backend uv run python -m app.verify_snapshot            # frontend/public/data
+PYTHONPATH=backend uv run python -m app.verify_snapshot            # frontend/nasa-earth-trends/public/data
 PYTHONPATH=backend uv run python -m app.verify_snapshot some/dir --allow-sample
 ```
 
