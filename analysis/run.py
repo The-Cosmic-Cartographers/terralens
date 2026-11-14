@@ -36,6 +36,7 @@ import pandas as pd
 
 from analysis import stats as tl
 from analysis import windows as tw
+from pipeline.regions import APP_REGIONS
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = REPO_ROOT / "data" / "processed"
@@ -393,7 +394,8 @@ LABELS: dict[str, str] = {
 
 
 def regions_with_data() -> list[str]:
-    return sorted({path.stem for path in PROCESSED.glob("*/*.parquet")})
+    on_disk = {path.stem for path in PROCESSED.glob("*/*.parquet")}
+    return [region for region in APP_REGIONS if region in on_disk]
 
 
 def main(argv: Iterable[str] | None = None) -> int:
