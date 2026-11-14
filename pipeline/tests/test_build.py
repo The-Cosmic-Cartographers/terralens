@@ -216,8 +216,10 @@ def test_contract_frame_has_every_contract_column_in_order() -> None:
     assert list(frame.columns) == CONTRACT_COLUMNS
     assert frame["anomaly"].isna().all()
     assert frame["coverage_fraction"].isna().all()
+    assert frame["n_valid_days"].isna().all()
     assert frame["unit"].iloc[0] == "°C"
     assert str(frame["valid_cell_count"].dtype) == "Int64"
+    assert str(frame["n_valid_days"].dtype) == "Int64"
 
 
 def test_build_writes_parquet_and_merges_provenance(tmp_path: Path) -> None:

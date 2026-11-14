@@ -22,24 +22,32 @@ def test_a_month_is_the_mean_of_its_valid_days() -> None:
     out = daily_to_monthly(daily(rows))
 
     assert len(out) == 1
-    assert out.loc[0, "valid_days"] == 20
+    assert out.loc[0, "n_valid_days"] == 20
     assert out.loc[0, "value"] == pytest.approx(sum(10.0 + day for day in range(1, 21)) / 20)
     assert out.loc[0, "timestamp"] == pd.Timestamp("2020-01-01")
 
 
-def test_a_month_below_the_minimum_keeps_its_counts_and_loses_its_value() -> None:
+def test_the_count_goes_to_n_valid_days_and_never_to_coverage() -> None:
+    """Coverage below 0.5 means "missing month" downstream; a 10-day month is not missing."""
+    out = daily_to_monthly(daily(days_in(2020, 2, 12)))
+
+    assert "n_valid_days" in out.columns
+    assert "coverage_fraction" not in out.columns
+    assert out.loc[0, "n_valid_days"] == 12
+
+
+def test_a_month_below_the_minimum_keeps_its_count_and_loses_its_value() -> None:
     out = daily_to_monthly(daily(days_in(2020, 2, 9)))
 
-    assert out.loc[0, "valid_days"] == 9
+    assert out.loc[0, "n_valid_days"] == 9
     assert pd.isna(out.loc[0, "value"])
     assert "below the" in out.loc[0, "quality_summary"]
-    assert out.loc[0, "coverage_fraction"] == pytest.approx(9 / 29)
 
 
 def test_exactly_the_minimum_passes() -> None:
     out = daily_to_monthly(daily(days_in(2020, 3, MIN_VALID_DAYS, value=7.0)))
 
-    assert out.loc[0, "valid_days"] == MIN_VALID_DAYS
+    assert out.loc[0, "n_valid_days"] == MIN_VALID_DAYS
     assert out.loc[0, "value"] == pytest.approx(7.0)
     assert "below the" not in out.loc[0, "quality_summary"]
 
@@ -55,8 +63,7 @@ def test_a_month_with_no_retrieval_is_kept_as_a_null_row() -> None:
         pd.Timestamp("2020-03-01"),
     ]
     february = out.iloc[1]
-    assert february["valid_days"] == 0
-    assert february["coverage_fraction"] == 0.0
+    assert february["n_valid_days"] == 0
     assert pd.isna(february["value"])
     assert out.iloc[2]["value"] == pytest.approx(2.0)
 
@@ -66,15 +73,14 @@ def test_a_repeated_day_is_counted_once_and_the_last_value_wins() -> None:
 
     out = daily_to_monthly(daily(rows))
 
-    assert out.loc[0, "valid_days"] == 10
+    assert out.loc[0, "n_valid_days"] == 10
     assert out.loc[0, "value"] == pytest.approx((1.0 * 9 + 50.0) / 10)
 
 
-def test_leap_february_uses_29_days_in_the_denominator() -> None:
+def test_the_summary_reports_the_real_length_of_the_month() -> None:
     out = daily_to_monthly(daily(days_in(2020, 2, 12)))
 
-    assert out.loc[0, "days_in_month"] == 29
-    assert out.loc[0, "coverage_fraction"] == pytest.approx(12 / 29)
+    assert out.loc[0, "quality_summary"].startswith("12 of 29 days")
 
 
 def test_an_empty_frame_is_rejected() -> None:
