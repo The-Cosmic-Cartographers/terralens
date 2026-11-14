@@ -39,6 +39,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | Cloudflare Workers static-assets config for the frontend (NAS-22) | `frontend/nasa-earth-trends/wrangler.jsonc` |
 | 2026-11-14 | Kevin | Claude Code | First Cloudflare Workers deploy of the static app and the live URL in the README (NAS-22) | `README.md`, deployment (no files) |
 | 2026-11-14 | Kevin | Claude Code | Wording fixes to the Case Files (D25, overclaim, provisional note) and an unverified-claims banner on the 1.5 °C card | `docs/case-files.md`, `docs/baseline-and-thresholds.md` |
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-60: `pipeline.pull` — one command that plans per-variable routes, pulls Harmony subsets with resumable checkpoints and capped retries under a time budget, builds the processed series, and reports blocked rows instead of substituting data; tests for planning, resume, retry cap, deadline and CSV hand-off | `pipeline/pull.py`, `pipeline/tests/test_pull.py`, `pipeline/README.md`, `pyproject.toml` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 

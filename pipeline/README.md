@@ -7,3 +7,49 @@
 - Every series carries units, coverage and the product/version it came from. Convert units here (K to °C, kg m-2 s-1 to mm/day) and cut every series at 2025-12-31.
 - Giovanni snaps boxes to the grid and reports an "analyzable region": record it in `provenance.json`.
 - Tests go next to the code as `test_*.py`.
+
+## One command: `pipeline.pull` (NAS-60)
+
+```bash
+export EARTHDATA_TOKEN=...                      # never written to disk, logs or provenance
+uv run python -m pipeline.pull --all              # every series, then build
+uv run python -m pipeline.pull --variable-id t2m --region-id ireland
+uv run python -m pipeline.pull --all --dry-run    # print the plan, no token needed
+```
+
+It plans per variable, pulls what a route can serve, writes `data/raw/<variable>_<region>.csv`, then calls `pipeline.build` so `data/processed/` is ready without a second command.
+
+### Routes, and why they are not interchangeable
+
+| Variable | Route | Products |
+| -- | -- | -- |
+| T2M | Harmony | MERRA-2 `M2TMNXSLV` (`C1276812859-GES_DISC`), field `T2M` |
+| aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
+| soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
+| evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
+| precipitation | **Giovanni only** | Harmony registers no coverage for `GPM_3IMERGM`; export the CSV in ≤13-year windows |
+| NO₂ | **no verified route** | `OMNO2d` exists in CMR but no field name has been proven from this pipeline |
+
+A blocked series is reported by name and exit code, never filled with a substitute or a different
+product. `--dry-run` shows which is which before anything runs.
+
+### What makes it survive this network
+
+- **Keep-alive sessions per worker** (`--workers`, default 8). The host resets roughly one TLS handshake in three; reusing connections, not more retries, is what makes a run finish.
+- **Checkpoints** in `data/raw/.pull/<dataset>_<region>.json`, written after every chunk. A killed run resumes; `pull` never re-submits a chunk whose months are already stored.
+- **Capped retries**: `--attempts` per slice, then `--rounds` extra passes over the missing months only.
+- **Total budget**: `--time-limit` seconds (default 1800). On expiry the run stops at a chunk boundary and exits `3`; rerunning resumes.
+- **Exit codes**: `0` complete, `2` missing credentials/config, `3` time limit, `4` at least one series failed or is blocked.
+
+### When NASA's service is down
+
+Harmony jobs that end `failed`/`canceled` are retried in a later round; if the whole service is out,
+the run stops with the job status in the message and the checkpoint keeps every month already
+parsed. Rerun the same command later — nothing is re-downloaded. For IMERG, use the Giovanni
+windowed route (13 years per request) and drop the CSV in `data/raw/` as
+`precipitation_<region>.csv`; `pipeline.build` reads both routes identically.
+
+### Measured
+
+Filled in from the run recorded in the NAS-60 PR: wall-clock per series, the slowest step, and
+what a clean 27-series run actually costs on this machine.
