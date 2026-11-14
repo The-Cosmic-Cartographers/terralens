@@ -4,6 +4,12 @@ Three worked examples, each built from output that exists in `data/results/` tod
 number below is copied from the JSON named beside it; nothing is estimated, rounded up, or
 filled in from a paper.
 
+**Provisional.** The Lineup holds only air temperature, so each region's correction covers one
+test and the adjusted p-values below equal the raw ones. They will change when the other four
+variables join the correction. The three verdicts should hold (the p-values are far below
+0.05), but every number here must be re-read from the files on Sunday (D16) before it is used
+on the project page.
+
 **Wording sign-off: pending Nandini.** The copy is drafted to the rules in doc 12: no
 attribution, no causal language, no mention of expected directions, and no claim stronger
 than the verdict.
@@ -14,7 +20,7 @@ Substitutions and limits, stated up front:
   moisture or evapotranspiration. Those series do not exist yet, so all three cases use
   air temperature, the only variable with real output.
 - The Dublin–Delhi pollution pair needs OMI NO2, which has no data (NAS-27). That case is
-  replaced by the Sahel step change below.
+  replaced by the Sahel record-shape case below.
 - "No clear trend" is covered by Case 2, which uses the window output rather than a Lineup
   row, because all three Lineup rows are significant.
 
@@ -26,8 +32,8 @@ Substitutions and limits, stated up front:
 
 > All three places have warmed since 1981. They have not warmed at the same rate. The
 > south-western United States warmed about twice as fast as Ireland, and almost three times
-> as fast as the Sahel; its interval sits entirely above both, so that gap is not an accident
-> of noise. Ireland and the Sahel cannot be separated from each other — their intervals
+> as fast as the Sahel; its interval does not overlap either of theirs, so the difference
+> is large relative to the uncertainty. Ireland and the Sahel cannot be separated from each other — their intervals
 > overlap — so the product does not order those two.
 
 **Numbers**
@@ -84,13 +90,15 @@ and it teaches the reader how to read the verdicts instead of the slopes.
 
 ---
 
-## Case 3 — Did the Sahel step up in the 1990s?
+## Case 3 — Where does the Sahel record split?
 
 **Plain language**
 
-> The Sahel series is not a straight line. The most likely single turning point is 1995: the
-> average before it is about 27.4 °C and after it about 28.0 °C. That is a description of
-> this record, not a claim about what caused it, and not a prediction that it stays there.
+> The Sahel series is not a straight line. The single year that best splits the record is
+> 1995: the average before it is about 27.4 °C and after it about 28.0 °C. The overall trend is
+> already a significant warming, and a steady warming also splits a record in the middle, so we
+> do not call this a step change. It describes the shape of this record; it says nothing about
+> what caused it and does not predict that it continues.
 
 **Numbers**
 
@@ -100,7 +108,7 @@ and it teaches the reader how to read the verdicts instead of the slopes.
 | Mean before | 27.42 °C |
 | Mean after | 28.01 °C |
 | Difference | +0.59 °C |
-| p for the step | 0.0035 |
+| p for the split | 0.0035 |
 | Record | 1981-01 – 2025-12, 540 months |
 | Overall rate | +0.17 °C per decade (adjusted p 1.0 × 10⁻³) |
 
@@ -110,7 +118,8 @@ Source: `data/results/lineup/sahel.json` (`change_point`) and
 **Caveat**
 
 > The change point is descriptive: it is the year that best splits this record, chosen after
-> looking at the data. It is not a detected break with a physical cause attached.
+> looking at the data. Because the overall trend is significant, it is not presented as a step
+> change (D25), and it is not a detected break with a physical cause attached.
 
 **Why this case earns its place:** it shows the product distinguishing "the trend" from "the
 shape of the record" — and it keeps D25's rule that diagnostics are descriptive only.
@@ -120,6 +129,8 @@ shape of the record" — and it keeps D25's rule that diagnostics are descriptiv
 ## What each case must not say
 
 - No "because of", "driven by", "due to", "caused by" — nothing in this output supports a cause.
+- No "step change" or "jump" for a row whose verdict is "Significant trend" (D25): a steady
+  trend also peaks mid-record in the change-point test.
 - No "fastest-warming", "worst", "dangerous" — no ranking beyond the three boxes shown.
 - No mention of what doc 11 expected to find; the reader gets the result, not the hypothesis.
 - No decimal places beyond the ones above: the slope is meaningful to two, the p-value to two

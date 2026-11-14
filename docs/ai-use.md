@@ -38,6 +38,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | Wrote the first real static snapshot into the frontend's public folder and fixed the hygiene test's path (NAS-21, NAS-22) | `frontend/nasa-earth-trends/public/data/`, `backend/tests/test_repo_hygiene.py` |
 | 2026-11-14 | Kevin | Claude Code | Cloudflare Workers static-assets config for the frontend (NAS-22) | `frontend/nasa-earth-trends/wrangler.jsonc` |
 | 2026-11-14 | Kevin | Claude Code | First Cloudflare Workers deploy of the static app and the live URL in the README (NAS-22) | `README.md`, deployment (no files) |
+| 2026-11-14 | Kevin | Claude Code | Wording fixes to the Case Files (D25, overclaim, provisional note) and an unverified-claims banner on the 1.5 °C card | `docs/case-files.md`, `docs/baseline-and-thresholds.md` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 

@@ -1,5 +1,11 @@
 # What 1.5 °C means — static explainer card
 
+> **Unverified, not for public use yet.** The dated claims below (2024 and 2026 as years above
+> 1.5 °C, the C3S statement of 11 November 2026, the 0.88 °C baseline conversion) have not been
+> checked against their sources. Nandini checks each figure before the card appears anywhere
+> public. It is not part of the MVP and stays out of the product pages until the Lineup, detail
+> page and Time Machine work.
+
 **Status:** copy ready. It is static text: it computes nothing, calls no endpoint, and must
 never be attached to a region card. Frontend places it (About/help); Nandini owns the wording.
 
