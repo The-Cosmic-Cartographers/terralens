@@ -65,6 +65,10 @@ PRODUCT_TYPE: dict[str, str] = {
 # other row is a state, so the annual mean is the right aggregate.
 ANNUAL_AGG: dict[str, str] = {"precipitation": "sum"}
 
+# The Sen slope is fitted to the annual aggregate, so for a summed variable its
+# unit is the annual total, not the monthly value the series is stored in.
+SLOPE_BASE_UNIT: dict[str, str] = {"precipitation": "mm (annual total)"}
+
 BASELINE = (1991, 2020)
 MIN_WINDOW_YEARS = 10
 
@@ -128,7 +132,7 @@ def trend_payload(
         "series_used": "anomaly",
         "trend_direction": "withheld" if withheld else row["trend_direction"],
         "sen_slope_per_year": None if withheld else row["sen_slope_per_year"],
-        "unit_per_year": f"{unit}/yr",
+        "unit_per_year": f"{SLOPE_BASE_UNIT.get(meta['variable_id'], unit)}/yr",
         "confidence_interval_95": None if withheld else tuple(row["confidence_interval_95"]),
         "p_value": None if withheld else row["p_value"],
         "adjusted_p_value": None if withheld else row["adjusted_p_value"],

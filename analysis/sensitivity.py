@@ -53,7 +53,7 @@ UNIT_PER_DECADE = {
     "t2m": "°C/decade",
     "soil_moisture_0_10": "kg/m²/decade",
     "evapotranspiration": "mm/day/decade",
-    "precipitation": "mm/month/decade",
+    "precipitation": "mm (annual total)/decade",
     "aerosol": "AOT/decade",
     "no2": "molec/cm²/decade",
 }

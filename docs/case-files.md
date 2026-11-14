@@ -40,9 +40,9 @@ Substitutions and limits, stated up front:
 
 | Place | Rate | 95% interval | Adjusted p | Period | Verdict |
 |---|---|---|---|---|---|
-| US Southwest | +0.46 °C per decade | +0.33 to +0.59 | 1.1 × 10⁻¹¹ | 1981-01 – 2025-12 | significant |
-| Ireland | +0.21 °C per decade | +0.12 to +0.31 | 1.5 × 10⁻⁵ | 1981-01 – 2025-12 | significant |
-| Sahel | +0.17 °C per decade | +0.04 to +0.29 | 1.0 × 10⁻³ | 1981-01 – 2025-12 | significant |
+| US Southwest | +0.46 °C per decade | +0.33 to +0.59 | 5.4 × 10⁻¹¹ | 1981-01 – 2025-12 | significant |
+| Ireland | +0.21 °C per decade | +0.12 to +0.31 | 7.6 × 10⁻⁵ | 1981-01 – 2025-12 | significant |
+| Sahel | +0.17 °C per decade | +0.04 to +0.29 | 2.5 × 10⁻³ | 1981-01 – 2025-12 | significant |
 
 Ireland's interval (+0.12 to +0.31) and the Sahel's (+0.04 to +0.29) overlap, so the two are
 not ordered — and no formal between-region test is reported here, which is why the copy says
@@ -75,7 +75,7 @@ places — same variable, same window, same method, same correction family per r
 
 | Window | Rate | 95% interval | Adjusted p | Verdict |
 |---|---|---|---|---|
-| 1981 – 2025 | +0.21 °C per decade | +0.12 to +0.31 | 1.5 × 10⁻⁵ | significant |
+| 1981 – 2025 | +0.21 °C per decade | +0.12 to +0.31 | 7.6 × 10⁻⁵ | significant |
 | 1986 – 2015 | +0.14 °C per decade | −0.05 to +0.35 | 0.18 | no clear trend |
 
 Source: `data/results/windows/merra2_m2tmnxslv/ireland.json` (30-year windows) and
@@ -112,7 +112,7 @@ and it teaches the reader how to read the verdicts instead of the slopes.
 | Difference | +0.59 °C |
 | p for the split | 0.0035 |
 | Record | 1981-01 – 2025-12, 540 months |
-| Overall rate | +0.17 °C per decade (adjusted p 1.0 × 10⁻³) |
+| Overall rate | +0.17 °C per decade (adjusted p 2.5 × 10⁻³) |
 
 Source: `data/results/lineup/sahel.json` (`change_point`) and
 `data/results/windows/merra2_m2tmnxslv/sahel.json`.
