@@ -92,7 +92,6 @@ function ExplorePage() {
       <div className="kpi-row">
         <KpiTile label="In catalogue" value={catalogue ? items.length : '—'} note="Datasets listed" />
         <KpiTile label="Ready" value={catalogue ? ready : '—'} note="Results available" tone="blue" />
-        <KpiTile label="Coming soon" value={catalogue ? items.length - ready : '—'} note="Pull or analysis pending" />
         <KpiTile label="Window" value="1981–2025" note="Monthly series" />
       </div>
 
