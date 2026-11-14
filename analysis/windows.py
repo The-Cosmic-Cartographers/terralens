@@ -20,6 +20,17 @@ Consistency rules (must match `stats.analyze_series`)
   Hamed–Rao factor of the window's own residuals (D7)
 * slope and CI come from the **annual** aggregate, exactly like the headline
 * verdict labels come from the adjusted p of the window's lineup family (D23)
+* a window **never spans a year that was dropped for missing months** (NAS-59)
+
+Full-window coverage (NAS-59)
+-----------------------------
+An incomplete year cannot enter a window, exactly as it cannot enter the
+headline. That used to hide a second problem: with interior years dropped, a
+window 1981–2025 could be computed from 42 years and still be labelled as the
+whole span. The JSON contract has no field to flag that, so such windows are
+**not emitted**; the caller gets the count in `report` and the run log says how
+many were skipped. `require_full_coverage=False` restores the old behaviour for
+experiments and tests, never for shipped results.
 
 BH family: one family **per window**, across the five variables — not across
 windows. Correcting across 666 windows would make every result vanish.
@@ -62,11 +73,19 @@ def build_windows(
     min_window_years: int = 10,
     annual_agg: str = "mean",
     alpha_verdict: float = tl.ALPHA_SIGNIFICANT,
+    require_full_coverage: bool = True,
+    report: dict | None = None,
 ) -> list[dict]:
     """Every window of at least `min_window_years` complete years.
 
     `anomaly_matrix` must be (years, 12) anomalies with NaN for missing months;
-    incomplete years are dropped before windows are formed.
+    incomplete years are dropped before windows are formed, and any window that
+    would span one of those dropped years is skipped (NAS-59) unless
+    `require_full_coverage` is False.
+
+    When `report` is given it is filled with
+    `windows_skipped_for_missing_years` and `years_dropped_incomplete`, so the
+    shortfall is visible to the caller instead of silently shrinking the output.
     """
     matrix = np.asarray(anomaly_matrix, dtype=float)
     yrs = np.asarray(years, dtype=int)
@@ -76,8 +95,14 @@ def build_windows(
         raise ValueError("years must have one entry per matrix row")
 
     keep = _complete(matrix)
+    dropped_years = int((~keep).sum())
     matrix, yrs = matrix[keep], yrs[keep]
     n = matrix.shape[0]
+
+    skipped = 0
+    if report is not None:
+        report["years_dropped_incomplete"] = dropped_years
+        report["windows_skipped_for_missing_years"] = 0
     if n < min_window_years:
         return []
 
@@ -92,6 +117,10 @@ def build_windows(
 
             span_years = int(yrs[j] - yrs[i] + 1)
             if span_years < min_window_years:
+                continue
+            # a dropped interior year means this window is not the span it claims
+            if require_full_coverage and span_years != j - i + 1:
+                skipped += 1
                 continue
 
             window = matrix[i : j + 1]
@@ -126,6 +155,9 @@ def build_windows(
                     },
                 }
             )
+
+    if report is not None:
+        report["windows_skipped_for_missing_years"] = skipped
     return out
 
 
@@ -198,6 +230,8 @@ def windows_for_series(
     baseline: tuple[int, int] | None = (1991, 2020),
     annual_agg: str = "mean",
     min_window_years: int = 10,
+    require_full_coverage: bool = True,
+    report: dict | None = None,
 ) -> list[dict]:
     """Convenience wrapper: rows of {year, month, value, coverage} -> windows."""
     matrix, yrs, _ = tl._build_matrix(rows, window)  # same assembly as the headline
@@ -218,7 +252,12 @@ def windows_for_series(
     anomalies = matrix - climatology
 
     built = build_windows(
-        anomalies, yrs, min_window_years=min_window_years, annual_agg=annual_agg
+        anomalies,
+        yrs,
+        min_window_years=min_window_years,
+        annual_agg=annual_agg,
+        require_full_coverage=require_full_coverage,
+        report=report,
     )
     for row in built:
         row["variable_id"] = variable_id

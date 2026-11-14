@@ -47,7 +47,7 @@ One line each, shown beside the pill.
 >
 > Before any test runs, coverage rules decide whether a row can be tested at all: a month counts as missing when less than half its area is valid, and a row is withheld below ten complete years or above 20% missing months. A withheld row is shown with its reason and no statistics, because "not enough data" must never be displayed as "no trend".
 >
-> For every row we also precompute the same test across every start/end pair at least ten years apart, which is what the Time Machine slider reads. For rows that are not significant, we report how many years of record a trend of that size would need to be detected (Weatherhead et al., 1998). That is a statement about evidence, not a forecast.
+> For every row we also precompute the same test across every start/end pair at least ten years apart, which is what the Time Machine slider reads. A window that would span a year without all twelve months is not offered at all, rather than being computed from a discontinuous record. For rows that are not significant, we report how many years of record a trend of that size would need to be detected (Weatherhead et al., 1998). That is a statement about evidence, not a forecast.
 
 ## 5. Project page — "Uncertainty"
 

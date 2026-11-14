@@ -189,6 +189,7 @@ def analyse_region(region: str) -> tuple[list[dict[str, Any]], list[dict[str, An
         )
         trend_rows.append(payload)
 
+        window_report: dict[str, Any] = {}
         built = tw.windows_for_series(
             rows,
             variable_id=variable_id,
@@ -197,7 +198,15 @@ def analyse_region(region: str) -> tuple[list[dict[str, Any]], list[dict[str, An
             baseline=BASELINE,
             annual_agg=agg,
             min_window_years=MIN_WINDOW_YEARS,
+            report=window_report,
         )
+        skipped = window_report.get("windows_skipped_for_missing_years", 0)
+        if skipped or window_report.get("years_dropped_incomplete"):
+            print(
+                f"  {region}/{variable_id}: dropped "
+                f"{window_report.get('years_dropped_incomplete', 0)} incomplete year(s), "
+                f"skipped {skipped} windows that would span them"
+            )
         for item in built:
             item["dataset_id"] = meta["dataset_id"]
         window_rows.extend(built)

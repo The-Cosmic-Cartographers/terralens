@@ -147,3 +147,48 @@ def test_build_is_fast_enough_for_the_pipeline(built):
 def test_short_records_return_no_windows():
     anomalies, years = synthetic(8)
     assert tw.build_windows(anomalies, years, min_window_years=10) == []
+
+
+def test_window_never_spans_a_year_dropped_for_missing_months():
+    """NAS-59: a window must be the span it claims, not a subset of it."""
+    anomalies, years = synthetic(45)
+    gappy = anomalies.copy()
+    gappy[20, 3] = np.nan  # one month missing in 2001
+    gap = int(years[20])
+    report: dict = {}
+
+    rows = tw.build_windows(gappy, years, min_window_years=10, report=report)
+
+    assert not [r for r in rows if r["start"] <= gap <= r["end"]]
+    assert all(r["n_years"] == r["end"] - r["start"] + 1 for r in rows)
+    assert report["years_dropped_incomplete"] == 1
+    assert report["windows_skipped_for_missing_years"] > 0
+    # the record on either side of the gap is still usable
+    assert any(r["start"] < gap for r in rows)
+    assert any(r["start"] > gap for r in rows)
+
+
+def test_a_complete_record_reports_no_skips():
+    anomalies, years = synthetic(45)
+    report: dict = {}
+
+    rows = tw.build_windows(anomalies, years, min_window_years=10, report=report)
+
+    assert len(rows) == 666
+    assert report == {"years_dropped_incomplete": 0, "windows_skipped_for_missing_years": 0}
+
+
+def test_require_full_coverage_false_restores_the_old_behaviour():
+    """The escape hatch exists for experiments; shipped results never use it."""
+    anomalies, years = synthetic(45)
+    gappy = anomalies.copy()
+    gappy[20, 3] = np.nan
+    gap = int(years[20])
+
+    rows = tw.build_windows(
+        gappy, years, min_window_years=10, require_full_coverage=False
+    )
+
+    spanning = [r for r in rows if r["start"] <= gap <= r["end"]]
+    assert spanning
+    assert all(r["n_years"] == r["end"] - r["start"] for r in spanning)
