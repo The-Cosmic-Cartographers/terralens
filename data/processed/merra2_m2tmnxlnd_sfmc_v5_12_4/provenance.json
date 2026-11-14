@@ -1,0 +1,101 @@
+{
+  "dataset_id": "merra2_m2tmnxlnd_sfmc_v5_12_4",
+  "product": "MERRA-2 monthly volumetric soil moisture, 0-5 cm surface layer (M2TMNXLND SFMC)",
+  "version": "5.12.4",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/f4521af9-3320-4909-9c04-26b9ebc4a785",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "SFMC",
+  "scale_factor": 1.0,
+  "native_unit": "m3/m3",
+  "output_unit": "m3/m3",
+  "spatial_resolution": "0.5\u00b0 x 0.625\u00b0",
+  "period_start": "1980-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "area mean computed locally from the source field, monthly",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, applied to the locally averaged field (NASA Harmony (GES DISC subset))",
+  "transformations": [
+    "Giovanni comment/header block skipped",
+    "unit unchanged (m3/m3)",
+    "CSV declared unit 'm3/m3' matched the expected 'm3/m3'",
+    "clipped to the registered window 1980-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "-10.00,51.50,-6.25,55.00",
+      "period_start": "1980-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SFMC",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/a6d564d5-0150-4c7b-ad5f-cf1ac584dc4c",
+      "source_csv": "soil_moisture_0_5_ireland.csv",
+      "source_csv_sha256": "fdc7773d3915e681906f2611f0bf13ee055dc2c65609ebb005a4e420918d6dfd",
+      "observations": 552,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (m3/m3)",
+        "CSV declared unit 'm3/m3' matched the expected 'm3/m3'",
+        "clipped to the registered window 1980-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "0.62,12.00,20.00,18.00",
+      "period_start": "1980-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SFMC",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/d08b0343-1d3a-4600-90c9-c012c148c956",
+      "source_csv": "soil_moisture_0_5_sahel.csv",
+      "source_csv_sha256": "5a29e2711bdd600ab954820c9eb0e0231c858d4161eb835ec6cd9f9b65e5302d",
+      "observations": 552,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (m3/m3)",
+        "CSV declared unit 'm3/m3' matched the expected 'm3/m3'",
+        "clipped to the registered window 1980-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "-115.00,31.00,-105.00,38.00",
+      "period_start": "1980-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SFMC",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/f4521af9-3320-4909-9c04-26b9ebc4a785",
+      "source_csv": "soil_moisture_0_5_us_southwest.csv",
+      "source_csv_sha256": "3a0c17404ddb860e1da45d8eb993b754367d81b157137ec1e65f702fe7d9fa81",
+      "observations": 552,
+      "transformations": [
+        "Giovanni comment/header block skipped",
+        "unit unchanged (m3/m3)",
+        "CSV declared unit 'm3/m3' matched the expected 'm3/m3'",
+        "clipped to the registered window 1980-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

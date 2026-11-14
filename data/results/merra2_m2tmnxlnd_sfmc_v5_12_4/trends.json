@@ -1,0 +1,142 @@
+[
+  {
+    "dataset_id": "merra2_m2tmnxlnd_sfmc_v5_12_4",
+    "variable_id": "soil_moisture_0_5",
+    "region_id": "ireland",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 9.737499999999955e-05,
+    "unit_per_year": "m3/m3/yr",
+    "confidence_interval_95": [
+      -6.96805555555624e-05,
+      0.0003023511904761887
+    ],
+    "p_value": 0.4509394241673079,
+    "adjusted_p_value": 0.4509394241673079,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.80; Hamed\u2013Rao variance factor 8.90; raw seasonal MK p = 0.0245",
+    "caveats": [
+      "sensitive_to_serial_correlation"
+    ],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:soil_moisture_0_5",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.6368196316372966,
+    "detect_years": 112.35919764968966,
+    "change_point": {
+      "change_point_year": 2007,
+      "K": 156.0,
+      "p_value": 0.4606767905157622,
+      "mean_before": 0.35706923809523816,
+      "mean_after": 0.3611557916666667,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 0.00016553763440860266,
+      "MAM": 2.2499999999999463e-06,
+      "JJA": 6.361904761904648e-05,
+      "SON": 0.0001741851851851836
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_sfmc_v5_12_4",
+    "variable_id": "soil_moisture_0_5",
+    "region_id": "sahel",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.00021728065476190467,
+    "unit_per_year": "m3/m3/yr",
+    "confidence_interval_95": [
+      3.018541666666673e-05,
+      0.00041523849206349115
+    ],
+    "p_value": 0.2594656734076839,
+    "adjusted_p_value": 0.38919851011152584,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.80; Hamed\u2013Rao variance factor 9.22; raw seasonal MK p = 0.0006",
+    "caveats": [
+      "sensitive_to_serial_correlation",
+      "level_shift_detected"
+    ],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:soil_moisture_0_5",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 1.1057345595750079,
+    "detect_years": 75.39051931879926,
+    "change_point": {
+      "change_point_year": 2009,
+      "K": 304.0,
+      "p_value": 0.007579055925663245,
+      "mean_before": 0.06884103222222222,
+      "mean_after": 0.07863402968750001,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 0.00014638989898989893,
+      "MAM": -0.00010690940170940165,
+      "JJA": 0.00018752291666666664,
+      "SON": 0.0006576555555555553
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_sfmc_v5_12_4",
+    "variable_id": "soil_moisture_0_5",
+    "region_id": "us_southwest",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "decreasing",
+    "sen_slope_per_year": -0.0005718492063492062,
+    "unit_per_year": "m3/m3/yr",
+    "confidence_interval_95": [
+      -0.0008523326923076924,
+      -0.00024766785714285834
+    ],
+    "p_value": 0.012855933312061252,
+    "adjusted_p_value": 0.038567799936183755,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": true,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.79; Hamed\u2013Rao variance factor 8.32; raw seasonal MK p = 0.0000",
+    "caveats": [],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:soil_moisture_0_5",
+    "verdict": "significant",
+    "effect_size_swings": 1.8188808001323966,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 1998,
+      "K": 351.0,
+      "p_value": 0.0011830676411866744,
+      "mean_before": 0.16050598596491228,
+      "mean_after": 0.1433089191358025,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": -0.0006104333333333332,
+      "MAM": -0.0008129549549549549,
+      "JJA": -0.0003716944444444445,
+      "SON": -0.0005219000000000002
+    }
+  }
+]

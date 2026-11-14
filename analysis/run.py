@@ -46,7 +46,7 @@ RESULTS = REPO_ROOT / "data" / "results"
 # catalogue does not carry it yet).
 DEFINITIONS: dict[str, str] = {
     "t2m": "How warm the air is at about head height",
-    "soil_moisture_0_10": "How much water is held in the top layer of soil",
+    "soil_moisture_0_5": "How much water is held in the top layer of soil",
     "evapotranspiration": "Water leaving the land through plants and evaporation",
     "precipitation": "How much rain and snow falls",
     "aerosol": "How much dust and smoke is in the air",
@@ -56,9 +56,9 @@ DEFINITIONS: dict[str, str] = {
 PRODUCT_TYPE: dict[str, str] = {
     "t2m": "reanalysis",
     "aerosol": "reanalysis",
-    "soil_moisture_0_10": "land_model",
-    "evapotranspiration": "land_model",
-    "precipitation": "satellite",
+    "soil_moisture_0_5": "reanalysis",
+    "evapotranspiration": "reanalysis",
+    "precipitation": "reanalysis",
     "no2": "satellite",
 }
 
@@ -385,7 +385,7 @@ def _rank_key(row: dict[str, Any]):
 
 LABELS: dict[str, str] = {
     "t2m": "Air temperature (2 m)",
-    "soil_moisture_0_10": "Soil moisture (0-10 cm)",
+    "soil_moisture_0_5": "Soil moisture (0-5 cm)",
     "evapotranspiration": "Evapotranspiration",
     "precipitation": "Precipitation",
     "aerosol": "Aerosol optical depth",

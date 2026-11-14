@@ -31,9 +31,9 @@ Each region is scanned for these variables, all through NASA Giovanni:
 | Variable | Product | Type |
 | -- | -- | -- |
 | Air temperature (2 m) | MERRA-2 M2TMNXSLV v5.12.4 | Model reanalysis |
-| Soil moisture (0–10 cm) | GLDAS-2.1 GLDAS_NOAH025_M | Land model |
-| Evapotranspiration | GLDAS-2.1 GLDAS_NOAH025_M | Land model |
-| Precipitation | GPM IMERG Final monthly v07 | Satellite estimate |
+| Soil moisture (0–5 cm) | MERRA-2 M2TMNXLND SFMC v5.12.4 | Model reanalysis |
+| Evapotranspiration (land) | MERRA-2 M2TMNXLND EVLAND v5.12.4 | Model reanalysis |
+| Precipitation (bias-corrected) | MERRA-2 M2TMNXFLX PRECTOTCORR v5.12.4 | Model reanalysis |
 | Aerosol optical depth | MERRA-2 M2TMNXAER v5.12.4 | Model reanalysis |
 | NO₂ column (Dublin, Delhi only) | OMI OMNO2d v004, 30% cloud screened | Satellite |
 
@@ -110,8 +110,6 @@ Copy `.env.example` to `.env` for local settings. Never commit credentials. NASA
 All data comes from NASA through [Giovanni](https://giovanni.gsfc.nasa.gov/), part of the NASA GES DISC archive:
 
 - MERRA-2 monthly reanalysis, v5.12.4 (NASA Global Modeling and Assimilation Office)
-- GLDAS-2.1 Noah land surface model, 0.25° monthly (NASA GSFC)
-- GPM IMERG Final Run monthly, v07 (NASA)
 - OMI OMNO2d NO₂ tropospheric column, v004 (NASA, Aura OMI)
 
 Each processed series has a `provenance.json` recording the product, version, region box, Giovanni's analysed region, access date and every transformation. The full reference list, with citations and access dates, is completed from those files before submission.
