@@ -1,8 +1,9 @@
 """Per-variable defaults for the Lineup, from Linear docs 11 and 10.
 
-These are the five rows Kevin verified in Giovanni on 14 Nov plus the OMI NO2
-field name that the verification corrected. They are defaults for the CLI only;
-every value can be overridden, and provenance records what was actually used.
+These are the row defaults for the Lineup: the five rows Kevin verified in Giovanni
+on 14 Nov plus the OMI NO2 field name that the verification corrected. They are
+defaults for the CLI only; every value can be overridden, and provenance records
+what was actually used.
 
 The window fields are D21 (doc 10): whole calendar years, fixed per variable so
 two regions of the same row can never be compared over different periods. T2M

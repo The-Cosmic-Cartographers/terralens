@@ -82,7 +82,9 @@ def test_window_drops_rows_before_its_start_year(tmp_path: Path) -> None:
     rows += [(1981, month, 281.0 + month) for month in range(1, 13)]
     csv_path = _write_export(tmp_path, rows)
 
-    parquet, _ = build(csv_path, region_id="ireland", **_kwargs(tmp_path))
+    parquet, _ = build(
+        csv_path, region_id="ireland", **_kwargs(tmp_path, start_year=1981, end_year=1981)
+    )
     frame = pd.read_parquet(parquet)
 
     assert len(frame) == 12
@@ -95,7 +97,9 @@ def test_missing_months_stay_as_null_rows(tmp_path: Path) -> None:
     rows += [(1982, month, 282.0 + month) for month in range(1, 13) if month != 3]
     csv_path = _write_export(tmp_path, rows)
 
-    parquet, provenance = build(csv_path, region_id="ireland", **_kwargs(tmp_path))
+    parquet, provenance = build(
+        csv_path, region_id="ireland", **_kwargs(tmp_path, start_year=1981, end_year=1982)
+    )
     frame = pd.read_parquet(parquet)
 
     assert len(frame) == 24, "the year with a gap must not be dropped"
@@ -156,7 +160,9 @@ def test_unit_row_match_is_accepted(tmp_path: Path) -> None:
     rows = [(1981, month, 280.0 + month) for month in range(1, 13)]
     csv_path = _write_export(tmp_path, rows, unit="kelvin")
 
-    parquet, provenance = build(csv_path, region_id="ireland", **_kwargs(tmp_path))
+    parquet, provenance = build(
+        csv_path, region_id="ireland", **_kwargs(tmp_path, start_year=1981, end_year=1981)
+    )
     assert pd.read_parquet(parquet)["value"].iloc[0] == pytest.approx(7.85)
     transformations = json.loads(provenance.read_text())["transformations"]
     assert any("'kelvin'" in line and "matched" in line for line in transformations)
@@ -166,9 +172,36 @@ def test_a_missing_unit_row_is_tolerated(tmp_path: Path) -> None:
     rows = [(1981, month, 280.0 + month) for month in range(1, 13)]
     csv_path = _write_export(tmp_path, rows, unit=None)
 
-    _, provenance = build(csv_path, region_id="ireland", **_kwargs(tmp_path))
+    _, provenance = build(
+        csv_path, region_id="ireland", **_kwargs(tmp_path, start_year=1981, end_year=1981)
+    )
     transformations = json.loads(provenance.read_text())["transformations"]
     assert any("declared no unit" in line for line in transformations)
+
+
+def test_a_series_that_stops_early_is_rejected(tmp_path: Path) -> None:
+    rows = [(1981, month, 280.0 + month) for month in range(1, 7)]
+    csv_path = _write_export(tmp_path, rows)
+
+    with pytest.raises(ValueError, match="allow-short"):
+        build(csv_path, region_id="ireland", **_kwargs(tmp_path, start_year=1981, end_year=1981))
+
+
+def test_allow_short_pads_the_window_and_records_it(tmp_path: Path) -> None:
+    rows = [(1981, month, 280.0 + month) for month in range(1, 7)]
+    csv_path = _write_export(tmp_path, rows)
+
+    parquet, provenance = build(
+        csv_path,
+        region_id="ireland",
+        **_kwargs(tmp_path, start_year=1981, end_year=1981, allow_short=True),
+    )
+    frame = pd.read_parquet(parquet)
+
+    assert len(frame) == 12, "the window is still the shape of the series"
+    assert frame["value"].isna().sum() == 6, "the six absent months are null rows"
+    transformations = json.loads(provenance.read_text())["transformations"]
+    assert any("short series allowed" in line for line in transformations)
 
 
 def test_contract_frame_has_every_contract_column_in_order() -> None:
@@ -188,7 +221,7 @@ def test_contract_frame_has_every_contract_column_in_order() -> None:
 
 
 def test_build_writes_parquet_and_merges_provenance(tmp_path: Path) -> None:
-    kwargs = _kwargs(tmp_path)
+    kwargs = _kwargs(tmp_path, start_year=1981, end_year=1982)
 
     parquet, provenance = build(SAMPLE, region_id="ireland", **kwargs)
     assert parquet.exists()

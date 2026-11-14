@@ -198,6 +198,7 @@ def build(
     end_year: int | None,
     out_root: Path,
     access_route: str = "NASA GES DISC / Giovanni",
+    allow_short: bool = False,
 ) -> tuple[Path, Path]:
     """Run the whole conversion for one CSV and return (parquet, provenance) paths."""
     spec_start, spec_end = window_for(variable_id)
@@ -216,6 +217,32 @@ def build(
         value=convert(values, native_unit, output_unit, index=values.index).to_numpy()
     )
     trimmed = trim_to_window(converted, start_year=start, end_year=end)
+
+    # A file that stops before the window ends would otherwise produce a short
+    # series that looks perfectly fine downstream. The window is the promise; a
+    # series that cannot keep it has to be an explicit decision.
+    window_first = pd.Timestamp(year=start, month=1, day=1)
+    window_last = pd.Timestamp(year=end, month=12, day=1)
+    covered_first = trimmed["timestamp"].iloc[0]
+    covered_last = trimmed["timestamp"].iloc[-1]
+    shortfall = []
+    if covered_first > window_first:
+        shortfall.append(f"starts {covered_first:%Y-%m} not {start}-01")
+    if covered_last < window_last:
+        shortfall.append(f"ends {covered_last:%Y-%m} not {end}-12")
+    if shortfall and not allow_short:
+        raise ValueError(
+            f"series does not cover the registered window {start}-01..{end}-12 "
+            f"({'; '.join(shortfall)}); pass --allow-short to accept a short series"
+        )
+    if shortfall:
+        full_index = pd.date_range(window_first, window_last, freq="MS")
+        trimmed = (
+            trimmed.set_index("timestamp")["value"]
+            .reindex(full_index)
+            .rename_axis("timestamp")
+            .reset_index()
+        )
 
     null_months = int(trimmed["value"].isna().sum())
     observed = int(len(trimmed) - null_months)
@@ -240,6 +267,9 @@ def build(
         else f"CSV declared no unit; expected {native_unit!r} assumed",
         f"clipped to the registered window {start}-01 to {end}-12",
         f"missing months kept as null rows ({null_months} in this series)",
+        f"short series allowed: {'; '.join(shortfall)}"
+        if shortfall
+        else "series covers the full registered window",
         "mapped to the doc 04 processed-series columns",
         "anomaly left null: climatology and anomalies belong to analysis/",
     ]
@@ -325,6 +355,11 @@ def _parser() -> argparse.ArgumentParser:
         default=None,
         help="override the registered window end (default: per variable, D21)",
     )
+    parser.add_argument(
+        "--allow-short",
+        action="store_true",
+        help="accept a series that does not reach both ends of the window (padded with nulls)",
+    )
     parser.add_argument("--out", type=Path, default=Path("data/processed"))
     return parser
 
@@ -364,6 +399,7 @@ def main(argv: list[str] | None = None) -> int:
             end_year=args.end_year,
             out_root=args.out,
             access_route=args.access_route or "NASA GES DISC / Giovanni",
+            allow_short=args.allow_short,
         )
     except (UnitMismatchError, ValueError) as error:
         parser.error(str(error))
