@@ -65,6 +65,16 @@ VARIABLES: dict[str, Variable] = {
         spatial_resolution="0.1°",
         giovanni_variable_id="precipitation",
     ),
+    "aerosol": Variable(
+        variable_id="aerosol",
+        dataset_id="merra2_m2tmnxaer_v5_12_4",
+        product="MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER)",
+        version="5.12.4",
+        native_unit="1",
+        output_unit="1",
+        spatial_resolution="0.5° x 0.625°",
+        giovanni_variable_id="TOTEXTTAU",
+    ),
     "no2": Variable(
         variable_id="no2",
         dataset_id="omi_omno2d_v004",

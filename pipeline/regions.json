@@ -1,6 +1,6 @@
 {
   "source": "Linear doc 11 §3 (demo regions) and §3a (NO2 city sub-boxes); boxes are W,S,E,N in degrees",
-  "open_decision": "D19 is still open. These coordinates are transcribed verbatim from doc 11: the Iberia box ends at 0°E and misses the east coast, and the 'NW India' box (68-78°E) includes much of Pakistan. Fix the boxes or the labels in D19 before real pulls rely on them.",
+  "open_decision": "D19 resolved 14 Nov (Parth): the Iberia box now reaches 3.5°E so the peninsular east coast (Barcelona, the Ebro delta) is inside it, and the 68-78°E box is relabelled NW South Asia because it spans the Indus plain of Pakistan as well as NW India. These are box averages, not polygons: they take in ocean and neighbouring land by construction, and the land mask decides which cells count.",
   "regions": [
     {
       "region_id": "ireland",
@@ -16,7 +16,7 @@
       "name": "Iberia",
       "west": -10.0,
       "south": 36.0,
-      "east": 0.0,
+      "east": 3.5,
       "north": 44.0,
       "scope": "all"
     },
@@ -31,7 +31,7 @@
     },
     {
       "region_id": "nw_south_asia",
-      "name": "NW India (Rajasthan-Punjab)",
+      "name": "NW South Asia (NW India and the Indus plain of Pakistan)",
       "west": 68.0,
       "south": 22.0,
       "east": 78.0,
