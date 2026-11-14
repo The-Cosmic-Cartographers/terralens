@@ -6,31 +6,39 @@
 */
 :root {
   /* Colour: structure */
-  --navy-900: #04122e;
-  --navy-800: #071d45;
-  --navy-700: #0b2a63;
-  --blue-600: #0b3d91;
-  --blue-500: #1b57b8;
-  --blue-100: #e3ecf9;
-  --blue-50: #f1f5fb;
+  --navy-900: #071426;
+  --navy-800: #0b2038;
+  --navy-700: #12395a;
+  --blue-600: #1467a8;
+  --blue-500: #2c8cc9;
+  --blue-100: #163d5b;
+  --blue-50: #102b42;
 
   /* Colour: neutrals */
-  --ink: #14181f;
-  --ink-2: #3a424e;
-  --muted: #5b6573;
-  --line: #d3d8df;
-  --line-strong: #aab2bd;
-  --surface: #ffffff;
-  --surface-alt: #f4f6f9;
-  --canvas: #eceff3;
+  --ink: #e4eff2;
+  --ink-2: #b2c5cc;
+  --muted: #7f9ba5;
+  --line: #244450;
+  --line-strong: #315966;
+  --surface: #0d242c;
+  --surface-alt: #112f38;
+  --canvas: #07181f;
+  --surface-strong: #12333d;
+  --text: var(--ink);
+  --border: var(--line);
+  --chart-grid: #315966;
+  --chart-axis: #a8c2c9;
+  --chart-line: #72d4c0;
+  --chart-trend: #f0d38a;
+  --chart-band: #4f9eb0;
 
   /* Colour: status (never the only signal; always paired with text) */
-  --red-500: #fc3d21;
-  --red-700: #b3200a;
-  --amber-100: #fff3cf;
-  --amber-700: #7a5600;
-  --green-700: #1d6b3a;
-  --green-100: #e3f3e8;
+  --red-500: #e45b52;
+  --red-700: #a93635;
+  --amber-100: #3c351f;
+  --amber-700: #f0d38a;
+  --green-700: #75d0b8;
+  --green-100: #123c39;
 
   /* Type */
   --font-sans: 'Public Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
@@ -39,7 +47,7 @@
   --mono: var(--font-mono);
 
   /* Space and shape */
-  --radius: 3px;
+  --radius: 9px;
   --gutter: clamp(16px, 4vw, 40px);
   --page-width: 1200px;
 

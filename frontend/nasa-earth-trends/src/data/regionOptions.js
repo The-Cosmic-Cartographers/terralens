@@ -12,7 +12,7 @@ export const regions = [
   {
     id: 'iberia',
     name: 'Iberia',
-    shortLocation: 'Southwestern Europe Â· 36â€“44Â°N, 10â€“2Â°W',
+    shortLocation: 'Southwestern Europe · 36–44°N, 10–2°W',
     signal: 'A strong contrast of dry interiors and Atlantic edges.',
     center: [-4, 40],
     zoom: 4.8,
@@ -28,7 +28,7 @@ export const regions = [
   {
     id: 'nw_south_asia',
     name: 'Northwest India',
-    shortLocation: 'Indus plain and northwest India Â· 22â€“32Â°N, 68â€“80Â°E',
+    shortLocation: 'Indus plain and northwest India · 22–32°N, 68–80°E',
     signal: 'Monsoon, irrigation, dust, and urban pressure meet here.',
     center: [75, 28],
     zoom: 4.6,

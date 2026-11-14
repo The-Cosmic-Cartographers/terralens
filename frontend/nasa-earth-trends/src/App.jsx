@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-
+import earthIcon from './assets/earthicon.png';
 import { useData } from './hooks/useData.js'
 
 import './App.css'
@@ -46,16 +47,25 @@ function currentTitle(pathname) {
 
 function App() {
   const location = useLocation()
+  const [theme, setTheme] = useState(() => (
+    window.localStorage.getItem('terralens-theme') || 'dark'
+  ))
   const { data: health, error, mode } = useData('health')
   const online = Boolean(health) && !error
 
+  useEffect(() => {
+    window.localStorage.setItem('terralens-theme', theme)
+  }, [theme])
+
   return (
-    <div className="dash">
+    <div className={`dash theme-${theme}`}>
       <aside className="sidebar">
         <NavLink className="brand" to="/" aria-label="TerraLens overview">
-          <span className="brand-mark" aria-hidden="true">
-            TL
-          </span>
+        <img
+          src={earthIcon}
+          alt="TerraLens"
+          className="brand-mark"
+        />
           <span>
             <strong>TerraLens</strong>
             <small>Earth system trend detective</small>
@@ -109,6 +119,20 @@ function App() {
             <strong>{currentTitle(location.pathname)}</strong>
           </div>
           <div className="topbar-chips">
+            <button
+              className="theme-toggle"
+              type="button"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-pressed={theme === 'light'}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              <span className="theme-toggle-track" aria-hidden="true">
+                <span className="theme-toggle-thumb" />
+              </span>
+              <span className="theme-toggle-label">
+                {theme === 'dark' ? 'Dark mode' : 'Light mode'}
+              </span>
+            </button>
             <span className="chip">Window 1981–2025</span>
             <span className="chip">Precomputed results</span>
           </div>

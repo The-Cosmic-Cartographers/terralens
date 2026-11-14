@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 
 import DatasetTable from '../components/DatasetTable.jsx'
+import GlossaryPanel from '../components/GlossaryPanel.jsx'
+import InvestigationStart from '../components/InvestigationStart.jsx'
 import KpiTile from '../components/KpiTile.jsx'
 import Panel from '../components/Panel.jsx'
 import RegionExplorer from '../components/RegionExplorer.jsx'
@@ -33,6 +35,8 @@ function HomePage() {
 
       <SampleDataWarning />
 
+      <InvestigationStart />
+
       <div className="kpi-row">
         <KpiTile
           label="Datasets ready"
@@ -43,7 +47,7 @@ function HomePage() {
         <KpiTile
           label="Study regions"
           value={regions ? regions.length : '—'}
-          note="Ireland, Sahel, US Southwest"
+          note="Ireland, Sahel, US Southwest, Iberia, Northwest India"
         />
         <KpiTile
           label="Analysis window"
@@ -92,6 +96,10 @@ function HomePage() {
               Open Opposite Trends
             </Link>
           </Panel>
+        </div>
+
+        <div className="span-12">
+          <GlossaryPanel />
         </div>
       </div>
     </div>

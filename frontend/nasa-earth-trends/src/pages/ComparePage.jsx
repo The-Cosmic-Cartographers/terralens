@@ -1,61 +1,129 @@
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
 
 import EmptyState from '../components/EmptyState.jsx'
+import ErrorState from '../components/ErrorState.jsx'
+import LoadingState from '../components/LoadingState.jsx'
 import Panel from '../components/Panel.jsx'
 import ProductBadge from '../components/ProductBadge.jsx'
 import SampleDataWarning from '../components/SampleDataWarning.jsx'
+import VerdictBadge from '../components/VerdictBadge.jsx'
+import { regions } from '../data/regionOptions.js'
+import { useData } from '../hooks/useData.js'
+
+const pairs = [
+  ['ireland', 'iberia'],
+  ['sahel', 'iberia'],
+  ['us_southwest', 'ireland'],
+  ['dublin_no2', 'delhi_no2'],
+]
+
+const labels = {
+  dublin_no2: 'Dublin',
+  delhi_no2: 'Delhi',
+}
+
+function regionName(regionId) {
+  return labels[regionId] || regions.find((region) => region.id === regionId)?.name || regionId
+}
+
+function directionSymbol(direction) {
+  if (direction === 'increasing') return '↑'
+  if (direction === 'decreasing') return '↓'
+  return '→'
+}
+
+function slopePerDecade(value) {
+  return value == null ? '—' : (Number(value) * 10).toFixed(2)
+}
+
+function CompareCard({ result }) {
+  return (
+    <article className="compare-result-card">
+      <div className="compare-result-heading">
+        <div>
+          <span className="section-index">{result.region_id}</span>
+          <h3>{regionName(result.region_id)}</h3>
+        </div>
+        <span className="compare-direction" aria-label={result.trend_direction || 'direction not supplied'}>
+          {directionSymbol(result.trend_direction)}
+        </span>
+      </div>
+      <VerdictBadge verdict={result.verdict} />
+      <dl className="kv">
+        <div><dt>Rate</dt><dd>{slopePerDecade(result.sen_slope_per_year)} {result.unit_per_year?.replace('/yr', '/decade') || 'per decade'}</dd></div>
+        <div><dt>95% interval</dt><dd>{result.confidence_interval_95?.map((value) => Number(value).toFixed(2)).join(' to ') || '—'}</dd></div>
+        <div><dt>Adjusted p</dt><dd>{result.adjusted_p_value ?? '—'}</dd></div>
+        <div><dt>Period</dt><dd>{result.period_start} – {result.period_end}</dd></div>
+      </dl>
+      <ProductBadge type={result.product_type} />
+    </article>
+  )
+}
 
 function ComparePage() {
+  const [datasetId, setDatasetId] = useState('merra2_m2tmnxslv')
+  const [pairIndex, setPairIndex] = useState(2)
+  const { data: catalogue, loading: catalogueLoading } = useData('catalogue')
+  const { data, loading, error } = useData('compare', { datasetId })
+  const [leftId, rightId] = pairs[pairIndex]
+  const selectedResults = useMemo(() => {
+    const results = data?.results || []
+    return [leftId, rightId].map((id) => results.find((result) => result.region_id === id)).filter(Boolean)
+  }, [data, leftId, rightId])
+  const selectedDataset = catalogue?.find((item) => item.dataset_id === datasetId)
+
   return (
     <div className="page">
       <div className="page-title">
         <div>
           <h1>Opposite Trends</h1>
-          <p>One variable. Two places. A more useful question.</p>
+          <p>One variable. Two places. The same evidence frame.</p>
         </div>
-        <ProductBadge type="satellite" />
+        <ProductBadge type={selectedDataset?.product_type || 'reanalysis'} />
       </div>
 
       <SampleDataWarning />
 
-      <div className="kpi-row">
-        <div className="kpi">
-          <span className="kpi-label">Variable</span>
-          <strong className="kpi-text">Nitrogen dioxide (NO₂)</strong>
-        </div>
-        <div className="kpi">
-          <span className="kpi-label">Place A</span>
-          <strong className="kpi-text">Delhi</strong>
-        </div>
-        <div className="kpi">
-          <span className="kpi-label">Place B</span>
-          <strong className="kpi-text">Dublin</strong>
-        </div>
-        <div className="kpi">
-          <span className="kpi-label">Window</span>
-          <strong className="kpi-text">1981–2025</strong>
-        </div>
-      </div>
-
       <div className="grid">
-        <Panel className="span-8" title="Comparison result">
-          <EmptyState
-            title="Comparison result not connected yet"
-            message="The backend model defines CompareResult, but its route and NO₂ result data are not available yet. The comparison frame is ready for the supplied analysis output."
-            action={
-              <Link className="button button-secondary" to="/explore">
-                Review the Lineup
-              </Link>
-            }
-          />
+        <Panel className="span-12" title="Choose the comparison">
+          <div className="compare-controls">
+            <label>
+              <span>Variable / dataset</span>
+              <select value={datasetId} onChange={(event) => setDatasetId(event.target.value)} disabled={catalogueLoading}>
+                {(catalogue || [{ dataset_id: 'merra2_m2tmnxslv', label: 'Air temperature (2 m)' }]).map((item) => (
+                  <option value={item.dataset_id} key={item.dataset_id}>{item.label || item.dataset_id}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Paired regions</span>
+              <select value={pairIndex} onChange={(event) => setPairIndex(Number(event.target.value))}>
+                {pairs.map(([first, second], index) => (
+                  <option value={index} key={`${first}-${second}`}>{regionName(first)} ↔ {regionName(second)}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {data?.period_note && <p className="period-note">{data.period_note}</p>}
         </Panel>
-        <Panel className="span-4" title="Why this comparison?">
-          <p>
-            Nitrogen dioxide is an atmospheric pollutant measured by satellite
-            instruments. Comparing two regions can reveal different observed
-            patterns, but the result cannot by itself explain why those
-            patterns occurred.
-          </p>
+
+        <Panel className="span-12" title={`${regionName(leftId)} ↔ ${regionName(rightId)}`} flush>
+          {loading && <LoadingState label="Loading comparison results" />}
+          {error && <ErrorState message={error.message} />}
+          {!loading && !error && selectedResults.length === 2 ? (
+            <div className="compare-results">
+              {selectedResults.map((result) => <CompareCard key={result.region_id} result={result} />)}
+            </div>
+          ) : (!loading && !error && (
+            <EmptyState
+              title="This pairing has no supplied result yet"
+              message="The compare frame is ready, but this variable and pair must be supplied by the analysis export before it can be shown."
+            />
+          ))}
+        </Panel>
+
+        <Panel className="span-12" title="How to read the arrows">
+          <p>The arrow is the direction supplied by analysis for each place. It is not a causal explanation, and a difference between places is not itself a claim about why either record changed.</p>
         </Panel>
       </div>
     </div>

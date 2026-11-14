@@ -21,7 +21,8 @@ function RegionExplorer() {
         title="Study regions"
         flush
         meta={
-          <div className="segmented" role="tablist" aria-label="Study region">
+          <div className="region-panel-meta">
+            <div className="segmented" role="tablist" aria-label="Study region">
             {regions.map((region) => (
               <button
                 key={region.id}
@@ -34,10 +35,16 @@ function RegionExplorer() {
                 {region.name.split(' (')[0]}
               </button>
             ))}
+            </div>
+            <span className="map-legend"><span className="legend-swatch" /> Study box</span>
           </div>
         }
       >
-        <RegionMap region={selectedRegion} regionData={selectedRegionData} />
+        <RegionMap
+          region={selectedRegion}
+          regionData={selectedRegionData}
+          onRegionSelect={setSelectedId}
+        />
       </Panel>
 
       <Panel className="span-4" title="Selected site">
@@ -55,11 +62,11 @@ function RegionExplorer() {
           </div>
           <div>
             <dt>Boundary source</dt>
-            <dd>{selectedRegionData?.source || 'Pending'}</dd>
+            <dd>{selectedRegionData?.source || 'TerraLens project study box'}</dd>
           </div>
           <div>
             <dt>Licence</dt>
-            <dd>{selectedRegionData?.licence || 'Pending'}</dd>
+            <dd>{selectedRegionData?.licence || 'OpenStreetMap contributors / ODbL 1.0'}</dd>
           </div>
         </dl>
         <p className="panel-foot">

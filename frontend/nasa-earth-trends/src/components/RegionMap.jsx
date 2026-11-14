@@ -1,37 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 
+import { regions } from '../data/regionOptions.js'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 const FALLBACK_CENTER = [20, 25]
 
-function RegionMap({ region, regionData }) {
+function RegionMap({ region, regionData, onRegionSelect }) {
   const mapContainer = useRef(null)
   const map = useRef(null)
-  const [localGeometry, setLocalGeometry] = useState(null)
+  const [localFeatures, setLocalFeatures] = useState([])
 
   useEffect(() => {
-    if (regionData?.geometry) {
-      return undefined
-    }
-
     const controller = new AbortController()
 
-    fetch(`/data/regions/${region.id}.geojson`, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((feature) => setLocalGeometry({
-        regionId: region.id,
-        geometry: feature?.geometry || null,
-      }))
-      .catch(() => setLocalGeometry({ regionId: region.id, geometry: null }))
+    Promise.all(regions.map((item) => (
+      fetch(`/data/regions/${item.id}.geojson`, { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : null))
+        .catch(() => null)
+    )))
+      .then((features) => setLocalFeatures(features.filter(Boolean)))
+      .catch(() => setLocalFeatures([]))
 
     return () => controller.abort()
-  }, [region.id, regionData])
+  }, [])
 
   useEffect(() => {
-    if (!mapContainer.current || map.current) {
-      return undefined
-    }
+    if (!mapContainer.current || map.current) return undefined
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
@@ -40,7 +35,6 @@ function RegionMap({ region, regionData }) {
       zoom: region.zoom || 2.2,
       attributionControl: true,
     })
-
     map.current.addControl(new maplibregl.NavigationControl(), 'top-right')
 
     return () => {
@@ -50,64 +44,91 @@ function RegionMap({ region, regionData }) {
   }, [region.center, region.zoom])
 
   useEffect(() => {
-    if (!map.current) {
-      return
-    }
+    if (!map.current) return undefined
 
+    const sourceId = 'study-regions'
+    const fillLayerId = 'study-regions-fill'
+    const lineLayerId = 'study-regions-line'
+    const selectedLayerId = 'selected-region-outline'
     const selectedGeometry = regionData?.geometry
-      || (localGeometry?.regionId === region.id ? localGeometry.geometry : null)
-    const sourceId = 'selected-region'
-    const layerId = 'selected-region-outline'
+      || localFeatures.find((feature) => feature.properties?.region_id === region.id)?.geometry
 
-    const updateRegionLayer = () => {
-      if (map.current.getLayer(layerId)) {
-        map.current.removeLayer(layerId)
-      }
+    const updateRegionLayers = () => {
+      if (map.current.getLayer(selectedLayerId)) map.current.removeLayer(selectedLayerId)
+      if (map.current.getLayer(lineLayerId)) map.current.removeLayer(lineLayerId)
+      if (map.current.getLayer(fillLayerId)) map.current.removeLayer(fillLayerId)
+      if (map.current.getSource(sourceId)) map.current.removeSource(sourceId)
 
-      if (map.current.getSource(sourceId)) {
-        map.current.removeSource(sourceId)
+      const features = localFeatures.map((feature) => ({
+        ...feature,
+        properties: { ...feature.properties, region_id: feature.properties?.region_id },
+      }))
+      if (!features.some((feature) => feature.properties?.region_id === region.id) && selectedGeometry) {
+        features.push({
+          type: 'Feature',
+          properties: { region_id: region.id },
+          geometry: selectedGeometry,
+        })
       }
-
-      if (!selectedGeometry) {
-        return
-      }
+      if (!features.length) return
 
       map.current.addSource(sourceId, {
         type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: selectedGeometry,
+        data: { type: 'FeatureCollection', features },
+      })
+      map.current.addLayer({
+        id: fillLayerId,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          'fill-color': '#2c8cc9',
+          'fill-opacity': 0.12,
         },
       })
-
       map.current.addLayer({
-        id: layerId,
+        id: lineLayerId,
         type: 'line',
         source: sourceId,
         paint: {
-          'line-color': '#0b3d91',
-          'line-width': 3,
-          'line-opacity': 0.9,
+          'line-color': '#2c8cc9',
+          'line-width': 1.5,
+          'line-opacity': 0.65,
         },
       })
+      map.current.addLayer({
+        id: selectedLayerId,
+        type: 'line',
+        source: sourceId,
+        filter: ['==', ['get', 'region_id'], region.id],
+        paint: {
+          'line-color': '#f0d38a',
+          'line-width': 3,
+          'line-opacity': 0.95,
+        },
+      })
+      map.current.on('click', fillLayerId, (event) => {
+        const clickedId = event.features?.[0]?.properties?.region_id
+        if (clickedId) onRegionSelect?.(clickedId)
+      })
+      map.current.on('mouseenter', fillLayerId, () => { map.current.getCanvas().style.cursor = 'pointer' })
+      map.current.on('mouseleave', fillLayerId, () => { map.current.getCanvas().style.cursor = '' })
     }
 
-    if (map.current.isStyleLoaded()) {
-      updateRegionLayer()
-    } else {
-      map.current.once('load', updateRegionLayer)
+    if (map.current.isStyleLoaded()) updateRegionLayers()
+    else map.current.once('load', updateRegionLayers)
+
+    return () => {
+      map.current?.off('click', fillLayerId)
+      map.current?.off('mouseenter', fillLayerId)
+      map.current?.off('mouseleave', fillLayerId)
     }
-  }, [localGeometry, region.id, regionData])
+  }, [localFeatures, region.id, regionData, onRegionSelect])
 
   return (
     <div className="region-map-shell">
       <div ref={mapContainer} className="region-map" />
-      {!regionData?.geometry
-        && !(localGeometry?.regionId === region.id && localGeometry.geometry) && (
-        <div className="map-data-note">
-          Region boundary will appear when its GeoJSON is available.
-        </div>
+      {!regionData?.geometry && !localFeatures.length && (
+        <div className="map-data-note">Region boundary will appear when its GeoJSON is available.</div>
       )}
       <div className="map-label">
         <span className="map-label-kicker">Selected field site</span>
