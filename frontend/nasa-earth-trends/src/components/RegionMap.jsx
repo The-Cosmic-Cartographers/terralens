@@ -6,6 +6,13 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 
 const FALLBACK_CENTER = [20, 25]
 
+// Every study box is green; the selected one is red. Colours are literals
+// because MapLibre paint expressions cannot read CSS custom properties.
+const REGION_FILL = '#3fa66c'
+const REGION_LINE = '#25784c'
+const SELECTED_FILL = '#e45b52'
+const SELECTED_LINE = '#a93635'
+
 function RegionMap({ region, regionData, onRegionSelect }) {
   const mapContainer = useRef(null)
   const map = useRef(null)
@@ -49,12 +56,11 @@ function RegionMap({ region, regionData, onRegionSelect }) {
     const sourceId = 'study-regions'
     const fillLayerId = 'study-regions-fill'
     const lineLayerId = 'study-regions-line'
-    const selectedLayerId = 'selected-region-outline'
+    const isSelected = ['==', ['get', 'region_id'], region.id]
     const selectedGeometry = regionData?.geometry
       || localFeatures.find((feature) => feature.properties?.region_id === region.id)?.geometry
 
     const updateRegionLayers = () => {
-      if (map.current.getLayer(selectedLayerId)) map.current.removeLayer(selectedLayerId)
       if (map.current.getLayer(lineLayerId)) map.current.removeLayer(lineLayerId)
       if (map.current.getLayer(fillLayerId)) map.current.removeLayer(fillLayerId)
       if (map.current.getSource(sourceId)) map.current.removeSource(sourceId)
@@ -81,8 +87,8 @@ function RegionMap({ region, regionData, onRegionSelect }) {
         type: 'fill',
         source: sourceId,
         paint: {
-          'fill-color': '#2c8cc9',
-          'fill-opacity': 0.12,
+          'fill-color': ['case', isSelected, SELECTED_FILL, REGION_FILL],
+          'fill-opacity': ['case', isSelected, 0.3, 0.16],
         },
       })
       map.current.addLayer({
@@ -90,20 +96,9 @@ function RegionMap({ region, regionData, onRegionSelect }) {
         type: 'line',
         source: sourceId,
         paint: {
-          'line-color': '#2c8cc9',
-          'line-width': 1.5,
-          'line-opacity': 0.65,
-        },
-      })
-      map.current.addLayer({
-        id: selectedLayerId,
-        type: 'line',
-        source: sourceId,
-        filter: ['==', ['get', 'region_id'], region.id],
-        paint: {
-          'line-color': '#f0d38a',
-          'line-width': 3,
-          'line-opacity': 0.95,
+          'line-color': ['case', isSelected, SELECTED_LINE, REGION_LINE],
+          'line-width': ['case', isSelected, 2.5, 1.4],
+          'line-opacity': ['case', isSelected, 0.95, 0.7],
         },
       })
       map.current.on('click', fillLayerId, (event) => {
