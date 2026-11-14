@@ -30,7 +30,21 @@
     "bh_family": "compare:aerosol_optical_depth",
     "verdict": "significant",
     "effect_size_swings": 1.21,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2013,
+      "K": 66.0,
+      "p_value": 0.255265,
+      "mean_before": -0.004571,
+      "mean_after": 0.00419,
+      "n": 23
+    },
+    "seasonal_slopes": {
+      "DJF": 6.3e-05,
+      "MAM": 0.000578,
+      "JJA": 0.001538,
+      "SON": 0.000147
+    }
   },
   {
     "dataset_id": "sample_aerosol",
@@ -60,6 +74,8 @@
     "bh_family": "compare:aerosol_optical_depth",
     "verdict": "not_enough_data",
     "effect_size_swings": null,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": null,
+    "seasonal_slopes": null
   }
 ]

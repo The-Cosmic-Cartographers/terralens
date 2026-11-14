@@ -30,7 +30,21 @@
     "bh_family": "compare:soil_moisture_0_10cm",
     "verdict": "no_clear_trend",
     "effect_size_swings": 0.95,
-    "detect_years": 53.8
+    "detect_years": 53.8,
+    "change_point": {
+      "change_point_year": 2012,
+      "K": 67.0,
+      "p_value": 0.457249,
+      "mean_before": -0.197373,
+      "mean_after": 0.19739,
+      "n": 26
+    },
+    "seasonal_slopes": {
+      "DJF": -0.02485,
+      "MAM": 0.074009,
+      "JJA": 0.043753,
+      "SON": -0.021977
+    }
   },
   {
     "dataset_id": "sample_soil_moisture_0_10cm",
@@ -63,6 +77,20 @@
     "bh_family": "compare:soil_moisture_0_10cm",
     "verdict": "significant",
     "effect_size_swings": -2.29,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2010,
+      "K": 141.0,
+      "p_value": 0.002902,
+      "mean_before": 0.68175,
+      "mean_after": -0.499968,
+      "n": 26
+    },
+    "seasonal_slopes": {
+      "DJF": -0.081624,
+      "MAM": -0.081638,
+      "JJA": -0.066933,
+      "SON": -0.060022
+    }
   }
 ]

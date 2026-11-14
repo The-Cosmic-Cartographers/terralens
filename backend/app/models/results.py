@@ -26,6 +26,34 @@ BhFamily = Annotated[str, StringConstraints(pattern=r"^(lineup|compare):[a-z0-9_
 ConfidenceInterval = tuple[float, float]
 
 
+class ChangePoint(ContractModel):
+    """Pettitt (1979) diagnostic: the single most likely level shift in the record (D25).
+
+    A diagnostic only: it never sets the verdict and is not in any BH family. A pure
+    monotonic trend also maximises the statistic mid-record, so the UI may call this a
+    step change only when the verdict is not significant.
+    """
+
+    change_point_year: int = Field(ge=1800, le=2200)
+    K: float = Field(ge=0)
+    p_value: Fraction
+    mean_before: float
+    mean_after: float
+    n: int = Field(ge=1)
+
+
+class SeasonalSlopes(ContractModel):
+    """Descriptive Sen slope per year for each season (D25). No p-values, no BH family.
+
+    A season is null when its slope could not be computed.
+    """
+
+    DJF: float | None
+    MAM: float | None
+    JJA: float | None
+    SON: float | None
+
+
 class TrendResult(ContractModel):
     """data/results/<dataset_id>/trends.json holds a list of these, one per region."""
 
@@ -55,6 +83,9 @@ class TrendResult(ContractModel):
     verdict: Verdict
     effect_size_swings: float | None  # change over the window / s.d. of annual-mean anomalies
     detect_years: float | None = Field(default=None, ge=0)  # only for non-significant verdicts
+    # D25 diagnostics. Null when withheld, and change_point also when the record is under 8 years.
+    change_point: ChangePoint | None = None
+    seasonal_slopes: SeasonalSlopes | None = None
 
     @model_validator(mode="after")
     def check_contract_rules(self) -> Self:
@@ -74,6 +105,8 @@ class TrendResult(ContractModel):
                 raise ValueError("a withheld result must have null statistics")
             if self.effect_size_swings is not None or self.detect_years is not None:
                 raise ValueError("a withheld result must not carry effect size or detectability")
+            if self.change_point is not None or self.seasonal_slopes is not None:
+                raise ValueError("a withheld result must not carry diagnostics")
             if not self.withheld_reason:
                 raise ValueError("a withheld result needs a withheld_reason")
             if self.verdict != "not_enough_data":
@@ -93,6 +126,11 @@ class TrendResult(ContractModel):
         assert self.confidence_interval_95 is not None
         assert self.p_value is not None
         assert self.adjusted_p_value is not None
+
+        if self.change_point is not None and not (
+            self.period_start.year <= self.change_point.change_point_year <= self.period_end.year
+        ):
+            raise ValueError("change_point_year must fall inside the result's period")
 
         low, high = self.confidence_interval_95
         if low > high:
