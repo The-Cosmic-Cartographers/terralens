@@ -65,6 +65,12 @@ slowest step is the job poll, not the download.
 `403 EULA Acceptance Failure` (`data.gesdisc.earthdata.nasa.gov`), which is also what broke
 Harmony's OPeNDAP subsetter — jobs died at 23% with `Subsetter failed with error: 403`. The
 pull exited `4`, named the job and the series, and left the checkpoint empty; nothing was
-substituted. The fix is on the account, not in the code: accept the GES DISC application at
-`urs.earthdata.nasa.gov/approve_app?client_id=e2WVk8Pw6weeLUKZYOxvTQ`, then rerun the same
-command.
+substituted.
+
+That EULA has since been accepted (`nasa_gesdisc_data_archive` appears under approved
+applications), and jobs still die the same way, now on OPeNDAP's side of the chain: the
+subsetter cannot read the granule's DMR++
+(`Failed to read the DMR++ from S3 … 403`), which is a service credential, not ours. Metadata
+alone (`…​.dmr.xml`) returns 200, so the collection and our token are fine. Until OPeNDAP
+serves those granule sidecars again, Harmony and direct OPeNDAP `.dods` both fail; the pull
+reports it per series and the rerun resumes.
