@@ -8,7 +8,9 @@ Places come in contrasting pairs, so one variable can be seen trending in opposi
 
 TerraLens describes what the data shows over the period measured. It makes no forecasts and no claims about causes.
 
-> **Status:** under development during the hackathon (14–15 Nov 2026). The backend, API, fixtures and static export work against SAMPLE data. Real NASA series and results, and the web app, are still landing. The live URL will be added here once it exists.
+> **Status:** under development during the hackathon (14–15 Nov 2026). Real MERRA-2 air temperature for Ireland, Sahel and US Southwest is processed, tested and served as a static snapshot. The other four variables and the finished web pages are still landing, so every verdict is provisional.
+>
+> **Live (hosting preview):** https://terralens.kevin-henry-333.workers.dev
 
 ## What you can do with it
 
