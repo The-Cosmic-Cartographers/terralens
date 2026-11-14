@@ -19,9 +19,10 @@ class SeriesRow(ContractModel):
     value: float | None  # area-weighted regional value; null if withheld
     unit: str = Field(min_length=1)  # verified from product metadata, after scale factors
     anomaly: float | None = None  # value minus climatology, if the baseline is approved
-    valid_cell_count: int = Field(ge=0)
-    total_cell_count: int = Field(gt=0)
-    coverage_fraction: Fraction
+    # Null when the source carries no per-cell counts (a Giovanni area average does not).
+    valid_cell_count: int | None = Field(default=None, ge=0)
+    total_cell_count: int | None = Field(default=None, gt=0)
+    coverage_fraction: Fraction | None = None
     n_valid_days: int | None = Field(default=None, ge=0)  # daily products only (OMI NO2)
     quality_summary: str
     source: str = Field(min_length=1)  # product identifier and version
@@ -30,11 +31,17 @@ class SeriesRow(ContractModel):
     def check_row(self) -> Self:
         if self.timestamp.day != 1:
             raise ValueError("timestamp must be the first day of the month")
-        if self.valid_cell_count > self.total_cell_count:
-            raise ValueError("valid_cell_count cannot exceed total_cell_count")
-        expected = self.valid_cell_count / self.total_cell_count
-        if not math.isclose(self.coverage_fraction, expected, abs_tol=0.005):
-            raise ValueError("coverage_fraction must equal valid_cell_count / total_cell_count")
+        counts = (self.valid_cell_count, self.total_cell_count)
+        if (counts[0] is None) != (counts[1] is None):
+            raise ValueError("valid_cell_count and total_cell_count must be given together")
+        if self.valid_cell_count is not None and self.total_cell_count is not None:
+            if self.valid_cell_count > self.total_cell_count:
+                raise ValueError("valid_cell_count cannot exceed total_cell_count")
+            if self.coverage_fraction is None:
+                raise ValueError("coverage_fraction is required when cell counts are given")
+            expected = self.valid_cell_count / self.total_cell_count
+            if not math.isclose(self.coverage_fraction, expected, abs_tol=0.005):
+                raise ValueError("coverage_fraction must equal valid_cell_count / total_cell_count")
         return self
 
 

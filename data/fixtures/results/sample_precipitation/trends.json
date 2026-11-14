@@ -30,7 +30,21 @@
     "bh_family": "compare:precipitation",
     "verdict": "significant",
     "effect_size_swings": 1.91,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2011,
+      "K": 117.0,
+      "p_value": 0.006667,
+      "mean_before": -8.162961,
+      "mean_after": 6.907124,
+      "n": 24
+    },
+    "seasonal_slopes": {
+      "DJF": 0.599818,
+      "MAM": 0.387557,
+      "JJA": 1.518682,
+      "SON": 1.439855
+    }
   },
   {
     "dataset_id": "sample_precipitation",
@@ -63,6 +77,20 @@
     "bh_family": "compare:precipitation",
     "verdict": "significant",
     "effect_size_swings": -2.38,
-    "detect_years": null
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2012,
+      "K": 134.0,
+      "p_value": 0.001127,
+      "mean_before": 5.531257,
+      "mean_after": -5.531263,
+      "n": 24
+    },
+    "seasonal_slopes": {
+      "DJF": -0.884648,
+      "MAM": -0.967025,
+      "JJA": -0.675626,
+      "SON": -0.493745
+    }
   }
 ]

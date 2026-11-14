@@ -1,0 +1,69 @@
+{
+  "source": "Linear doc 11 §3 (demo regions) and §3a (NO2 city sub-boxes); boxes are W,S,E,N in degrees",
+  "open_decision": "D19 resolved 14 Nov (Parth): the Iberia box now reaches 3.5°E so the peninsular east coast (Barcelona, the Ebro delta) is inside it, and the 68-78°E box is relabelled NW South Asia because it spans the Indus plain of Pakistan as well as NW India. These are box averages, not polygons: they take in ocean and neighbouring land by construction, and the land mask decides which cells count.",
+  "regions": [
+    {
+      "region_id": "ireland",
+      "name": "Ireland",
+      "west": -10.5,
+      "south": 51.4,
+      "east": -6.0,
+      "north": 55.4,
+      "scope": "all"
+    },
+    {
+      "region_id": "iberia",
+      "name": "Iberia",
+      "west": -10.0,
+      "south": 36.0,
+      "east": 3.5,
+      "north": 44.0,
+      "scope": "all"
+    },
+    {
+      "region_id": "sahel",
+      "name": "Sahel (West Africa)",
+      "west": 0.0,
+      "south": 12.0,
+      "east": 20.0,
+      "north": 18.0,
+      "scope": "all"
+    },
+    {
+      "region_id": "nw_south_asia",
+      "name": "NW South Asia (NW India and the Indus plain of Pakistan)",
+      "west": 68.0,
+      "south": 22.0,
+      "east": 78.0,
+      "north": 32.0,
+      "scope": "all"
+    },
+    {
+      "region_id": "us_southwest",
+      "name": "US Southwest (Colorado Basin)",
+      "west": -115.0,
+      "south": 31.0,
+      "east": -105.0,
+      "north": 38.0,
+      "scope": "all"
+    },
+    {
+      "region_id": "dublin_no2",
+      "name": "Dublin",
+      "west": -6.5,
+      "south": 53.25,
+      "east": -6.0,
+      "north": 53.45,
+      "scope": "no2"
+    },
+    {
+      "region_id": "delhi_no2",
+      "name": "Delhi NCR",
+      "west": 76.5,
+      "south": 28.0,
+      "east": 78.0,
+      "north": 29.5,
+      "scope": "no2"
+    }
+  ]
+}

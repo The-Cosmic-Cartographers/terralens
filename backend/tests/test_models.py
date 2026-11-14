@@ -137,11 +137,22 @@ def provenance(**overrides):
         "period_end": "2025-12-01",
         "qa_rules": ["sample"],
         "region_source": "sample",
-        "requested_box": "-10.5,51.4,-6.0,55.4",
-        "analyzable_region": "sample",
-        "giovanni_variable_id": "sample",
-        "giovanni_permalink": "https://example.invalid/sample",
         "citation": SAMPLE,
+        "regions": {
+            "ireland": {
+                "region_id": "ireland",
+                "requested_box": "-10.5,51.4,-6.0,55.4",
+                "analyzable_region": "sample",
+                "giovanni_variable_id": "sample",
+                "permalink": "https://example.invalid/sample",
+                "period_start": "1981-01-01",
+                "period_end": "2025-12-01",
+                "source_csv": "sample.csv",
+                "source_csv_sha256": "a" * 64,
+                "observations": 540,
+                "transformations": ["monthly aggregation"],
+            }
+        },
         "transformations": ["monthly aggregation"],
     }
     record.update(overrides)
@@ -173,9 +184,25 @@ def test_series_row_value_can_be_withheld():
     assert SeriesRow(**series_row(value=None, anomaly=None)).value is None
 
 
+def test_series_row_coverage_may_be_null_when_the_source_has_no_cell_counts():
+    row = SeriesRow(
+        **series_row(valid_cell_count=None, total_cell_count=None, coverage_fraction=None)
+    )
+    assert row.coverage_fraction is None
+
+
+def test_series_row_may_omit_the_coverage_columns_entirely():
+    record = series_row()
+    for name in ("valid_cell_count", "total_cell_count", "coverage_fraction"):
+        del record[name]
+    assert SeriesRow(**record).valid_cell_count is None
+
+
 @pytest.mark.parametrize(
     "overrides",
     [
+        {"total_cell_count": None},  # counts must come as a pair
+        {"coverage_fraction": None},  # counts given, fraction missing
         {"timestamp": "2020-01-15"},  # not the first of the month
         {"coverage_fraction": 0.5},  # not valid / total
         {"valid_cell_count": 300},  # more valid cells than cells
@@ -208,14 +235,111 @@ def test_series_response_rows_must_match_the_response():
 
 
 def test_provenance_accepts_a_sample_record():
-    assert Provenance(**provenance()).analyzable_region == "sample"
+    record = Provenance(**provenance())
+    assert record.regions["ireland"].analyzable_region == "sample"
 
 
-def test_provenance_requires_every_field():
+def test_provenance_requires_the_product_fields():
     record = provenance()
-    del record["giovanni_permalink"]
+    del record["access_route"]
     with pytest.raises(ValidationError):
         Provenance(**record)
+
+
+def test_provenance_citation_may_be_left_for_later():
+    record = provenance()
+    del record["citation"]
+    assert Provenance(**record).citation == ""
+
+
+def test_provenance_holds_several_regions_and_needs_at_least_one():
+    record = provenance()
+    second = {**record["regions"]["ireland"], "region_id": "iberia"}
+    record["regions"]["iberia"] = second
+    assert set(Provenance(**record).regions) == {"ireland", "iberia"}
+    record["regions"] = {}
+    with pytest.raises(ValidationError):
+        Provenance(**record)
+
+
+def test_provenance_region_key_must_match_its_region_id():
+    record = provenance()
+    record["regions"]["iberia"] = record["regions"].pop(
+        "ireland"
+    )  # key says iberia, id says ireland
+    with pytest.raises(ValidationError):
+        Provenance(**record)
+
+
+def test_provenance_region_fields_are_required_and_unknown_ones_rejected():
+    record = provenance()
+    del record["regions"]["ireland"]["requested_box"]
+    with pytest.raises(ValidationError):
+        Provenance(**record)
+    record = provenance()
+    record["regions"]["ireland"]["extra"] = 1
+    with pytest.raises(ValidationError):
+        Provenance(**record)
+
+
+# --- trend diagnostics (D25) ------------------------------------------------
+
+
+CHANGE_POINT = {
+    "change_point_year": 1998,
+    "K": 120.0,
+    "p_value": 0.01,
+    "mean_before": -0.2,
+    "mean_after": 0.3,
+    "n": 45,
+}
+SEASONAL = {"DJF": 0.04, "MAM": 0.02, "JJA": 0.01, "SON": None}
+
+
+def test_trend_accepts_the_d25_diagnostics():
+    result = TrendResult(**trend(change_point=CHANGE_POINT, seasonal_slopes=SEASONAL))
+    assert result.change_point.change_point_year == 1998
+    assert result.seasonal_slopes.SON is None
+
+
+def test_trend_diagnostics_are_optional():
+    assert TrendResult(**trend()).change_point is None
+    assert TrendResult(**trend()).seasonal_slopes is None
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"change_point": {**CHANGE_POINT, "change_point_year": 1900}},  # outside the period
+        {"change_point": {**CHANGE_POINT, "p_value": 1.5}},
+        {"change_point": {**CHANGE_POINT, "K": -1.0}},
+        {"change_point": {**CHANGE_POINT, "surprise": 1}},
+        {"seasonal_slopes": {"DJF": 0.1, "MAM": 0.1, "JJA": 0.1}},  # a season is missing
+        {"seasonal_slopes": {**SEASONAL, "WINTER": 0.1}},
+    ],
+)
+def test_trend_rejects_bad_diagnostics(overrides):
+    with pytest.raises(ValidationError):
+        TrendResult(**trend(**overrides))
+
+
+def test_a_withheld_result_cannot_carry_diagnostics():
+    for extra in ({"change_point": CHANGE_POINT}, {"seasonal_slopes": SEASONAL}):
+        with pytest.raises(ValidationError):
+            TrendResult(**withheld_trend(**extra))
+
+
+def test_the_record_long_enough_caveat_is_an_ordinary_caveat():
+    record = trend(
+        trend_direction="no_significant_trend",
+        significant_at_0_05=False,
+        verdict="no_clear_trend",
+        adjusted_p_value=0.4,
+        p_value=0.3,
+        detect_years=None,
+        caveats=["record_long_enough_but_not_significant"],
+    )
+    assert TrendResult(**record).detect_years is None
 
 
 # --- trend ----------------------------------------------------------------

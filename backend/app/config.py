@@ -3,7 +3,7 @@ from pathlib import Path
 
 CORS_ORIGINS = [
     origin.strip()
-    for origin in os.environ.get("TERRALENS_CORS_ORIGINS", "http://localhost:3000").split(",")
+    for origin in os.environ.get("TERRALENS_CORS_ORIGINS", "http://localhost:5173").split(",")
     if origin.strip()
 ]
 

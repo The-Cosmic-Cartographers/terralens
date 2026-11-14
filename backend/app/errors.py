@@ -7,7 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.models import ErrorBody, ErrorResponse
-from app.services.store import DatasetNotFound, DataUnavailable
+from app.services.store import DatasetNotFound, DataUnavailable, RegionNotFound
 
 
 def error_response(
@@ -18,6 +18,15 @@ def error_response(
 
 
 def install_error_handlers(app: FastAPI) -> None:
+    @app.exception_handler(RegionNotFound)
+    async def region_not_found(_: Request, error: RegionNotFound) -> JSONResponse:
+        return error_response(
+            404,
+            "region_not_found",
+            f"Unknown region_id '{error.region_id}'",
+            {"region_id": error.region_id},
+        )
+
     @app.exception_handler(DatasetNotFound)
     async def dataset_not_found(_: Request, error: DatasetNotFound) -> JSONResponse:
         return error_response(

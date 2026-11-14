@@ -102,5 +102,5 @@ def test_a_file_that_breaks_the_contract_is_503_not_a_crash(monkeypatch, tmp_pat
 
 
 def test_cors_allows_the_local_frontend(client):
-    response = client.get("/health", headers={"Origin": "http://localhost:3000"})
-    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+    response = client.get("/health", headers={"Origin": "http://localhost:5173"})
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
