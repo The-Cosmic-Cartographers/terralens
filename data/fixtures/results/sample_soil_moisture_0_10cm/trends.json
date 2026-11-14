@@ -1,0 +1,68 @@
+[
+  {
+    "dataset_id": "sample_soil_moisture_0_10cm",
+    "variable_id": "soil_moisture_0_10cm",
+    "region_id": "ireland",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.021019,
+    "unit_per_year": "kg/m²/yr",
+    "confidence_interval_95": [
+      -0.014556,
+      0.055051
+    ],
+    "p_value": 0.293224,
+    "adjusted_p_value": 0.293224,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 312,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 0.9914,
+    "method": "SAMPLE: Mann–Kendall on annual means + Theil–Sen (fixture generator)",
+    "serial_correlation_note": "SAMPLE — NOT NASA DATA: not assessed",
+    "caveats": [
+      "SAMPLE — NOT NASA DATA"
+    ],
+    "withheld_reason": null,
+    "product_type": "land_model",
+    "bh_family": "compare:soil_moisture_0_10cm",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.95,
+    "detect_years": 53.8
+  },
+  {
+    "dataset_id": "sample_soil_moisture_0_10cm",
+    "variable_id": "soil_moisture_0_10cm",
+    "region_id": "iberia",
+    "period_start": "2000-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "decreasing",
+    "sen_slope_per_year": -0.077676,
+    "unit_per_year": "kg/m²/yr",
+    "confidence_interval_95": [
+      -0.102169,
+      -0.055516
+    ],
+    "p_value": 1.4e-05,
+    "adjusted_p_value": 2.8e-05,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": true,
+    "observation_count": 312,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 0.9776,
+    "method": "SAMPLE: Mann–Kendall on annual means + Theil–Sen (fixture generator)",
+    "serial_correlation_note": "SAMPLE — NOT NASA DATA: not assessed",
+    "caveats": [
+      "SAMPLE — NOT NASA DATA"
+    ],
+    "withheld_reason": null,
+    "product_type": "land_model",
+    "bh_family": "compare:soil_moisture_0_10cm",
+    "verdict": "significant",
+    "effect_size_swings": -2.29,
+    "detect_years": null
+  }
+]
