@@ -6,15 +6,15 @@ const DATA_MODE = import.meta.env.VITE_DATA_MODE || 'static'
 const resources = {
   catalogue: {
     api: '/api/v1/catalogue',
-    static: '/catalogue.json',
+    static: 'catalogue.json',
   },
   regions: {
     api: '/api/v1/regions',
-    static: '/regions.json',
+    static: 'regions.json',
   },
   metadata: {
     api: '/api/v1/metadata',
-    static: '/metadata/{datasetId}.json',
+    static: 'metadata/{datasetId}.json',
   },
 }
 
@@ -34,7 +34,10 @@ function resolvePath(kind, params = {}) {
 async function request(kind, params = {}) {
   const base = DATA_MODE === 'live' ? API_BASE_URL : STATIC_DATA_BASE_URL
   const path = resolvePath(kind, params)
-  const url = new URL(path, `${base.replace(/\/$/, '')}/`)
+  const absoluteBase = base.startsWith('http')
+    ? base
+    : new URL(base, window.location.origin).toString()
+  const url = new URL(path, `${absoluteBase.replace(/\/$/, '')}/`)
 
   if (DATA_MODE === 'live' && kind === 'metadata' && params.datasetId) {
     url.searchParams.set('dataset_id', params.datasetId)

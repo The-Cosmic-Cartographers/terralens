@@ -1,0 +1,42 @@
+export const regions = [
+  {
+    id: 'ireland',
+    name: 'Ireland',
+    shortLocation: 'North Atlantic · 51–55°N',
+    signal: 'Cool, maritime, and highly seasonal.',
+    center: [-8, 53.3],
+    zoom: 5,
+  },
+  {
+    id: 'iberia',
+    name: 'Iberia',
+    shortLocation: 'Southwestern Europe · 36–44°N',
+    signal: 'A strong contrast of dry interiors and Atlantic edges.',
+    center: [-4, 40],
+    zoom: 4.8,
+  },
+  {
+    id: 'west_africa',
+    name: 'West Africa',
+    shortLocation: 'Sahel to Gulf of Guinea · 5–20°N',
+    signal: 'A transition zone shaped by rainfall and heat.',
+    center: [-3, 13],
+    zoom: 4.3,
+  },
+  {
+    id: 'north_west_india',
+    name: 'North West India',
+    shortLocation: 'Indo-Gangetic plain · 24–32°N',
+    signal: 'Monsoon, irrigation, dust, and urban pressure meet here.',
+    center: [75, 28],
+    zoom: 4.4,
+  },
+  {
+    id: 'us_southwest',
+    name: 'US Southwest',
+    shortLocation: 'Arid western United States · 31–38°N',
+    signal: 'A dryland system where heat and water availability are tightly linked.',
+    center: [-111, 35],
+    zoom: 4.3,
+  },
+]

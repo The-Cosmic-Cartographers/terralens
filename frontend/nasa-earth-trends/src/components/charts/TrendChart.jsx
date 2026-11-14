@@ -34,7 +34,7 @@ function TrendChart({ data = chartFrame }) {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#d95c43"
+            stroke="#8fb7ad"
             strokeWidth={3}
             dot={false}
             connectNulls={false}
