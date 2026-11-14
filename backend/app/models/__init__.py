@@ -1,7 +1,7 @@
 """Pydantic models for the data and API contract (Linear doc 04)."""
 
 from app.models.meta import CatalogueItem, ErrorBody, ErrorResponse, Health, Metadata, Region
-from app.models.provenance import Provenance
+from app.models.provenance import Provenance, RegionProvenance
 from app.models.results import CompareResult, Lineup, LineupRow, TrendResult, Window, Windows
 from app.models.series import SeriesResponse, SeriesRow
 
@@ -16,6 +16,7 @@ __all__ = [
     "Metadata",
     "Provenance",
     "Region",
+    "RegionProvenance",
     "SeriesResponse",
     "SeriesRow",
     "TrendResult",
