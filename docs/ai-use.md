@@ -24,6 +24,8 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Kevin | Claude Code | Index builder for the real data folder (catalogue, regions, metadata, data version), unique GLDAS dataset ids in the registry, and tests (NAS-6) | `backend/scripts/build_data_index.py`, `backend/tests/test_data_index.py`, `data/catalogue.json`, `data/regions.json`, `data/metadata/`, `pipeline/registry.py` |
 | 2026-11-14 | Kevin | Claude Code | Contract update for D25 diagnostics (`change_point`, `seasonal_slopes`) in the models, fixture generator, fixtures and tests | `backend/app/models/results.py`, `backend/scripts/generate_fixtures.py`, `data/fixtures/`, `backend/tests/test_models.py` |
 | 2026-11-14 | Kevin | Claude Code | Checked Giovanni's user manual for what it does and does not offer; reworded the one-line pitch ("chart") in the README and Linear docs | `README.md`, Linear docs 00, 01, 07, 09, 12, 13 |
+| 2026-11-14 | Parth | Codebuff (Buffy) | NAS-43: generate the References list from `provenance.json` instead of typing citations by hand, with tests | `pipeline/references.py`, `pipeline/tests/test_references.py`, `docs/references.md` |
+
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
