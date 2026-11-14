@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import math
 import os
 import threading
 import time
@@ -104,6 +105,11 @@ GIOVANNI_ONLY: dict[str, str] = {
         "overwrite data/raw/t2m_<region>.csv, so this row stays on Giovanni"
     ),
 }
+
+# The exception Kevin allowed on NAS-64: the clash above is about the three committed
+# files, not the product. For regions with no committed T2M yet, Harmony is fine and
+# provenance records the Harmony route rather than claiming Giovanni.
+HARMONY_T2M_REGIONS = frozenset({"iberia", "nw_south_asia"})
 
 # IMERG has no Harmony coverage and its OPeNDAP endpoints answer 410/404, so the
 # monthly HDF5 files are fetched straight from GES DISC (303 -> presigned URL) and
@@ -292,6 +298,61 @@ def centre_mask(
     return ((lat >= south) & (lat <= north))[:, None] & ((lon >= west) & (lon <= east))[None, :]
 
 
+def grid_extent(box: tuple[float, float, float, float], step: float = 0.25) -> str:
+    """The W,S,E,N extent of the 0.25 degree cell centres inside the box.
+
+    Deterministic, so a series that finished from a checkpoint still gets the same
+    footprint the payload path would have measured (NAS-64 review: the build must
+    not depend on a payload being present in this run).
+    """
+    west, south, east, north = box
+    first_centre = -90.0 + step / 2
+    lat0 = math.ceil((south - first_centre) / step - 1e-9)
+    lat1 = math.floor((north - first_centre) / step + 1e-9)
+    lon0 = math.ceil((west + 180.0 - step / 2) / step - 1e-9)
+    lon1 = math.floor((east + 180.0 - step / 2) / step + 1e-9)
+    if lat0 > lat1 or lon0 > lon1:
+        raise ValueError(f"box {box} contains no {step} degree cell centre")
+    return (
+        f"{lon0 * step - 180.0 + step / 2:.2f},{first_centre + lat0 * step:.2f},"
+        f"{lon1 * step - 180.0 + step / 2:.2f},{first_centre + lat1 * step:.2f}"
+    )
+
+
+def parse_extent(text: str | None) -> tuple[float, float, float, float] | None:
+    """Read a provenance extent, accepting only a well-formed W,S,E,N quadruple."""
+    if not text:
+        return None
+    parts = text.split(",")
+    if len(parts) != 4:
+        return None
+    try:
+        west, south, east, north = (float(part) for part in parts)
+    except ValueError:
+        return None
+    # A one-row or one-column box has south == north or west == east; that is legal.
+    if not (-180.0 <= west <= east <= 180.0 and -90.0 <= south <= north <= 90.0):
+        return None
+    if west == east and south == north:
+        return None
+    return west, south, east, north
+
+
+def require_extent(series: Series) -> str:
+    """The analyzable footprint, recomputed from the box if this run never set one.
+
+    A build without a trustworthy W,S,E,N extent is refused: Kevin's review asked for
+    a build that fails rather than a checker that finds the hole afterwards.
+    """
+    extent = series.extent
+    if parse_extent(extent) is None:
+        extent = grid_extent(series.box)
+        print(f"  {series.label}: extent rebuilt from the box -> {extent}")
+    if parse_extent(extent) is None:
+        raise ValueError(f"{series.label}: extent {extent!r} is not a W,S,E,N footprint")
+    return extent
+
+
 def slice_extent(
     payload: bytes, scratch: Path, *, box: tuple[float, float, float, float] | None = None
 ) -> str | None:
@@ -423,7 +484,7 @@ def build_series(series: Series, route: Route, csv_path: Path, out_root: Path) -
                 "north": series.box[3],
             }
         ),
-        analyzable_region=series.extent,
+        analyzable_region=require_extent(series),
         permalink=(
             f"https://harmony.earthdata.nasa.gov/jobs/{series.jobs[-1]}"
             if series.jobs
@@ -728,7 +789,9 @@ def plan(
                 )
             if not _applies(variable_id, region_id):
                 continue
-            if variable_id in GIOVANNI_ONLY:
+            if variable_id in GIOVANNI_ONLY and not (
+                variable_id == "t2m" and region_id in HARMONY_T2M_REGIONS
+            ):
                 blocked.append((variable_id, region_id, GIOVANNI_ONLY[variable_id]))
                 continue
             route = HARMONY_ROUTES.get(variable_id)

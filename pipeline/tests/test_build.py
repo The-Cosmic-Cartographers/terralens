@@ -259,3 +259,26 @@ def test_build_writes_parquet_and_merges_provenance(tmp_path: Path) -> None:
         "transformations",
         "regions",
     }, "no key may be added that the backend contract does not know"
+
+
+def test_a_locally_reduced_route_does_not_claim_giovanni(tmp_path: Path) -> None:
+    """NAS-64 review: IMERG is a local 1-degree mean, so its provenance must say so."""
+    kwargs = _kwargs(
+        tmp_path,
+        start_year=1981,
+        end_year=1982,
+        access_route="NASA GES DISC direct HDF5 download, 1-degree area mean",
+    )
+    _, provenance = build(SAMPLE, region_id="ireland", **kwargs)
+    payload = json.loads(provenance.read_text())
+    assert "Giovanni" not in payload["region_source"]
+    assert "locally averaged" in payload["region_source"]
+    assert not any("Giovanni" in rule for rule in payload["qa_rules"])
+
+
+def test_a_giovanni_route_keeps_its_own_wording(tmp_path: Path) -> None:
+    kwargs = _kwargs(tmp_path, start_year=1981, end_year=1982)
+    _, provenance = build(SAMPLE, region_id="ireland", **kwargs)
+    payload = json.loads(provenance.read_text())
+    assert payload["region_source"] == "Linear doc 11 §3 box, entered in Giovanni"
+    assert payload["qa_rules"][0].startswith("Giovanni area-averaged")
