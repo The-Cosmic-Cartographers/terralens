@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 
 from app.models import CatalogueItem, Metadata, Provenance, Region
-from pipeline.regions import load_regions
+from pipeline.regions import APP_REGIONS, load_regions
 from pipeline.registry import VARIABLES
 
 LABELS = {
@@ -39,12 +39,6 @@ LIMITATIONS = [
     "Changes in what it assimilates can create artificial steps in a record.",
     "Months with no value are kept as empty rows, never filled in.",
 ]
-# The app's regions are an explicit list (decision D26), not whatever has a file. A
-# dataset is `ready` only when it has a series for every one of them; otherwise a
-# static export would have holes. Extra regions or city pairs on disk (Iberia, the
-# NO2 cities) stay out of the catalogue until they are added here on purpose.
-APP_REGIONS = ("ireland", "sahel", "us_southwest")
-
 REGION_SOURCE = "Region boxes defined by TerraLens (Linear doc 01, decision D19)"
 REGION_LICENCE = "TerraLens project boxes; no third-party boundary data"
 
