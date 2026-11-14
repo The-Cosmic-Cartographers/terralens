@@ -17,10 +17,9 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 
-# Node / Next.js
+# Node / Vite
 node_modules/
-.next/
-out/
+dist/
 frontend/.env*.local
 
 # OS and editors

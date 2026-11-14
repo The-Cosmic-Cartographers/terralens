@@ -57,7 +57,7 @@ NASA data (Giovanni / GES DISC)
    -> pipeline/   clean monthly series per place and variable
    -> analysis/   trends, corrected p-values, verdicts, Time Machine windows
    -> backend/    FastAPI (development) and a static JSON export
-   -> frontend/   Next.js app that reads the precomputed snapshot
+   -> frontend/   Vite + React app that reads the precomputed snapshot
 ```
 
 Everything the app shows is computed before deployment, so the judged site needs no live server. The backend only reads files and never computes statistics.
@@ -99,7 +99,7 @@ PYTHONPATH=backend uv run python -m app.export
 PYTHONPATH=backend uv run python -m app.export --data-dir data/fixtures --allow-sample
 ```
 
-Frontend (once `frontend/` is scaffolded): `cd frontend && npm install && npm run dev`.
+Frontend (once `frontend/` is scaffolded): `cd frontend && npm install && npm run dev` (Vite serves http://localhost:5173).
 
 Copy `.env.example` to `.env` for local settings. Never commit credentials. NASA Earthdata credentials go in `~/.netrc` or environment variables. More detail is in [`backend/README.md`](backend/README.md) and [`data/README.md`](data/README.md).
 
