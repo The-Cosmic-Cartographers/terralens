@@ -34,6 +34,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-14 | Nandini | Codebuff (Buffy) | Sensitivity and scientific QA material generated from the real series rather than typed by hand, and the methodology, uncertainty and limitations copy for the app and project page (NAS-47, NAS-48, NAS-49) | `analysis/sensitivity.py`, `analysis/qa.py`, `docs/sensitivity-notes.md`, `docs/qa-report.md`, `docs/methodology.md` |
 | 2026-11-14 | Nandini | Codebuff (Buffy) | Decision records and contract wording in Linear: D25 diagnostics proposal and acceptance, and the schema 2 additions (NAS-9, NAS-16) | Linear docs 10 and 04, not in the repo |
 | 2026-11-14 | Kevin | Claude Code | Wrote the first real static snapshot into the frontend's public folder and fixed the hygiene test's path (NAS-21, NAS-22) | `frontend/nasa-earth-trends/public/data/`, `backend/tests/test_repo_hygiene.py` |
+| 2026-11-14 | Kevin | Claude Code | Cloudflare Pages SPA fallback file for the frontend (NAS-22) | `frontend/nasa-earth-trends/public/_redirects` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
