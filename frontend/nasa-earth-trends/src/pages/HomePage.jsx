@@ -89,6 +89,12 @@ function HomePage() {
               the data shows over the measured period. It does not forecast or
               claim causes.
             </p>
+            <p className="method-note">
+              <strong>Minimum data.</strong> Ten complete years (all twelve
+              months present) and no more than 20% of months missing; months
+              under half-covered are dropped first. Below that, no test is run —
+              the record is marked “Not enough data”.
+            </p>
             <Link className="text-link" to="/case-files">
               How to read a case file →
             </Link>

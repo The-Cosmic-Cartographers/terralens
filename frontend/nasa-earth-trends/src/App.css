@@ -1172,6 +1172,20 @@ h3 {
   line-height: 1.6;
 }
 
+.method-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.method-note strong {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
 .period-note,
 .filter-note {
   margin-top: 14px;
