@@ -22,9 +22,9 @@ TerraLens describes what the data shows over the period measured. It makes no fo
 
 ## Places and variables
 
-Five regions, chosen in contrasting pairs, plus two city boxes for air quality:
+Five regions, chosen in contrasting pairs:
 
-Ireland · Iberia · Sahel (West Africa) · NW South Asia (Thar–Indus) · US Southwest (Colorado Basin) · Dublin and Delhi NCR (NO₂ only)
+Ireland · Iberia · Sahel (West Africa) · NW South Asia (Thar–Indus) · US Southwest (Colorado Basin)
 
 Each region is scanned for these variables, all through NASA Giovanni:
 
@@ -35,7 +35,6 @@ Each region is scanned for these variables, all through NASA Giovanni:
 | Evapotranspiration (land) | MERRA-2 M2TMNXLND EVLAND v5.12.4 | Model reanalysis |
 | Precipitation (bias-corrected) | MERRA-2 M2TMNXFLX PRECTOTCORR v5.12.4 | Model reanalysis |
 | Aerosol optical depth | MERRA-2 M2TMNXAER v5.12.4 | Model reanalysis |
-| NO₂ column (Dublin, Delhi only) | OMI OMNO2d v004, 30% cloud screened | Satellite |
 
 Each variable is analysed over whole calendar years ending at the last complete year, and every row shows its own period.
 
@@ -110,7 +109,6 @@ Copy `.env.example` to `.env` for local settings. Never commit credentials. NASA
 All data comes from NASA through [Giovanni](https://giovanni.gsfc.nasa.gov/), part of the NASA GES DISC archive:
 
 - MERRA-2 monthly reanalysis, v5.12.4 (NASA Global Modeling and Assimilation Office)
-- OMI OMNO2d NO₂ tropospheric column, v004 (NASA, Aura OMI)
 
 Each processed series has a `provenance.json` recording the product, version, region box, Giovanni's analysed region, access date and every transformation. The full reference list, with citations and access dates, is completed from those files before submission.
 
