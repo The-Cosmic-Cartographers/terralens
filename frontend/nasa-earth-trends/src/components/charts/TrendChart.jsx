@@ -9,6 +9,8 @@ import {
   YAxis,
 } from 'recharts'
 
+import { formatChartValue } from '../../utils/format.js'
+
 function median(values) {
   const sorted = [...values].sort((a, b) => a - b)
   const mid = Math.floor(sorted.length / 2)
@@ -34,6 +36,15 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
       : intercept + slope * (index / 12),
   }))
 
+  // Ticks sit on whole years (multiples of 5 for a long record) so the axis never
+  // rounds the last December up to the following year.
+  const times = chartData.map((point) => point.t).filter((value) => Number.isFinite(value))
+  const first = Math.min(...times)
+  const last = Math.max(...times)
+  const step = last - first > 25 ? 5 : 2
+  const ticks = []
+  for (let year = Math.ceil(first / step) * step; year <= last; year += step) ticks.push(year)
+
   if (!chartData.length) {
     return (
       <div className="trend-chart chart-empty">
@@ -51,9 +62,9 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             dataKey="t"
             type="number"
             domain={['dataMin', 'dataMax']}
+            ticks={ticks}
             tickFormatter={(value) => String(Math.round(value))}
             allowDecimals={false}
-            tickCount={9}
             tick={{ fill: 'var(--chart-axis)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
@@ -65,6 +76,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             width={42}
           />
           <Tooltip
+            formatter={(value, name) => [formatChartValue(value), name]}
             labelFormatter={(value) => {
               const year = Math.floor(value + 1e-6)
               const month = Math.round((value - year) * 12) + 1

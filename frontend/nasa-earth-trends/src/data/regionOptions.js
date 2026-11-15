@@ -1,4 +1,4 @@
-// The three study regions in the current snapshot (decision D26).
+// The five study regions in the current snapshot (decision D26).
 // Boxes match data/regions.json; centre and zoom only frame the map.
 const allRegions = [
   {
