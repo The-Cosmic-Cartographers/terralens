@@ -33,6 +33,10 @@ function trendFor(lineup, variableId) {
   return row?.window_unavailable ? undefined : row?.trend
 }
 
+function datasetFor(lineup, variableId) {
+  return lineup?.rows?.find((row) => row.variable_id === variableId)?.dataset_id
+}
+
 function unitPerDecade(trend) {
   const unit = trend?.unit_per_year
   if (!unit) return ''
@@ -219,12 +223,15 @@ function SummaryPage() {
                       </th>
                       {regions.map((region) => {
                         const trend = trendFor(lineups[region.id], variable.id)
+                        const datasetId = datasetFor(lineups[region.id], variable.id)
+                        const detailParams = new URLSearchParams({ region: region.id })
+                        if (datasetId) detailParams.set('dataset', datasetId)
                         return (
                           <td key={region.id}>
                             {trend ? (
                               <Link
                                 className="summary-cell"
-                                to={`/explore/${variable.id}?region=${region.id}`}
+                                to={`/explore/${variable.id}?${detailParams.toString()}`}
                                 aria-label={`${labels[variable.id]} in ${region.name}: ${verdictLabel(trend.verdict)}`}
                               >
                                 <VerdictBadge verdict={trend.verdict} />

@@ -31,13 +31,13 @@ function VariableDetailPage() {
   const [searchParams] = useSearchParams()
   const regionId = searchParams.get('region') || regions[0].id
   const { data: catalogue, loading: catalogueLoading } = useData('catalogue')
-  const { data: trend, loading: trendLoading, error: trendError } = useData('trend', {
-    regionId,
-    datasetId: searchParams.get('dataset') || fallbackDataset[variableId]?.dataset_id,
-  })
   const dataset = catalogue?.find((item) => item.variable_id === variableId)
     || fallbackDataset[variableId]
   const datasetId = searchParams.get('dataset') || dataset?.dataset_id
+  const { data: trend, loading: trendLoading, error: trendError } = useData('trend', {
+    regionId,
+    datasetId,
+  })
   const { data: series } = useData('series', { regionId, datasetId })
   const { data: metadata } = useData('metadata', { datasetId })
   const { startYear, endYear } = useWindow()
