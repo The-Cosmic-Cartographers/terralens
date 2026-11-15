@@ -15,7 +15,7 @@ npm run build
 
 The central client in `src/services/dataClient.js` supports `VITE_DATA_MODE=live` for the FastAPI service and `VITE_DATA_MODE=static` for a deployed JSON snapshot. The API paths currently implemented are catalogue, regions and metadata. Set `VITE_API_BASE_URL` and `VITE_STATIC_DATA_BASE_URL` in `.env` as needed.
 
-The repository does not yet expose the static snapshot under the frontend's public directory, and result routes for lineup, variable trends, comparison and case files are not implemented in the backend. Until those integrations land, the UI shows explicit loading, empty, error or not-connected states and never invents scientific findings.
+The repository does not yet expose the static snapshot under the frontend's public directory, and result routes for lineup, variable trends, and comparison are not implemented in the backend. Until those integrations land, the UI shows explicit loading, empty, error or not-connected states and never invents scientific findings.
 
 ## Chart decision
 

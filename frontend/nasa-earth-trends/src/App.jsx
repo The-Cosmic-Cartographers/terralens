@@ -1,19 +1,20 @@
-import { Suspense, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Suspense, useEffect, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
 import LoadingState from './components/LoadingState.jsx'
 import WindowSelector from './components/WindowSelector.jsx'
+import { useBusy } from './hooks/useBusy.js'
 import { useData } from './hooks/useData.js'
 import { ageLabel, coverageEndFrom, freshnessOf, snapshotDateFrom } from './utils/freshness.js'
 
 import './App.css'
 
+// Each hint says what the page is for, so a first visit knows where to go.
 const navigation = [
-  { to: '/', label: 'Overview', end: true, icon: 'overview', title: 'Overview' },
-  { to: '/summary', label: 'Summary', icon: 'summary', title: 'Summary' },
-  { to: '/explore', label: 'The Lineup', icon: 'lineup', title: 'The Lineup' },
-  { to: '/compare', label: 'Opposite Trends', icon: 'compare', title: 'Opposite Trends' },
-  { to: '/case-files', label: 'Case Files', icon: 'cases', title: 'Case Files' },
+  { to: '/', label: 'Overview', end: true, icon: 'overview', title: 'Overview', hint: 'Start here' },
+  { to: '/summary', label: 'Summary', icon: 'summary', title: 'Summary', hint: 'Every region at a glance' },
+  { to: '/explore', label: 'The Lineup', icon: 'lineup', title: 'The Lineup', hint: 'Ranked signals per region' },
+  { to: '/compare', label: 'Opposite Trends', icon: 'compare', title: 'Opposite Trends', hint: 'Two places side by side' },
 ]
 
 const iconPaths = {
@@ -21,7 +22,6 @@ const iconPaths = {
   summary: 'M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z',
   lineup: 'M4 5h16M4 10h16M4 15h10M4 20h6',
   compare: 'M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7',
-  cases: 'M5 3h10l4 4v14H5zM14 3v5h5M8 13h8M8 17h6',
 }
 
 function NavIcon({ name }) {
@@ -59,22 +59,33 @@ function readTheme() {
   return 'light'
 }
 
-function currentTitle(pathname) {
-  if (pathname.startsWith('/explore/')) return 'The Lineup / Trend detail'
+// Breadcrumb trail after "TerraLens". Every step but the current page links.
+function crumbsFor(pathname) {
+  if (pathname.startsWith('/explore/')) {
+    return [{ label: 'The Lineup', to: '/explore' }, { label: 'Trend detail' }]
+  }
   const match = navigation.find((item) =>
     item.end ? pathname === item.to : pathname.startsWith(item.to),
   )
-  return match?.title ?? 'TerraLens'
+  return [{ label: match?.title ?? 'TerraLens' }]
 }
 
 function App() {
   const location = useLocation()
   const [theme, setTheme] = useState(readTheme)
+  const busy = useBusy()
+  const crumbs = crumbsFor(location.pathname)
   const { data: health, error, mode } = useData('health')
   const { data: catalogue } = useData('catalogue')
   const online = Boolean(health) && !error
   const freshness = freshnessOf(snapshotDateFrom(health?.data_version))
   const coverageEnd = coverageEndFrom(catalogue)
+
+  // Mirror the theme onto <html> so the page body, scrollbars and native
+  // controls take the same tokens as the dashboard.
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark'
@@ -112,7 +123,10 @@ function App() {
               className="nav-link"
             >
               <NavIcon name={item.icon} />
-              {item.label}
+              <span className="nav-text">
+                <span>{item.label}</span>
+                <small className="nav-hint">{item.hint}</small>
+              </span>
             </NavLink>
           ))}
         </nav>
@@ -150,11 +164,17 @@ function App() {
 
       <div className="dash-main">
         <header className="topbar">
-          <div className="crumbs">
-            <span>TerraLens</span>
-            <span aria-hidden="true">/</span>
-            <strong>{currentTitle(location.pathname)}</strong>
-          </div>
+          <nav className="crumbs" aria-label="Breadcrumb">
+            <Link to="/">TerraLens</Link>
+            {crumbs.map((crumb, index) => (
+              <span key={crumb.label} className="crumb-step">
+                <span aria-hidden="true">/</span>
+                {index < crumbs.length - 1
+                  ? <Link to={crumb.to}>{crumb.label}</Link>
+                  : <strong aria-current="page">{crumb.label}</strong>}
+              </span>
+            ))}
+          </nav>
           <div className="topbar-chips">
             <button
               className="theme-toggle"
@@ -171,6 +191,9 @@ function App() {
               </span>
             </button>
             <WindowSelector />
+          </div>
+          <div className={busy ? 'progress-bar is-busy' : 'progress-bar'} aria-hidden="true">
+            <span />
           </div>
         </header>
 

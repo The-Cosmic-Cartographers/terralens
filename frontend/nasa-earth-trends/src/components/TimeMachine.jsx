@@ -54,9 +54,12 @@ function TimeMachine({ regionId, datasetId, headline = null }) {
     <section className="time-machine">
       <div className="time-machine-heading">
         <div>
-          <span className="section-index">TIME MACHINE</span>
           <h2>Change the window, not the evidence.</h2>
           <p>Both sliders read supplied windows; the browser does not recalculate statistics.</p>
+          <p>
+            Windows shorter than {data.min_window_years} years are not offered: a p-value from a
+            shorter record would overstate confidence, so none is reported.
+          </p>
         </div>
         <span className="window-rule">Minimum: {data.min_window_years} years</span>
       </div>

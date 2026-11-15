@@ -95,9 +95,6 @@ function HomePage() {
               under half-covered are dropped first. Below that, no test is run —
               the record is marked “Not enough data”.
             </p>
-            <Link className="text-link" to="/case-files">
-              How to read a case file →
-            </Link>
           </Panel>
 
           <Panel title="Comparison track" className="panel-accent">

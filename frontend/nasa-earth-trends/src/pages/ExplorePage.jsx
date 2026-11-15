@@ -7,6 +7,7 @@ import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import KpiTile from '../components/KpiTile.jsx'
 import LineupRow from '../components/LineupRow.jsx'
+import LineupSkeleton from '../components/LineupSkeleton.jsx'
 import LoadingState from '../components/LoadingState.jsx'
 import Panel from '../components/Panel.jsx'
 import ProductBadge from '../components/ProductBadge.jsx'
@@ -100,7 +101,6 @@ function ExplorePage() {
         <KpiTile label="Window" value="1980–2025" note="Monthly series" />
       </div>
 
-      {(catalogueLoading || lineupLoading) && <LoadingState label="Loading supplied environmental results" />}
       {catalogueError && <ErrorState message={catalogueError.message} />}
       {lineupError && <ErrorState message={lineupError.message} />}
 
@@ -126,11 +126,13 @@ function ExplorePage() {
           {selectedVariableId && (
             <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={`/explore/${selectedVariableId}?region=${regionId}`}>Open its detail view.</Link></p>
           )}
-          {visibleRows.length ? (
+          {lineupLoading ? (
+            <LineupSkeleton rows={selectedVariableId ? 1 : 5} label="Loading supplied environmental results" />
+          ) : visibleRows.length ? (
             <div className="lineup-result-list">
               {visibleRows.map((row, index) => <LineupRow key={`${row.dataset_id}-${row.variable_id}`} row={row} rank={index + 1} />)}
             </div>
-          ) : (
+          ) : !lineupError && (
             <EmptyState
               title="No ranked results supplied for this region"
               message="The interface will show the lineup when the API or static result package provides it."
@@ -139,7 +141,7 @@ function ExplorePage() {
         </Panel>
 
         <Panel className="span-12" title="Catalogue" flush>
-          <DatasetTable items={items} />
+          {catalogueLoading ? <LoadingState label="Loading the dataset catalogue" /> : <DatasetTable items={items} />}
           {!catalogueLoading && !catalogueError && items.length === 0 && (
             <EmptyState title="No catalogue entries available" message="The connected data catalogue is empty." />
           )}

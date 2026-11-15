@@ -102,6 +102,24 @@ async function request(kind, params = {}) {
 const pending = new Map()
 const resolved = new Map()
 
+// Network requests in flight, for the request bar under the top bar. Cache
+// hits never count, so a page opened again shows no activity.
+let inFlight = 0
+const activityListeners = new Set()
+
+function trackActivity(delta) {
+  inFlight += delta
+  activityListeners.forEach((listener) => listener())
+}
+
+export const activity = {
+  subscribe(listener) {
+    activityListeners.add(listener)
+    return () => activityListeners.delete(listener)
+  },
+  isBusy: () => inFlight > 0,
+}
+
 function cacheKey(kind, params) {
   return `${kind}|${JSON.stringify(params)}`
 }
@@ -110,6 +128,7 @@ function cached(kind, params, load) {
   const key = cacheKey(kind, params)
 
   if (!pending.has(key)) {
+    trackActivity(1)
     pending.set(
       key,
       load()
@@ -120,7 +139,8 @@ function cached(kind, params, load) {
         .catch((error) => {
           pending.delete(key)
           throw error
-        }),
+        })
+        .finally(() => trackActivity(-1)),
     )
   }
 
