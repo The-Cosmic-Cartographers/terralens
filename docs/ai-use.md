@@ -68,6 +68,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-15 | Kevin | Claude Code | Case Files page: show the 95% interval per decade next to the per-decade rate and format the adjusted p-value | `frontend/nasa-earth-trends/src/pages/CaseFilesPage.jsx` |
 | 2026-11-15 | Kevin | Claude Code | Demo kit (NAS-53): screenshots of the live app taken with headless Chrome and the demo script; the submission form draft (NAS-54) and project page draft (NAS-39) in Linear | `docs/demo/` |
 | 2026-11-15 | Kevin | Claude Code | Frontend QA fixes (NAS-52): the precipitation trend line was drawn at twelve times the right slope on the monthly chart, and the Lineup row slope used a fixed three decimals; both now follow the file's units and the shared formatter | `frontend/nasa-earth-trends/src/components/charts/TrendChart.jsx`, `src/components/LineupRow.jsx` |
+| 2026-11-15 | Kevin | Claude Code | NAS-44: ground-station direction check against NOAA Climate Data Online (GSOM monthly summaries) for Ireland and the US Southwest, the script and the generated report | `analysis/station_check.py`, `docs/station-check.md` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
