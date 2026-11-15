@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { useData } from '../hooks/useData.js'
 import { FALLBACK_WINDOW, WindowContext } from './window.js'
@@ -25,6 +26,7 @@ function readStoredYear() {
 
 function WindowProvider({ children }) {
   const { data: catalogue } = useData('catalogue')
+  const [searchParams, setSearchParams] = useSearchParams()
 
   // The window the app can honestly describe runs from the earliest supplied
   // period start to the latest supplied period end.
@@ -38,25 +40,52 @@ function WindowProvider({ children }) {
     return end > start ? { start, end } : FALLBACK_WINDOW
   }, [catalogue])
 
+  // The URL wins over the stored preference: a shared link should open on the
+  // range it names, and back/forward should restore it without a write.
+  const urlEnd = yearOf(searchParams.get('end'))
+  const requestedStart = yearOf(searchParams.get('start'))
   const [chosenEnd, setChosenEnd] = useState(readStoredYear)
 
-  // A stored year from an older snapshot may sit outside today's bounds; the
-  // displayed year is always clamped, and picking a year rewrites the stored one.
-  const endYear = clamp(chosenEnd ?? bounds.end, bounds.start, bounds.end)
+  const endYear = urlEnd == null
+    ? clamp(chosenEnd ?? bounds.end, bounds.start, bounds.end)
+    : clamp(urlEnd, bounds.start, bounds.end)
+  const startYear = clamp(requestedStart ?? bounds.start, bounds.start, endYear)
 
   const setEndYear = useCallback((year) => {
     const next = clamp(Number(year), bounds.start, bounds.end)
     setChosenEnd(next)
+
+    setSearchParams((params) => {
+      const updated = new URLSearchParams(params)
+      updated.set('end', String(next))
+
+      // A requested start later than the chosen end would leave the plot empty,
+      // so that request is dropped and the record's own start applies again.
+      const requested = yearOf(updated.get('start'))
+      if (requested != null && requested >= next) updated.delete('start')
+
+      return updated
+    }, { replace: true })
+  }, [bounds.start, bounds.end, setSearchParams, setChosenEnd])
+
+  // Whatever the range ends up being, the next visit without a URL keeps it.
+  useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, String(next))
+      window.localStorage.setItem(STORAGE_KEY, String(endYear))
     } catch {
       // A blocked storage write only costs persistence, never correctness.
     }
-  }, [bounds.start, bounds.end])
+  }, [endYear])
 
   const value = useMemo(
-    () => ({ startYear: bounds.start, endYear, maxYear: bounds.end, setEndYear }),
-    [bounds.start, bounds.end, endYear, setEndYear],
+    () => ({
+      startYear,
+      endYear,
+      minYear: bounds.start,
+      maxYear: bounds.end,
+      setEndYear,
+    }),
+    [startYear, bounds.start, bounds.end, endYear, setEndYear],
   )
 
   return <WindowContext.Provider value={value}>{children}</WindowContext.Provider>

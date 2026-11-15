@@ -3,16 +3,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWindow } from '../state/window.js'
 
 function WindowSelector() {
-  const { startYear, endYear, maxYear, setEndYear } = useWindow()
+  const { startYear, endYear, minYear, maxYear, setEndYear } = useWindow()
   const [open, setOpen] = useState(false)
   const rootRef = useRef(null)
   const listRef = useRef(null)
 
-  // The list always spans the whole record, so a year picked earlier can be
-  // changed back without a reload.
+  // The list spans the whole record rather than the current range, so a year
+  // requested in the URL can be changed back without a reload.
   const years = useMemo(
-    () => Array.from({ length: maxYear - startYear + 1 }, (_, index) => maxYear - index),
-    [startYear, maxYear],
+    () => Array.from({ length: maxYear - minYear + 1 }, (_, index) => maxYear - index),
+    [minYear, maxYear],
   )
 
   useEffect(() => {

@@ -7,6 +7,7 @@ export const FALLBACK_WINDOW = { start: 1981, end: 2025 }
 export const WindowContext = createContext({
   startYear: FALLBACK_WINDOW.start,
   endYear: FALLBACK_WINDOW.end,
+  minYear: FALLBACK_WINDOW.start,
   maxYear: FALLBACK_WINDOW.end,
   setEndYear: () => {},
 })
