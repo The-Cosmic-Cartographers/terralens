@@ -38,13 +38,15 @@ function VariableDetailPage() {
   const datasetId = searchParams.get('dataset') || dataset?.dataset_id
   const { data: series } = useData('series', { regionId, datasetId })
   const { data: metadata } = useData('metadata', { datasetId })
+  const anomalyAvailable = Boolean(series?.rows?.some((row) => row.anomaly != null))
+  const displayMode = seriesMode === 'anomaly' && !anomalyAvailable ? 'value' : seriesMode
   const chartData = useMemo(() => (series?.rows || []).map((row) => ({
     label: row.timestamp?.slice(0, 4),
     t: Number(row.timestamp?.slice(0, 4)) + (Number(row.timestamp?.slice(5, 7)) - 1) / 12,
-    value: seriesMode === 'anomaly' ? row.anomaly : row.value,
+    value: displayMode === 'anomaly' ? row.anomaly : row.value,
     ciLow: null,
     ciHigh: null,
-  })), [series, seriesMode])
+  })), [displayMode, series])
   const region = regions.find((item) => item.id === regionId) || regions[0]
   const loading = catalogueLoading || trendLoading
 
@@ -68,9 +70,18 @@ function VariableDetailPage() {
       <div className="grid">
         <Panel className="span-8" title="Historical series" meta={<span className="chip">Chart foundation</span>}>
           <div className="chart-toolbar" role="group" aria-label="Series display mode">
-            <button type="button" className={seriesMode === 'value' ? 'active' : ''} onClick={() => setSeriesMode('value')}>Measured</button>
-            <button type="button" className={seriesMode === 'anomaly' ? 'active' : ''} onClick={() => setSeriesMode('anomaly')}>Anomaly</button>
+            <button type="button" className={displayMode === 'value' ? 'active' : ''} onClick={() => setSeriesMode('value')}>Measured</button>
+            <button
+              type="button"
+              className={displayMode === 'anomaly' ? 'active' : ''}
+              onClick={() => setSeriesMode('anomaly')}
+              disabled={!anomalyAvailable}
+              title={anomalyAvailable ? 'Show supplied anomaly values' : 'Anomaly values are not present in this series export'}
+            >
+              Anomaly {!anomalyAvailable && '(not supplied)'}
+            </button>
           </div>
+          {!anomalyAvailable && <p className="chart-note">Anomaly values are not included in this series export, so only the measured monthly values can be displayed.</p>}
           {chartData.length ? <TrendChart data={chartData} trend={trend} /> : <EmptyState title="Historical series unavailable" message="No monthly series was supplied for this region and variable." />}
         </Panel>
 

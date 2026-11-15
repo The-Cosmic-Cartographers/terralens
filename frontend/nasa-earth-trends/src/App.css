@@ -2311,6 +2311,17 @@ body {
   color: var(--navy-900);
 }
 
+.chart-toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.chart-note {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .evidence-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
