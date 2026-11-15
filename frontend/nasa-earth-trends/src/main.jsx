@@ -9,6 +9,7 @@ import {
   ComparePage,
   ExplorePage,
   HomePage,
+  SummaryPage,
   VariableDetailPage,
 } from './pages'
 import './index.css'
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')).render(
         <Routes>
           <Route element={<App />}>
             <Route index element={<HomePage />} />
+            <Route path="summary" element={<SummaryPage />} />
             <Route path="explore" element={<ExplorePage />} />
             <Route
               path="explore/:variableId"

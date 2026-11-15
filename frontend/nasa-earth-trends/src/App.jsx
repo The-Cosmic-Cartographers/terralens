@@ -10,6 +10,7 @@ import './App.css'
 
 const navigation = [
   { to: '/', label: 'Overview', end: true, icon: 'overview', title: 'Overview' },
+  { to: '/summary', label: 'Summary', icon: 'summary', title: 'Summary' },
   { to: '/explore', label: 'The Lineup', icon: 'lineup', title: 'The Lineup' },
   { to: '/compare', label: 'Opposite Trends', icon: 'compare', title: 'Opposite Trends' },
   { to: '/case-files', label: 'Case Files', icon: 'cases', title: 'Case Files' },
@@ -17,6 +18,7 @@ const navigation = [
 
 const iconPaths = {
   overview: 'M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z',
+  summary: 'M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z',
   lineup: 'M4 5h16M4 10h16M4 15h10M4 20h6',
   compare: 'M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7',
   cases: 'M5 3h10l4 4v14H5zM14 3v5h5M8 13h8M8 17h6',
