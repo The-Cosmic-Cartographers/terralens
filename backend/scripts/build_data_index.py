@@ -49,6 +49,13 @@ LIMITATIONS = [
     "Changes in what it assimilates can create artificial steps in a record.",
     "Months with no value are kept as empty rows, never filled in.",
 ]
+
+# NO2 has an ingestion route but is not a catalogue row: it has city boxes rather
+# than the five study regions, so it can never be ready in the app's catalogue.
+CATALOGUE_VARIABLES = tuple(
+    spec for spec in VARIABLES.values() if spec.variable_id != "no2"
+)
+
 REGION_SOURCE = "Region boxes defined by TerraLens (Linear doc 01, decision D19)"
 REGION_LICENCE = "TerraLens project boxes; no third-party boundary data"
 
@@ -65,7 +72,7 @@ def build(processed: Path, out: Path) -> list[str]:
     unknown = [r for r in APP_REGIONS if r not in boxes]
     if unknown:
         raise ValueError(f"APP_REGIONS not in pipeline/regions.json: {', '.join(unknown)}")
-    ids = [spec.dataset_id for spec in VARIABLES.values()]
+    ids = [spec.dataset_id for spec in CATALOGUE_VARIABLES]
     if len(set(ids)) != len(ids):
         raise ValueError(
             "two variables share a dataset_id; their series would overwrite each other"
@@ -75,7 +82,7 @@ def build(processed: Path, out: Path) -> list[str]:
     newest = dt.date.min
     written: list[str] = []
 
-    for spec in VARIABLES.values():
+    for spec in CATALOGUE_VARIABLES:
         folder = processed / spec.dataset_id
         provenance_file = folder / "provenance.json"
         files = sorted(folder.glob("*.parquet")) if folder.is_dir() else []

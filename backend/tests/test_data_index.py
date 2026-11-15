@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from pipeline.registry import VARIABLES
-from scripts.build_data_index import APP_REGIONS, build
+from scripts.build_data_index import APP_REGIONS, CATALOGUE_VARIABLES, build
 
 ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = ROOT / "data" / "processed"
@@ -43,11 +43,12 @@ def test_a_dataset_is_ready_only_when_it_covers_every_app_region(index):
     """
     client, _ = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
-    assert len(items) == len(VARIABLES)
-    for spec in VARIABLES.values():
+    assert len(items) == len(CATALOGUE_VARIABLES)
+    for spec in CATALOGUE_VARIABLES:
         expected = "ready" if has_all_app_regions(spec.dataset_id) else "coming_soon"
         assert items[spec.dataset_id] == expected, spec.dataset_id
     assert items["merra2_m2tmnxslv"] == "ready"
+    assert "omi_omno2d_v004" not in items
 
 
 def test_regions_are_exactly_the_app_regions(index):

@@ -43,14 +43,5 @@
     "period_start": "1980-01-01",
     "period_end": "2025-12-01",
     "status": "ready"
-  },
-  {
-    "dataset_id": "omi_omno2d_v004",
-    "variable_id": "no2",
-    "label": "NO2 column (troposphere)",
-    "unit": "molec/cm2",
-    "period_start": "2005-01-01",
-    "period_end": "2025-12-01",
-    "status": "coming_soon"
   }
 ]
