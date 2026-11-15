@@ -590,8 +590,14 @@ def analyze_series(
     annual_sd = float(np.std(annual_clean, ddof=1)) if annual_clean.size > 1 else float("nan")
     base["effect_size_swings"] = effect_size_swings(slope, int(annual_clean.size), annual_sd)
     # contract (doc 04): detectability is only filled when the verdict is not significant
+    # The anomalies are monthly, so the slope must be in the same monthly units. With
+    # annual_agg="sum" (precipitation) the Sen slope is in annual-total units per year,
+    # twelve times the monthly scale; dividing by 12 puts the two on one footing.
+    detect_slope = slope / 12.0 if annual_agg == "sum" else slope
     detect = (
-        None if base["verdict"] == "significant" else detectability_years(anomalies_flat, slope)
+        None
+        if base["verdict"] == "significant"
+        else detectability_years(anomalies_flat, detect_slope)
     )
     if detect is not None and detect <= int(annual_clean.size):
         # The record is already longer than the length needed under stationary
