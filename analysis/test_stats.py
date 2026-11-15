@@ -198,15 +198,31 @@ def test_verdict_is_set_from_the_computed_p_value():
     assert row["adjusted_p_value"] == pytest.approx(row["p_value"])
 
 
-def test_detectability_is_suppressed_when_the_record_is_long_enough():
-    # 76 years of skewed rainfall: n* comes out shorter than the record, so the
-    # number would contradict the row and must be withheld with a caveat.
+def test_detectability_is_suppressed_when_the_record_is_long_enough(monkeypatch):
+    # When n* comes out shorter than the record, "needs N years" would contradict
+    # the row, so the number is withheld with a caveat. Force a short n* so the
+    # rule is tested on its own, independent of any particular random series.
+    from terralens import _stats
+
+    monkeypatch.setattr(_stats, "detectability_years", lambda *_args: 5.0)
     rng = np.random.default_rng(10)
     matrix = rng.gamma(shape=2.0, scale=40.0, size=(76, 12))
-    row = analyze(matrix, start_year=1950)
-    if row["verdict"] != "significant" and row["adjusted_p_value"] is not None:
-        assert row["detect_years"] is None
-        assert "record_long_enough_but_not_significant" in row["caveats"]
+    row = analyze(matrix, start_year=1950, annual_agg="mean")
+    assert row["verdict"] != "significant"
+    assert row["detect_years"] is None
+    assert "record_long_enough_but_not_significant" in row["caveats"]
+
+
+def test_detectability_uses_monthly_units_for_summed_variables():
+    # Precipitation is aggregated as an annual sum, so its Sen slope is in
+    # annual-total units. Detectability compares it with MONTHLY noise, so the
+    # summed and averaged views of the same series must give the same answer.
+    matrix = seasonal_series(46, trend_per_month=0.0, seed=21, noise=30.0)
+    summed = analyze(matrix, annual_agg="sum")
+    averaged = analyze(matrix, annual_agg="mean")
+    assert summed["verdict"] != "significant"
+    assert summed["detect_years"] is not None
+    assert summed["detect_years"] == pytest.approx(averaged["detect_years"], rel=1e-6)
 
 
 def test_analyze_series_reports_diagnostics_by_default():

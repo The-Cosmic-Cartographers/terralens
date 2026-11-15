@@ -386,7 +386,6 @@
         "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
         "serial_correlation_note": "lag-1 rho = +0.35; Hamed\u2013Rao variance factor 2.09; raw seasonal MK p = 0.7081",
         "caveats": [
-          "record_long_enough_but_not_significant",
           "level_shift_detected"
         ],
         "withheld_reason": null,
@@ -394,7 +393,7 @@
         "bh_family": "lineup:sahel",
         "verdict": "no_clear_trend",
         "effect_size_swings": 1.1519680740655134,
-        "detect_years": null,
+        "detect_years": 59.23815988470338,
         "change_point": {
           "change_point_year": 2009,
           "K": 294.0,
