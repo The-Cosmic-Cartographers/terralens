@@ -41,7 +41,7 @@ function InvestigationStart() {
   return (
     <section className="start-investigation" aria-labelledby="start-investigation-title">
       <div>
-        <span className="section-index">START AN INVESTIGATION</span>
+        <span className="section-index">Start an investigation</span>
         <h2 id="start-investigation-title">Ask a smaller question. See the evidence faster.</h2>
         <p>Choose the kind of place, the signal you care about, and the period you want to inspect. These choices filter the Lineup; they never change the supplied statistics.</p>
       </div>

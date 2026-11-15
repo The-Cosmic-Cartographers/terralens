@@ -1,11 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import App from './App.jsx'
 import WindowProvider from './state/WindowProvider.jsx'
 import {
-  CaseFilesPage,
   ComparePage,
   ExplorePage,
   HomePage,
@@ -28,7 +27,8 @@ createRoot(document.getElementById('root')).render(
               element={<VariableDetailPage />}
             />
             <Route path="compare" element={<ComparePage />} />
-            <Route path="case-files" element={<CaseFilesPage />} />
+            {/* Retired or mistyped links, such as the old /case-files, land on the Overview. */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </WindowProvider>

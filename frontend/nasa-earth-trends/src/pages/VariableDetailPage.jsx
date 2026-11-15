@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 import EmptyState from '../components/EmptyState.jsx'
@@ -29,7 +29,6 @@ const fallbackDataset = {
 function VariableDetailPage() {
   const { variableId } = useParams()
   const [searchParams] = useSearchParams()
-  const [seriesMode, setSeriesMode] = useState('value')
   const regionId = searchParams.get('region') || regions[0].id
   const { data: catalogue, loading: catalogueLoading } = useData('catalogue')
   const { data: trend, loading: trendLoading, error: trendError } = useData('trend', {
@@ -45,10 +44,10 @@ function VariableDetailPage() {
   const chartData = useMemo(() => (series?.rows || []).map((row) => ({
     label: row.timestamp?.slice(0, 4),
     t: Number(row.timestamp?.slice(0, 4)) + (Number(row.timestamp?.slice(5, 7)) - 1) / 12,
-    value: seriesMode === 'anomaly' ? row.anomaly : row.value,
+    value: row.value,
     ciLow: null,
     ciHigh: null,
-  })), [series, seriesMode])
+  })), [series])
   // The header picker trims the plotted years. It never recalculates anything:
   // the supplied trend statistics keep describing the whole record, and the
   // note under the chart says so whenever the plot is shorter than the record.
@@ -82,10 +81,6 @@ function VariableDetailPage() {
 
       <div className="grid">
         <Panel className="span-8" title="Historical series" meta={<span className="chip">Chart foundation</span>}>
-          <div className="chart-toolbar" role="group" aria-label="Series display mode">
-            <button type="button" className={seriesMode === 'value' ? 'active' : ''} onClick={() => setSeriesMode('value')}>Measured</button>
-            <button type="button" className={seriesMode === 'anomaly' ? 'active' : ''} onClick={() => setSeriesMode('anomaly')}>Anomaly</button>
-          </div>
           {chartData.length ? <TrendChart data={plottedData} trend={trend} /> : <EmptyState title="Historical series unavailable" message="No monthly series was supplied for this region and variable." />}
           {isTrimmed && (
             <p className="chart-note">

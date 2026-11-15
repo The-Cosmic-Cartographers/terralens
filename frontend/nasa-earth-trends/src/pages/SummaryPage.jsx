@@ -149,7 +149,7 @@ function SummaryPage() {
           <Panel title="The short answer">
             <div className="summary-answer">
               <div className="summary-answer-column">
-                <span className="section-index">WHAT CHANGED</span>
+                <span className="section-index">What changed</span>
                 <ul className="summary-list">
                   {variables.map((variable) => (
                     <li key={variable.id}>
@@ -160,7 +160,7 @@ function SummaryPage() {
               </div>
 
               <div className="summary-answer-column">
-                <span className="section-index">BECAUSE OF THAT CHANGE, WHAT CHANGED?</span>
+                <span className="section-index">Because of that change, what changed?</span>
                 <p className="summary-plain">
                   This snapshot cannot answer &ldquo;because&rdquo;. Each signal is tested on its own
                   record, and TerraLens does not run an attribution test, so no variable here is

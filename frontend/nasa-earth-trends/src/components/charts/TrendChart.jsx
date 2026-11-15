@@ -17,7 +17,17 @@ function median(values) {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 }
 
+// Recharts animates in JavaScript, so the CSS reduced-motion rule cannot
+// reach it; ask the browser directly.
+function prefersReducedMotion() {
+  return typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
 function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
+  // The measured series draws left to right, the way the record is read, and
+  // the trend line follows once the data it summarises is on screen.
+  const animate = !prefersReducedMotion()
   // The supplied Sen slope is per year and the points are monthly. Draw the line
   // slope * years + intercept, with the intercept the median of (value - slope * years),
   // which is the Sen line's own definition; nothing is re-tested here.
@@ -88,10 +98,12 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               return `${year}-${String(month).padStart(2, '0')}`
             }}
             contentStyle={{
-              background: 'var(--surface-strong)',
-              border: '1px solid var(--border)',
-              borderRadius: '10px',
-              color: 'var(--text)',
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow-pop)',
+              color: 'var(--ink)',
+              fontSize: 'var(--text-sm)',
             }}
           />
           <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} isAnimationActive={false} />
@@ -104,7 +116,9 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             strokeWidth={2.5}
             dot={false}
             connectNulls={false}
-            isAnimationActive={false}
+            isAnimationActive={animate}
+            animationDuration={900}
+            animationEasing="ease-out"
           />
           {trend?.sen_slope_per_year != null && (
             <Line
@@ -116,7 +130,10 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               strokeDasharray="6 4"
               dot={false}
               connectNulls={false}
-              isAnimationActive={false}
+              isAnimationActive={animate}
+              animationBegin={700}
+              animationDuration={500}
+              animationEasing="ease-out"
             />
           )}
         </LineChart>

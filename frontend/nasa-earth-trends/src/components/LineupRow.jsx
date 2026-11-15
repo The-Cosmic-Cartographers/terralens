@@ -33,6 +33,9 @@ function LineupRow({ row, rank }) {
         </small>
       </span>
       <ProductBadge type={row.product_type || trend.product_type} />
+      <svg className="row-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+        <path d="m6 3 5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </Link>
   )
 }

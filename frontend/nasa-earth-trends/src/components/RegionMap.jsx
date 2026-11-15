@@ -6,12 +6,15 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 
 const FALLBACK_CENTER = [20, 25]
 
-// Every study box is green; the selected one is red. Colours are literals
-// because MapLibre paint expressions cannot read CSS custom properties.
-const REGION_FILL = '#3fa66c'
-const REGION_LINE = '#25784c'
-const SELECTED_FILL = '#e45b52'
-const SELECTED_LINE = '#a93635'
+// Study boxes are slate; the selected one takes the accent blue, the same
+// colour that marks a selection everywhere else (DESIGN.md). Colours are
+// literals because MapLibre paint expressions cannot read CSS custom
+// properties: they mirror --ink-2 and --accent from index.css. The basemap is
+// light in both themes, so the light-theme values are the right ones.
+const REGION_FILL = '#3a4d5e'
+const REGION_LINE = '#3a4d5e'
+const SELECTED_FILL = '#1462a6'
+const SELECTED_LINE = '#1462a6'
 
 function RegionMap({ region, regionData, onRegionSelect }) {
   const mapContainer = useRef(null)
@@ -37,14 +40,18 @@ function RegionMap({ region, regionData, onRegionSelect }) {
     return () => controller.abort()
   }, [])
 
+  // The first region seeds the camera; later selections fly there instead of
+  // rebuilding the map, which used to blank it and reload every tile.
+  const initialView = useRef({ center: region.center, zoom: region.zoom })
+
   useEffect(() => {
     if (!mapContainer.current || map.current) return undefined
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: 'https://tiles.openfreemap.org/styles/bright',
-      center: region.center || FALLBACK_CENTER,
-      zoom: region.zoom || 2.2,
+      center: initialView.current.center || FALLBACK_CENTER,
+      zoom: initialView.current.zoom || 2.2,
       attributionControl: true,
     })
     map.current.addControl(new maplibregl.NavigationControl(), 'top-right')
@@ -53,6 +60,17 @@ function RegionMap({ region, regionData, onRegionSelect }) {
       map.current?.remove()
       map.current = null
     }
+  }, [])
+
+  // The flight shows where the new region sits relative to the last one.
+  // MapLibre skips the animation when the reader prefers reduced motion.
+  useEffect(() => {
+    map.current?.flyTo({
+      center: region.center || FALLBACK_CENTER,
+      zoom: region.zoom || 2.2,
+      duration: 1200,
+      essential: false,
+    })
   }, [region.center, region.zoom])
 
   useEffect(() => {
