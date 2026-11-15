@@ -10,6 +10,15 @@ from terralens import cache
 EXPECTED = ["iberia", "ireland", "nw_south_asia", "sahel", "us_southwest"]
 
 
+def test_version_matches_release_metadata():
+    import tomllib
+    from pathlib import Path
+
+    pyproject = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    metadata = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    assert tl.__version__ == metadata["project"]["version"]
+
+
 def test_list_regions_is_the_five_poc_regions():
     assert tl.list_regions() == EXPECTED
 
