@@ -1868,7 +1868,7 @@ body {
 .theme-light {
   --ink: #142331;
   --ink-2: #405466;
-  --muted: #6b7e8d;
+  --muted: #55697a;
   --line: #d8e2e8;
   --line-strong: #b6c8d3;
   --surface: #ffffff;
@@ -1877,7 +1877,7 @@ body {
   --blue-50: #f1f8fc;
   --blue-100: #dff1fb;
   --green-100: #def3ee;
-  --green-700: #167c72;
+  --green-700: #0f6a61;
   --amber-100: #fff3cf;
   --amber-700: #7a5600;
 }

@@ -67,6 +67,7 @@ NASA Space Apps requires every AI tool used, and what it was used for, to be dec
 | 2026-11-15 | Kevin | Claude Code | Clean-session check of the deployed site (NAS-24) through browser automation, then Detail page polish: plain-language verdict, variable and method, slope precision for small per-year slopes, rounded chart tooltip and whole-year axis ticks | `frontend/nasa-earth-trends/src/utils/format.js`, `frontend/nasa-earth-trends/src/pages/VariableDetailPage.jsx`, `frontend/nasa-earth-trends/src/components/`, `frontend/nasa-earth-trends/src/App.css` |
 | 2026-11-15 | Kevin | Claude Code | Case Files page: show the 95% interval per decade next to the per-decade rate and format the adjusted p-value | `frontend/nasa-earth-trends/src/pages/CaseFilesPage.jsx` |
 | 2026-11-15 | Kevin | Claude Code | Demo kit (NAS-53): screenshots of the live app taken with headless Chrome and the demo script; the submission form draft (NAS-54) and project page draft (NAS-39) in Linear | `docs/demo/` |
+| 2026-11-15 | Kevin | Claude Code | Frontend QA fixes (NAS-52): the precipitation trend line was drawn at twelve times the right slope on the monthly chart, and the Lineup row slope used a fixed three decimals; both now follow the file's units and the shared formatter | `frontend/nasa-earth-trends/src/components/charts/TrendChart.jsx`, `src/components/LineupRow.jsx` |
 
 Parth, Nandini and Bhargav: add a row for every AI tool you use, including chat assistants, code completion and image tools, in the same pull request as the work.
 
