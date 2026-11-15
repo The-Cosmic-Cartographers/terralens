@@ -16,7 +16,7 @@ from typing import Any
 
 from . import regions as _regions
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 
 def list_regions() -> list[str]:

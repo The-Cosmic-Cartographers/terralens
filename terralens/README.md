@@ -21,7 +21,7 @@ The package is currently published on **TestPyPI**, not real PyPI. Install the
 verified test release with:
 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ terralens-earth==0.1.2
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ terralens-earth==0.1.3
 ```
 
 `--extra-index-url` is required because TestPyPI hosts only `terralens-earth`;
