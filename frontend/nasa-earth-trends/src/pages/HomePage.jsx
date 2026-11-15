@@ -17,6 +17,12 @@ function HomePage() {
 
   const items = catalogue ?? []
   const ready = items.filter((item) => item.status === 'ready').length
+  // regions.json also carries the Dublin and Delhi boxes that exist only for the
+  // NO2 comparison. Counting it whole reported seven study regions; the study
+  // set is the five in the region options that the snapshot actually covers.
+  const studyRegions = regionOptions.filter((option) =>
+    regions?.some((item) => item.region_id === option.id),
+  )
 
   return (
     <div className="page">
@@ -47,8 +53,8 @@ function HomePage() {
         />
         <KpiTile
           label="Study regions"
-          value={regions ? regions.length : '—'}
-          note={regionOptions.map((region) => region.name).join(', ')}
+          value={regions ? studyRegions.length : '—'}
+          note={studyRegions.map((region) => region.name).join(', ')}
         />
         <KpiTile
           label="Analysis window"
@@ -82,6 +88,12 @@ function HomePage() {
               coverage, method, limitations and provenance. It describes what
               the data shows over the measured period. It does not forecast or
               claim causes.
+            </p>
+            <p className="method-note">
+              <strong>Minimum data.</strong> Ten complete years (all twelve
+              months present) and no more than 20% of months missing; months
+              under half-covered are dropped first. Below that, no test is run —
+              the record is marked “Not enough data”.
             </p>
             <Link className="text-link" to="/case-files">
               How to read a case file →

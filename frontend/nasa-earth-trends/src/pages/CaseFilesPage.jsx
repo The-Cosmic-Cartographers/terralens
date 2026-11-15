@@ -6,7 +6,9 @@ import ErrorState from '../components/ErrorState.jsx'
 import LoadingState from '../components/LoadingState.jsx'
 import Panel from '../components/Panel.jsx'
 import SampleDataWarning from '../components/SampleDataWarning.jsx'
+import SourceLink from '../components/SourceLink.jsx'
 import VerdictBadge from '../components/VerdictBadge.jsx'
+import { datasetSourceUrl } from '../data/sources.js'
 import { useData } from '../hooks/useData.js'
 
 const DATASET_ID = 'merra2_m2tmnxslv'
@@ -162,7 +164,10 @@ function CaseFilesPage() {
               <div>
                 <span className="section-index">THE LINEUP ROW</span>
                 <h2>Air temperature (2 m)</h2>
-                <p className="case-muted">MERRA-2 model reanalysis · monthly series · 1981–2025</p>
+                <p className="case-muted">
+                  <SourceLink href={datasetSourceUrl(DATASET_ID)}>MERRA-2 model reanalysis</SourceLink>
+                  {' · monthly series · 1981–2025'}
+                </p>
                 <ResultSummary result={caseResult} />
                 <Link className="button button-secondary" to={`/explore?region=${currentCase.regionId}&variable=t2m`}>Open this Lineup view</Link>
               </div>

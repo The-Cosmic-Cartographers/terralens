@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import earthIcon from './assets/earthicon.png';
+import LoadingState from './components/LoadingState.jsx'
+import WindowSelector from './components/WindowSelector.jsx'
 import { useData } from './hooks/useData.js'
+import { ageLabel, coverageEndFrom, freshnessOf, snapshotDateFrom } from './utils/freshness.js'
 
 import './App.css'
 
@@ -37,6 +40,23 @@ function NavIcon({ name }) {
   )
 }
 
+const THEME_KEY = 'terralens-theme'
+// Earlier builds saved the theme on first paint, so a stored value alone does
+// not prove the visitor chose it. Only a toggle sets this marker.
+const THEME_CHOICE_KEY = 'terralens-theme-chosen'
+
+function readTheme() {
+  try {
+    const chosen = window.localStorage.getItem(THEME_CHOICE_KEY)
+    const stored = window.localStorage.getItem(THEME_KEY)
+    if (chosen && (stored === 'light' || stored === 'dark')) return stored
+  } catch {
+    // Blocked storage only costs a preference, never the page.
+  }
+
+  return 'light'
+}
+
 function currentTitle(pathname) {
   if (pathname.startsWith('/explore/')) return 'The Lineup / Trend detail'
   const match = navigation.find((item) =>
@@ -47,15 +67,23 @@ function currentTitle(pathname) {
 
 function App() {
   const location = useLocation()
-  const [theme, setTheme] = useState(() => (
-    window.localStorage.getItem('terralens-theme') || 'dark'
-  ))
+  const [theme, setTheme] = useState(readTheme)
   const { data: health, error, mode } = useData('health')
+  const { data: catalogue } = useData('catalogue')
   const online = Boolean(health) && !error
+  const freshness = freshnessOf(snapshotDateFrom(health?.data_version))
+  const coverageEnd = coverageEndFrom(catalogue)
 
-  useEffect(() => {
-    window.localStorage.setItem('terralens-theme', theme)
-  }, [theme])
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    try {
+      window.localStorage.setItem(THEME_KEY, next)
+      window.localStorage.setItem(THEME_CHOICE_KEY, '1')
+    } catch {
+      // Blocked storage only costs a preference, never the page.
+    }
+  }
 
   return (
     <div className={`dash theme-${theme}`}>
@@ -88,12 +116,23 @@ function App() {
         </nav>
 
         <div className="side-status">
-          <span className="side-label">Data status</span>
+          <span className="side-label">Data freshness</span>
           <div className="side-status-row">
-            <span className={online ? 'status-dot' : 'status-dot status-off'} />
-            {online ? 'Snapshot ready' : error ? 'Snapshot unavailable' : 'Checking…'}
+            <span
+              className={`status-dot status-${online ? freshness.tone : 'off'}`}
+              title={online ? `Snapshot rebuilt ${ageLabel(freshness.ageDays).toLowerCase()}` : undefined}
+            />
+            {online ? freshness.label : error ? 'Snapshot unavailable' : 'Checking…'}
           </div>
           <dl>
+            <div>
+              <dt>Updated</dt>
+              <dd>{online ? ageLabel(freshness.ageDays) : '—'}</dd>
+            </div>
+            <div>
+              <dt>Coverage</dt>
+              <dd>{coverageEnd ?? '—'}</dd>
+            </div>
             <div>
               <dt>Version</dt>
               <dd>{health?.data_version ?? '—'}</dd>
@@ -105,10 +144,6 @@ function App() {
           </dl>
         </div>
 
-        <p className="side-note">
-          Independent team project for the NASA Space Apps Challenge 2026. Not
-          an official NASA product.
-        </p>
       </aside>
 
       <div className="dash-main">
@@ -124,7 +159,7 @@ function App() {
               type="button"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               aria-pressed={theme === 'light'}
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
             >
               <span className="theme-toggle-track" aria-hidden="true">
                 <span className="theme-toggle-thumb" />
@@ -133,17 +168,27 @@ function App() {
                 {theme === 'dark' ? 'Dark mode' : 'Light mode'}
               </span>
             </button>
-            <span className="chip">Window 1980–2025</span>
-            <span className="chip">Precomputed results</span>
+            <WindowSelector />
           </div>
         </header>
 
         <main className="workspace" key={location.pathname}>
-          <Outlet />
+          <Suspense fallback={<LoadingState label="Loading evidence" />}>
+            <Outlet />
+          </Suspense>
         </main>
 
         <footer className="workspace-foot">
-          <span>Data: NASA GES DISC (MERRA-2, OMI), Earthdata</span>
+          <span>
+            Data:{' '}
+            <a className="source-link" href="https://disc.gsfc.nasa.gov" target="_blank" rel="noreferrer noopener">NASA GES DISC</a>
+            {' ('}
+            <a className="source-link" href="https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/" target="_blank" rel="noreferrer noopener">MERRA-2</a>
+            {', '}
+            <a className="source-link" href="https://disc.gsfc.nasa.gov/datasets/OMNO2D_004/summary" target="_blank" rel="noreferrer noopener">OMI</a>
+            {'), '}
+            <a className="source-link" href="https://www.earthdata.nasa.gov" target="_blank" rel="noreferrer noopener">Earthdata</a>
+          </span>
           <span>Evidence over assumptions. No forecasts, no causes.</span>
         </footer>
       </div>

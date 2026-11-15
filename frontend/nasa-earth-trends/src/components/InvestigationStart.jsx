@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import DropdownMenu from './DropdownMenu.jsx'
 import { regions } from '../data/regionOptions.js'
 import { variableGlossary } from '../data/glossary.js'
 
@@ -45,24 +46,33 @@ function InvestigationStart() {
         <p>Choose the kind of place, the signal you care about, and the period you want to inspect. These choices filter the Lineup; they never change the supplied statistics.</p>
       </div>
       <form className="investigation-form" onSubmit={startInvestigation}>
-        <label>
+        <div className="field">
           <span>What kind of place?</span>
-          <select value={placeType} onChange={(event) => setPlaceType(event.target.value)}>
-            {placeChoices.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
-          </select>
-        </label>
-        <label>
+          <DropdownMenu
+            label="What kind of place?"
+            value={placeType}
+            options={placeChoices.map(([id, label]) => ({ value: id, label }))}
+            onChange={setPlaceType}
+          />
+        </div>
+        <div className="field">
           <span>What do you care about?</span>
-          <select value={variableId} onChange={(event) => setVariableId(event.target.value)}>
-            {variableGlossary.map((item) => <option value={item.variableId} key={item.variableId}>{item.name}</option>)}
-          </select>
-        </label>
-        <label>
+          <DropdownMenu
+            label="What do you care about?"
+            value={variableId}
+            options={variableGlossary.map((item) => ({ value: item.variableId, label: item.name }))}
+            onChange={setVariableId}
+          />
+        </div>
+        <div className="field">
           <span>Which period?</span>
-          <select value={period} onChange={(event) => setPeriod(event.target.value)}>
-            {periodChoices.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
-          </select>
-        </label>
+          <DropdownMenu
+            label="Which period?"
+            value={period}
+            options={periodChoices.map(([id, label]) => ({ value: id, label }))}
+            onChange={setPeriod}
+          />
+        </div>
         <button className="button button-primary" type="submit">Follow the trail</button>
       </form>
     </section>
