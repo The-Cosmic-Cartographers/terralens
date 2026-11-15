@@ -17,9 +17,9 @@ than the verdict.
 Substitutions and limits, stated up front:
 
 - The ticket's candidate pairs (Ireland vs Iberia, wet vs dry) need precipitation, soil
-  moisture or evapotranspiration. Those series now exist (MERRA-2, 1980–2025, NAS-77), but
-  Iberia is outside the app's three regions, so all three cases still use air temperature,
-  the series verified against Giovanni.
+  moisture or evapotranspiration. Those series now exist for all five regions (MERRA-2,
+  1980–2025, NAS-77), but the three cases below were drafted on air temperature, the series
+  verified against Giovanni, and keep to it.
 - The Dublin–Delhi pollution pair needs OMI NO2, which has no data (NAS-27). That case is
   replaced by the Sahel record-shape case below.
 - "No clear trend" is covered by Case 2, which uses the window output; the air temperature

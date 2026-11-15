@@ -2,6 +2,53 @@
   {
     "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
     "variable_id": "evapotranspiration",
+    "region_id": "iberia",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "no_significant_trend",
+    "sen_slope_per_year": 0.0019054818461538487,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      -0.0009649980000000039,
+      0.005086079999999998
+    ],
+    "p_value": 0.13493911376947532,
+    "adjusted_p_value": 0.13493911376947532,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": false,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.64; Hamed\u2013Rao variance factor 4.62; raw seasonal MK p = 0.0013",
+    "caveats": [
+      "sensitive_to_serial_correlation"
+    ],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "no_clear_trend",
+    "effect_size_swings": 0.6353068955273881,
+    "detect_years": 92.28905725645198,
+    "change_point": {
+      "change_point_year": 1995,
+      "K": 184.0,
+      "p_value": 0.2593942922693921,
+      "mean_before": 1.311680007,
+      "mean_after": 1.3975449023999997,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 0.0012037009655172452,
+      "MAM": 0.005289479999999985,
+      "JJA": -0.00035124923076923286,
+      "SON": 0.0026187199999999984
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
+    "variable_id": "evapotranspiration",
     "region_id": "ireland",
     "period_start": "1980-01-01",
     "period_end": "2025-12-01",
@@ -14,7 +61,7 @@
       0.0029885532631579214
     ],
     "p_value": 0.005635655647923787,
-    "adjusted_p_value": 0.014121730012087497,
+    "adjusted_p_value": 0.014089139119809468,
     "adjustment_method": "benjamini_hochberg",
     "significant_at_0_05": true,
     "observation_count": 552,
@@ -47,6 +94,51 @@
   {
     "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
     "variable_id": "evapotranspiration",
+    "region_id": "nw_south_asia",
+    "period_start": "1980-01-01",
+    "period_end": "2025-12-01",
+    "series_used": "anomaly",
+    "trend_direction": "increasing",
+    "sen_slope_per_year": 0.011057810926829273,
+    "unit_per_year": "mm/day/yr",
+    "confidence_interval_95": [
+      0.005298767999999995,
+      0.01659899815384615
+    ],
+    "p_value": 0.0006185634157083175,
+    "adjusted_p_value": 0.0030928170785415876,
+    "adjustment_method": "benjamini_hochberg",
+    "significant_at_0_05": true,
+    "observation_count": 552,
+    "missing_month_count": 0,
+    "mean_coverage_fraction": 1.0,
+    "method": "seasonal_mann_kendall_hamed_rao + sens_slope",
+    "serial_correlation_note": "lag-1 rho = +0.68; Hamed\u2013Rao variance factor 5.22; raw seasonal MK p = 0.0000",
+    "caveats": [],
+    "withheld_reason": null,
+    "product_type": "reanalysis",
+    "bh_family": "compare:evapotranspiration",
+    "verdict": "significant",
+    "effect_size_swings": 1.9061102128816694,
+    "detect_years": null,
+    "change_point": {
+      "change_point_year": 2005,
+      "K": 356.0,
+      "p_value": 0.0009558464925116333,
+      "mean_before": 0.9908284619076924,
+      "mean_after": 1.30343029884,
+      "n": 46
+    },
+    "seasonal_slopes": {
+      "DJF": 0.004648209230769231,
+      "MAM": 0.004765299428571429,
+      "JJA": 0.016048320000000022,
+      "SON": 0.017828983384615384
+    }
+  },
+  {
+    "dataset_id": "merra2_m2tmnxlnd_evland_v5_12_4",
+    "variable_id": "evapotranspiration",
     "region_id": "sahel",
     "period_start": "1980-01-01",
     "period_end": "2025-12-01",
@@ -59,7 +151,7 @@
       0.006653209499999993
     ],
     "p_value": 0.12239433786677933,
-    "adjusted_p_value": 0.12239433786677933,
+    "adjusted_p_value": 0.13493911376947532,
     "adjustment_method": "benjamini_hochberg",
     "significant_at_0_05": false,
     "observation_count": 552,
@@ -107,7 +199,7 @@
       -0.0019331760000000078
     ],
     "p_value": 0.009414486674724998,
-    "adjusted_p_value": 0.014121730012087497,
+    "adjusted_p_value": 0.015690811124541664,
     "adjustment_method": "benjamini_hochberg",
     "significant_at_0_05": true,
     "observation_count": 552,

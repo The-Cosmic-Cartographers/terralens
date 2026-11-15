@@ -11,11 +11,12 @@ import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
 import { formatIntervalPerDecade, formatP, formatSigned } from '../utils/format.js'
 
-// Pairs among the three app regions (decision D26).
+// The paired regions of the Opposite Trends view (doc 11 and NAS-34); every region is an app region.
 const pairs = [
-  ['ireland', 'sahel'],
-  ['sahel', 'us_southwest'],
+  ['ireland', 'iberia'],
+  ['sahel', 'iberia'],
   ['us_southwest', 'ireland'],
+  ['sahel', 'nw_south_asia'],
 ]
 
 const labels = {

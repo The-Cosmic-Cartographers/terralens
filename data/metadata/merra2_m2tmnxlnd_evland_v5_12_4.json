@@ -7,5 +7,5 @@
     "Months with no value are kept as empty rows, never filled in.",
     "This is a land-surface field averaged over the box's grid cells without weighting by land fraction (MERRA-2 FRLAND), so coastal cells count in full."
   ],
-  "attribution": "MERRA-2 monthly land evapotranspiration (M2TMNXLND EVLAND). NASA Goddard Earth Sciences Data and Information Services Center (GES DISC), accessed through NASA Harmony (GES DISC subset) on 2026-11-14."
+  "attribution": "MERRA-2 monthly land evapotranspiration (M2TMNXLND EVLAND). NASA Goddard Earth Sciences Data and Information Services Center (GES DISC), accessed through NASA Harmony (GES DISC subset) on 2026-11-15."
 }

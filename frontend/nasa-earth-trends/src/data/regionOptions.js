@@ -43,7 +43,6 @@ const allRegions = [
   },
 ]
 
-// The app shows the three snapshot regions only (decision D26); the others stay
-// defined here for when more regions are exported.
-const APP_REGION_IDS = ['ireland', 'sahel', 'us_southwest', 'iberia', 'nw_south_asia']
+// The app shows the five snapshot regions (decision D31).
+const APP_REGION_IDS = ['ireland', 'iberia', 'sahel', 'nw_south_asia', 'us_southwest']
 export const regions = allRegions.filter((region) => APP_REGION_IDS.includes(region.id))
