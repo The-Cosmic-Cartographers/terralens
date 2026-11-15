@@ -52,9 +52,7 @@ LIMITATIONS = [
 
 # NO2 has an ingestion route but is not a catalogue row: it has city boxes rather
 # than the five study regions, so it can never be ready in the app's catalogue.
-CATALOGUE_VARIABLES = tuple(
-    spec for spec in VARIABLES.values() if spec.variable_id != "no2"
-)
+CATALOGUE_VARIABLES = tuple(spec for spec in VARIABLES.values() if spec.variable_id != "no2")
 
 REGION_SOURCE = "Region boxes defined by TerraLens (Linear doc 01, decision D19)"
 REGION_LICENCE = "TerraLens project boxes; no third-party boundary data"
