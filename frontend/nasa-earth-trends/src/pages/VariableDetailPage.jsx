@@ -11,7 +11,7 @@ import SourceLink from '../components/SourceLink.jsx'
 import TimeMachine from '../components/TimeMachine.jsx'
 import TrendChart from '../components/charts/TrendChart.jsx'
 import { regions } from '../data/regionOptions.js'
-import { provenanceUrl } from '../data/sources.js'
+import { accessRecord, provenanceUrl } from '../data/sources.js'
 import { useData } from '../hooks/useData.js'
 import { useWindow } from '../state/window.js'
 import { formatP, formatSlope, methodLabel, verdictLabel } from '../utils/format.js'
@@ -58,6 +58,7 @@ function VariableDetailPage() {
     }),
     [chartData, startYear, endYear],
   )
+  const access = accessRecord(metadata?.provenance, regionId)
   const isTrimmed = plottedData.length > 0 && plottedData.length < chartData.length
   const region = regions.find((item) => item.id === regionId) || regions[0]
   const loading = catalogueLoading || trendLoading
@@ -80,7 +81,7 @@ function VariableDetailPage() {
       {trendError && <ErrorState message={trendError.message} />}
 
       <div className="grid">
-        <Panel className="span-8" title="Historical series" meta={<span className="chip">Chart foundation</span>}>
+        <Panel className="span-8" title="Historical series">
           {chartData.length ? <TrendChart data={plottedData} trend={trend} /> : <EmptyState title="Historical series unavailable" message="No monthly series was supplied for this region and variable." />}
           {isTrimmed && (
             <p className="chart-note">
@@ -104,6 +105,12 @@ function VariableDetailPage() {
                 </SourceLink>
               </dd>
             </div>
+            {access && (
+              <div>
+                <dt>Access</dt>
+                <dd>{access.href ? <SourceLink href={access.href}>{access.label}</SourceLink> : access.label}</dd>
+              </div>
+            )}
           </dl>
         </Panel>
 

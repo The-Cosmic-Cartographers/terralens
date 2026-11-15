@@ -6,7 +6,7 @@ This reads those, plus the registry in `pipeline/`, and writes what the API also
     data/catalogue.json            one entry per Lineup row; `ready` once its series exist
     data/regions.json              the regions that have at least one processed series
     data/metadata/<dataset_id>.json
-    data/data_version.txt          "giovanni-<newest access date>"
+    data/data_version.txt          "terralens-<newest access date>"
 
     PYTHONPATH=backend:. uv run python -m scripts.build_data_index
 
@@ -154,7 +154,7 @@ def build(processed: Path, out: Path) -> list[str]:
         + "\n",
         encoding="utf-8",
     )
-    (out / "data_version.txt").write_text(f"giovanni-{newest.isoformat()}\n", encoding="utf-8")
+    (out / "data_version.txt").write_text(f"terralens-{newest.isoformat()}\n", encoding="utf-8")
     return ["catalogue.json", "regions.json", "data_version.txt", *written]
 
 

@@ -104,12 +104,19 @@ function TimeMachine({ regionId, datasetId, headline = null }) {
           <div><span>Selected window</span><strong>{shown.start} — {shown.end}</strong></div>
           <VerdictBadge verdict={shown.verdict} />
           <div><span>Sen slope / year</span><strong>{formatSlope(shown.sen_slope_per_year)}</strong></div>
-          <div><span>{isFullPeriod ? 'Adjusted p-value' : 'Window p-value'}</span><strong>{formatP(shown.adjusted_p_value)}</strong></div>
+          <div><span>Adjusted p-value</span><strong>{formatP(shown.adjusted_p_value)}</strong></div>
         </div>
       ) : (
         <div className="window-result window-result-empty">
           This exact window is not present in the supplied results.
         </div>
+      )}
+
+      {shown && (
+        <p className="window-note">
+          Adjusted p-values correct across the five variables tested over the same window
+          (Benjamini–Hochberg), so a window&rsquo;s verdict is judged against its own family.
+        </p>
       )}
 
       {detectYears && recordYears ? (

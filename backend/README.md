@@ -63,4 +63,4 @@ After a pipeline run, write the files the API needs next to `data/processed/`:
 PYTHONPATH=backend:. uv run python -m scripts.build_data_index
 ```
 
-It writes `data/catalogue.json` (a dataset is `ready` once its series exist, otherwise `coming_soon`), `data/regions.json` (only regions that have a series), `data/metadata/<dataset_id>.json` and `data/data_version.txt` (`giovanni-<newest access date>`). Re-run it after every pull; the output is deterministic. `/lineup`, `/trend`, `/windows` and `/compare` still need the analysis module's result files.
+It writes `data/catalogue.json` (a dataset is `ready` once its series exist, otherwise `coming_soon`), `data/regions.json` (only regions that have a series), `data/metadata/<dataset_id>.json` and `data/data_version.txt` (`terralens-<newest access date>`). Re-run it after every pull; the output is deterministic. `/lineup`, `/trend`, `/windows` and `/compare` still need the analysis module's result files.

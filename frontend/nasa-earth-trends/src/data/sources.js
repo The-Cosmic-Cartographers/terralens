@@ -48,12 +48,37 @@ export function datasetSourceUrl(datasetId) {
   return datasetSources[datasetId]?.url ?? null
 }
 
-// Prefer the link the pipeline recorded for this exact region: a Giovanni
-// permalink or a Harmony job that produced the series on screen. Fall back to
-// the product page, never to a link for a different region.
+const HARMONY_JOB = /^https?:\/\/harmony\.earthdata\.nasa\.gov\/jobs\/([0-9a-f-]{8,})/i
+
+// A Harmony job page opens only for the account that ran it, behind an Earthdata
+// login, so it is a record of how a series was made and never a link to follow.
+function isHarmonyJob(url) {
+  return HARMONY_JOB.test(url ?? '')
+}
+
+// The link behind "Source": the product's own public page. A region's Giovanni
+// permalink is the fallback, and a Harmony job page is never used.
 export function provenanceUrl(provenance, regionId) {
   const region = regionId ? provenance?.regions?.[regionId] : null
-  return httpUrl(region?.permalink)
-    ?? datasetSourceUrl(provenance?.dataset_id)
-    ?? httpUrl(provenance?.doi_or_url)
+  const permalink = httpUrl(region?.permalink)
+  const fallback = httpUrl(provenance?.doi_or_url)
+
+  return datasetSourceUrl(provenance?.dataset_id)
+    ?? (permalink && !isHarmonyJob(permalink) ? permalink : null)
+    ?? (fallback && !isHarmonyJob(fallback) ? fallback : null)
+}
+
+// How this region's series was fetched, for the evidence record: a Giovanni
+// request is a link anyone can open; a Harmony job is shown as an id.
+export function accessRecord(provenance, regionId) {
+  const region = regionId ? provenance?.regions?.[regionId] : null
+  const permalink = httpUrl(region?.permalink) ?? httpUrl(provenance?.doi_or_url)
+  const route = provenance?.access_route || null
+
+  if (!permalink) return route ? { label: route, href: null } : null
+
+  const job = permalink.match(HARMONY_JOB)
+  if (job) return { label: `${route ?? 'NASA Harmony'}, job ${job[1].slice(0, 8)}`, href: null }
+
+  return { label: route ?? 'Giovanni request', href: permalink }
 }

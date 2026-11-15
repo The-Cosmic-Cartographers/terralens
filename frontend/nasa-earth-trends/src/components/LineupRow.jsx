@@ -11,6 +11,25 @@ function LineupRow({ row, rank }) {
     ? null
     : Number(trend.sen_slope_per_year) * 10
 
+  if (row.window_unavailable) {
+    return (
+      <Link
+        className="lineup-result-row is-unavailable"
+        to={`/explore/${row.variable_id}?region=${trend.region_id || row.region_id}&dataset=${row.dataset_id}`}
+      >
+        <span className="lineup-rank">{String(rank).padStart(2, '0')}</span>
+        <span className="lineup-result-name">
+          <strong>{row.label}</strong>
+          <small>{row.definition || 'Definition supplied with the result.'}</small>
+        </span>
+        <span className="lineup-unavailable">
+          Not offered for {row.window_span.start}–{row.window_span.end}: a window needs at
+          least 10 years of record.
+        </span>
+      </Link>
+    )
+  }
+
   return (
     <Link
       className="lineup-result-row"

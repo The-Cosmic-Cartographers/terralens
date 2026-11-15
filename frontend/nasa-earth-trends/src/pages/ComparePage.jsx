@@ -99,7 +99,9 @@ function ComparePage() {
                 label="Variable / dataset"
                 value={datasetId}
                 disabled={catalogueLoading}
-                options={(catalogue || [{ dataset_id: 'merra2_m2tmnxslv', label: 'Air temperature (2 m)' }]).map((item) => ({
+                options={(catalogue || [{ dataset_id: 'merra2_m2tmnxslv', label: 'Air temperature (2 m)', status: 'ready' }])
+                  .filter((item) => item.status === 'ready')
+                  .map((item) => ({
                   value: item.dataset_id,
                   label: item.label || item.dataset_id,
                 }))}
@@ -139,6 +141,7 @@ function ComparePage() {
 
         <Panel className="span-12" title="How to read the arrows">
           <p>The arrow is the direction supplied by analysis for each place. It is not a causal explanation, and a difference between places is not itself a claim about why either record changed.</p>
+          <p>The adjusted p here is corrected across the five regions for this one variable. The Lineup and Trend detail pages correct across the five variables in one place, so the same result can carry a different adjusted p there.</p>
         </Panel>
       </div>
     </div>

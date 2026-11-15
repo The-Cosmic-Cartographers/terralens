@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import DatasetTable from '../components/DatasetTable.jsx'
@@ -15,6 +15,8 @@ import SampleDataWarning from '../components/SampleDataWarning.jsx'
 import VariableCard from '../components/VariableCard.jsx'
 import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
+import { useWindowedLineups } from '../hooks/useWindowedLineups.js'
+import { useWindow } from '../state/window.js'
 
 const guide = [
   {
@@ -74,8 +76,12 @@ function ExplorePage() {
   const [regionId, setRegionId] = useState(searchParams.get('region') || regions[0].id)
   const { data: catalogue, loading: catalogueLoading, error: catalogueError } = useData('catalogue')
   const { data: lineup, loading: lineupLoading, error: lineupError } = useData('lineup', { regionId })
+  const { maxYear } = useWindow()
+  const lineupList = useMemo(() => [lineup], [lineup])
+  const { lineups: [windowedLineup], pending: windowPending, startYear, endYear } = useWindowedLineups(lineupList)
   const items = catalogue ?? []
-  const rows = lineup?.rows ?? []
+  const rows = windowedLineup?.rows ?? []
+  const isWindowed = Boolean(windowedLineup?.windowed)
   const selectedVariableId = searchParams.get('variable')
   const requestedStart = searchParams.get('start')
   const requestedEnd = searchParams.get('end')
@@ -89,7 +95,7 @@ function ExplorePage() {
       <div className="page-title">
         <div>
           <h1>The Lineup</h1>
-          <p>Ranked environmental signals across the selected region, using supplied results from 1980–2025 (each row shows its own period).</p>
+          <p>Ranked environmental signals across the selected region, using supplied results from {startYear}–{endYear} (each row shows its own period).</p>
         </div>
       </div>
 
@@ -98,7 +104,7 @@ function ExplorePage() {
       <div className="kpi-row">
         <KpiTile label="In catalogue" value={catalogue ? items.length : '—'} note="Datasets listed" />
         <KpiTile label="Ready" value={catalogue ? ready : '—'} note="Results available" tone="blue" />
-        <KpiTile label="Window" value="1980–2025" note="Monthly series" />
+        <KpiTile label="Window" value={`${startYear}–${endYear}`} note="Monthly series" />
       </div>
 
       {catalogueError && <ErrorState message={catalogueError.message} />}
@@ -126,7 +132,14 @@ function ExplorePage() {
           {selectedVariableId && (
             <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={`/explore/${selectedVariableId}?region=${regionId}`}>Open its detail view.</Link></p>
           )}
-          {lineupLoading ? (
+          {isWindowed && !lineupLoading && !windowPending && (
+            <p className="filter-note">
+              Showing the supplied results for {startYear}–{endYear}. Each row starts at its own
+              record start (air temperature begins in 1981) and rows are ranked by their adjusted
+              p-value for this window. Choose {maxYear} in the header for the full record.
+            </p>
+          )}
+          {lineupLoading || windowPending ? (
             <LineupSkeleton rows={selectedVariableId ? 1 : 5} label="Loading supplied environmental results" />
           ) : visibleRows.length ? (
             <div className="lineup-result-list">
