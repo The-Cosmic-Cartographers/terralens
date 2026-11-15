@@ -39,6 +39,16 @@ function TimeMachine({ regionId, datasetId, headline = null }) {
       }
     : selected
 
+  // Detectability (doc 05, NAS-46) is supplied only for full-record results that
+  // are not significant. Round so the number does not read more precise than it is.
+  const rawDetect = headline && headline.verdict !== 'significant' ? headline.detect_years : null
+  const detectYears = Number.isFinite(rawDetect) && rawDetect > 0
+    ? (rawDetect >= 100 ? Math.round(rawDetect / 10) * 10 : Math.round(rawDetect))
+    : null
+  const recordYears = headline?.period_start && headline?.period_end
+    ? Number(headline.period_end.slice(0, 4)) - Number(headline.period_start.slice(0, 4)) + 1
+    : null
+
   if (loading) return <LoadingState label="Loading precomputed windows" />
   if (error) return <ErrorState message={error.message} />
   if (!data?.windows?.length || !bounds) {
@@ -101,6 +111,18 @@ function TimeMachine({ regionId, datasetId, headline = null }) {
           This exact window is not present in the supplied results.
         </div>
       )}
+
+      {detectYears && recordYears ? (
+        <div className="detect-note">
+          <span>Would it be detectable?</span>
+          <p>
+            Not proven over {recordYears} years of record. If this rate and this much year-to-year
+            variability held, a record of about <strong>{detectYears} years</strong> would be needed
+            to detect a trend of this size (Weatherhead et al., 1998). This describes the evidence,
+            not a forecast.
+          </p>
+        </div>
+      ) : null}
     </section>
   )
 }
