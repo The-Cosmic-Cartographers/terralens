@@ -25,7 +25,8 @@ def test_region_geojson_carries_its_id():
 
 
 def test_cell_estimate_uses_the_registry_resolution():
-    coverage = get_region("ireland").cells("soil_moisture_0_10")
+    # Every MERRA-2 row shares one grid; OMI NO2 is the only finer one in the registry.
+    coverage = get_region("ireland").cells("no2")
     assert coverage.cells > 100
     assert coverage.warn is False
     coarse = get_region("ireland").cells("t2m")

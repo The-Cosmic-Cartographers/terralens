@@ -31,6 +31,7 @@ from analysis.run import (
     load_series,
     to_rows,
 )
+from pipeline.regions import APP_REGIONS
 from pipeline.registry import VARIABLES
 
 DOC = REPO_ROOT / "docs" / "sensitivity-notes.md"
@@ -43,7 +44,7 @@ REGION_NAMES = {
 }
 VARIABLE_NAMES = {
     "t2m": "Air temperature (2 m)",
-    "soil_moisture_0_10": "Soil moisture (0-10 cm)",
+    "soil_moisture_0_5": "Soil moisture (0-5 cm)",
     "evapotranspiration": "Evapotranspiration",
     "precipitation": "Precipitation",
     "aerosol": "Aerosol optical depth",
@@ -51,9 +52,9 @@ VARIABLE_NAMES = {
 }
 UNIT_PER_DECADE = {
     "t2m": "°C/decade",
-    "soil_moisture_0_10": "kg/m²/decade",
+    "soil_moisture_0_5": "m³/m³/decade",
     "evapotranspiration": "mm/day/decade",
-    "precipitation": "mm/month/decade",
+    "precipitation": "mm (annual total)/decade",
     "aerosol": "AOT/decade",
     "no2": "molec/cm²/decade",
 }
@@ -245,8 +246,8 @@ def build_document(rows: list[dict]) -> str:
     lines.append("## Limitations worth stating out loud")
     lines.append("")
     lines.append(
-        "* **Reanalysis is not observation.** MERRA-2 and GLDAS are model-plus-assimilation "
-        "products; a trend in them is a trend in the assimilated system, not a thermometer."
+        "* **Reanalysis is not observation.** MERRA-2 is a model-plus-assimilation "
+        "product; a trend in them is a trend in the assimilated system, not a thermometer."
     )
     lines.append(
         "* **The p-value depends on the window.** The period table above exists because a "
@@ -271,7 +272,7 @@ def build_document(rows: list[dict]) -> str:
 
 
 def main() -> int:
-    parquets = sorted(PROCESSED.glob("*/*.parquet"))
+    parquets = sorted(path for path in PROCESSED.glob("*/*.parquet") if path.stem in APP_REGIONS)
     if not parquets:
         print("no processed series found")
         return 1

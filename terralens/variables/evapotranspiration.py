@@ -1,4 +1,4 @@
-"""Evapotranspiration (GLDAS-2.1 Noah), reported in mm/day."""
+"""Evapotranspiration (MERRA-2 M2TMNXLND EVLAND), reported in mm/day."""
 
 from __future__ import annotations
 

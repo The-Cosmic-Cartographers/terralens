@@ -1,14 +1,14 @@
 """Per-variable defaults for the Lineup, from Linear docs 11 and 10.
 
-These are the row defaults for the Lineup: the five rows Kevin verified in Giovanni
-on 14 Nov plus the OMI NO2 field name that the verification corrected. They are
-defaults for the CLI only; every value can be overridden, and provenance records
-what was actually used.
+The registry lives in the package because the library needs it and the wheel must
+not install a top-level ``pipeline`` package; ``pipeline.registry`` re-exports it.
+
+These are the source definitions for the five MVP rows, with NO2 retained for a
+later route decision. Provenance records the product and field actually used.
 
 The window fields are D21 (doc 10): whole calendar years, fixed per variable so
-two regions of the same row can never be compared over different periods. T2M
-starts in 1981 even though MERRA-2 begins in 1980; IMERG stops at 2024 because
-the Giovanni product ends on 2025-09-30.
+two regions of the same row can never be compared over different periods. The
+five MVP rows now use the same MERRA-2 monthly window, 1980–2025.
 """
 
 from __future__ import annotations
@@ -45,43 +45,41 @@ VARIABLES: dict[str, Variable] = {
         start_year=1981,
         end_year=2025,
     ),
-    "soil_moisture_0_10": Variable(
-        variable_id="soil_moisture_0_10",
-        dataset_id="gldas_noah025_m21_soilmoi0_10",
-        product="GLDAS-2.1 Noah monthly soil moisture, 0-10 cm (GLDAS_NOAH025_M)",
-        version="2.1",
-        native_unit="kg/m2",
-        output_unit="kg/m2",
-        spatial_resolution="0.25°",
-        giovanni_variable_id="SoilMoi0_10cm_inst",
-        start_year=2000,
+    "soil_moisture_0_5": Variable(
+        variable_id="soil_moisture_0_5",
+        dataset_id="merra2_m2tmnxlnd_sfmc_v5_12_4",
+        product="MERRA-2 monthly volumetric soil moisture, 0-5 cm surface layer (M2TMNXLND SFMC)",
+        version="5.12.4",
+        native_unit="m3/m3",
+        output_unit="m3/m3",
+        spatial_resolution="0.5° x 0.625°",
+        giovanni_variable_id="SFMC",
+        start_year=1980,
         end_year=2025,
     ),
     "evapotranspiration": Variable(
         variable_id="evapotranspiration",
-        dataset_id="gldas_noah025_m21_evap",
-        product="GLDAS-2.1 Noah monthly evapotranspiration (GLDAS_NOAH025_M)",
-        version="2.1",
-        native_unit="kg/m2/s",
+        dataset_id="merra2_m2tmnxlnd_evland_v5_12_4",
+        product="MERRA-2 monthly land evapotranspiration (M2TMNXLND EVLAND)",
+        version="5.12.4",
+        native_unit="kg m-2 s-1",
         output_unit="mm/day",
-        spatial_resolution="0.25°",
-        giovanni_variable_id="Evap_tavg",
-        start_year=2000,
+        spatial_resolution="0.5° x 0.625°",
+        giovanni_variable_id="EVLAND",
+        start_year=1980,
         end_year=2025,
     ),
     "precipitation": Variable(
         variable_id="precipitation",
-        dataset_id="gpm_3imergm_v07b",
-        # Pinned to the V07B reprocessed run (NAS-57): the granule filenames carry
-        # `.V07B`, and V07 and V07B must never be mixed inside one series.
-        product="GPM IMERG Final monthly precipitation, V07B reprocessed run (GPM_3IMERGM)",
-        version="V07B",
-        native_unit="mm/hr",
+        dataset_id="merra2_m2tmnxflx_prectotcorr_v5_12_4",
+        product="MERRA-2 monthly bias-corrected total precipitation (M2TMNXFLX PRECTOTCORR)",
+        version="5.12.4",
+        native_unit="kg m-2 s-1",
         output_unit="mm/month",
-        spatial_resolution="0.1°",
-        giovanni_variable_id="precipitation",
-        start_year=2001,
-        end_year=2024,
+        spatial_resolution="0.5° x 0.625°",
+        giovanni_variable_id="PRECTOTCORR",
+        start_year=1980,
+        end_year=2025,
     ),
     "aerosol": Variable(
         variable_id="aerosol",
@@ -92,7 +90,7 @@ VARIABLES: dict[str, Variable] = {
         output_unit="1",
         spatial_resolution="0.5° x 0.625°",
         giovanni_variable_id="TOTEXTTAU",
-        start_year=2003,
+        start_year=1980,
         end_year=2025,
     ),
     "no2": Variable(

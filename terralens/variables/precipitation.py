@@ -1,4 +1,4 @@
-"""Precipitation (GPM IMERG Final, V07B), reported in mm/month."""
+"""Precipitation (MERRA-2 M2TMNXFLX PRECTOTCORR), reported in mm/month."""
 
 from __future__ import annotations
 
@@ -6,7 +6,10 @@ from .base import Variable
 
 
 class Precipitation(Variable):
-    """Rain and snow as a monthly total, so years aggregate by sum, not mean."""
+    """Rain and snow as a monthly total, so years aggregate by sum, not mean.
+
+    This is MERRA-2 bias-corrected model output, not the IMERG satellite estimate.
+    """
 
     variable_id = "precipitation"
     alias = "precipitation"

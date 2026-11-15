@@ -1,4 +1,5 @@
 import {
+  Area,
   CartesianGrid,
   Line,
   LineChart,
@@ -8,42 +9,135 @@ import {
   YAxis,
 } from 'recharts'
 
-const chartFrame = [{ year: '—', value: null }]
+import { formatChartValue } from '../../utils/format.js'
 
-function TrendChart({ data = chartFrame }) {
+function median(values) {
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+}
+
+// Recharts animates in JavaScript, so the CSS reduced-motion rule cannot
+// reach it; ask the browser directly.
+function prefersReducedMotion() {
+  return typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
+function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
+  // The measured series draws left to right, the way the record is read, and
+  // the trend line follows once the data it summarises is on screen.
+  const animate = !prefersReducedMotion()
+  // The supplied Sen slope is per year and the points are monthly. Draw the line
+  // slope * years + intercept, with the intercept the median of (value - slope * years),
+  // which is the Sen line's own definition; nothing is re-tested here.
+  // For a summed variable (precipitation) the file's slope is a change in the annual
+  // total per year; the plotted points are monthly values, so one month moves by 1/12.
+  const perMonthShare = String(trend?.unit_per_year || '').includes('annual total') ? 12 : 1
+  const slope = trend?.sen_slope_per_year == null
+    ? null
+    : Number(trend.sen_slope_per_year) / perMonthShare
+  const valid = data
+    .map((point, index) => ({ index, value: point[dataKey] }))
+    .filter((point) => point.value != null && Number.isFinite(Number(point.value)))
+  const intercept = slope == null || !valid.length
+    ? null
+    : median(valid.map((point) => Number(point.value) - slope * (point.index / 12)))
+  const chartData = data.map((point, index) => ({
+    ...point,
+    index,
+    trendLine: intercept == null || point[dataKey] == null
+      ? null
+      : intercept + slope * (index / 12),
+  }))
+
+  // Ticks sit on whole years (multiples of 5 for a long record) so the axis never
+  // rounds the last December up to the following year.
+  const times = chartData.map((point) => point.t).filter((value) => Number.isFinite(value))
+  const first = Math.min(...times)
+  const last = Math.max(...times)
+  const step = last - first > 25 ? 5 : 2
+  const ticks = []
+  for (let year = Math.ceil(first / step) * step; year <= last; year += step) ticks.push(year)
+
+  if (!chartData.length) {
+    return (
+      <div className="trend-chart chart-empty">
+        No measured series was supplied for this selection.
+      </div>
+    )
+  }
+
   return (
     <div className="trend-chart">
-      <ResponsiveContainer width="100%" height={260}>
-        <LineChart
-          data={data}
-          margin={{ top: 12, right: 16, bottom: 4, left: 0 }}
-        >
-          <CartesianGrid
-            stroke="#d8d8cf"
-            strokeDasharray="2 5"
-            vertical={false}
-          />
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={chartData} margin={{ top: 12, right: 16, bottom: 4, left: 0 }}>
+          <CartesianGrid stroke="var(--chart-grid)" strokeDasharray="2 5" vertical={false} />
           <XAxis
-            dataKey="year"
-            tick={{ fill: '#777970', fontSize: 11 }}
+            dataKey="t"
+            type="number"
+            domain={['dataMin', 'dataMax']}
+            ticks={ticks}
+            tickFormatter={(value) => String(Math.round(value))}
+            allowDecimals={false}
+            tick={{ fill: 'var(--chart-axis)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
-          <YAxis hide domain={['auto', 'auto']} />
-          <Tooltip />
+          <YAxis
+            tick={{ fill: 'var(--chart-axis)', fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            width={42}
+          />
+          <Tooltip
+            formatter={(value, name) => [formatChartValue(value), name]}
+            labelFormatter={(value) => {
+              const year = Math.floor(value + 1e-6)
+              const month = Math.round((value - year) * 12) + 1
+              return `${year}-${String(month).padStart(2, '0')}`
+            }}
+            contentStyle={{
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow-pop)',
+              color: 'var(--ink)',
+              fontSize: 'var(--text-sm)',
+            }}
+          />
+          <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} isAnimationActive={false} />
+          <Area dataKey="ciLow" stroke="none" fill="var(--surface)" fillOpacity={1} isAnimationActive={false} />
           <Line
             type="monotone"
-            dataKey="value"
-            stroke="#d95c43"
-            strokeWidth={3}
+            dataKey={dataKey}
+            name="Measured"
+            stroke="var(--chart-line)"
+            strokeWidth={2.5}
             dot={false}
             connectNulls={false}
+            isAnimationActive={animate}
+            animationDuration={900}
+            animationEasing="ease-out"
           />
+          {trend?.sen_slope_per_year != null && (
+            <Line
+              type="monotone"
+              dataKey="trendLine"
+              name="Supplied trend line"
+              stroke="var(--chart-trend)"
+              strokeWidth={2}
+              strokeDasharray="6 4"
+              dot={false}
+              connectNulls={false}
+              isAnimationActive={animate}
+              animationBegin={700}
+              animationDuration={500}
+              animationEasing="ease-out"
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
-      <div className="chart-placeholder">
-        Supplied historical series will appear here
-      </div>
     </div>
   )
 }

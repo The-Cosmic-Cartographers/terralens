@@ -9,13 +9,20 @@ and the CSV the builder receives.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from pipeline import pull
 from pipeline.giovanni import read_giovanni_csv, read_giovanni_unit
 from pipeline.registry import Variable
+
+# The autouse fixture below replaces these with fakes; these are the real ones, for the
+# tests that exercise the netCDF math itself.
+_REAL_MONTH_MEANS = pull.month_means
+_REAL_SLICE_EXTENT = pull.slice_extent
 
 
 def _variable(start: int = 2001, end: int = 2002) -> Variable:
@@ -65,7 +72,12 @@ def _isolated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(pull, "RAW", raw)
     monkeypatch.setattr(pull, "CHECKPOINTS", checkpoints)
     monkeypatch.setattr(
-        pull, "month_means", lambda payload, field, scratch: {payload.decode(): 280.0}
+        pull,
+        "month_means",
+        lambda payload, field, scratch, box=None: {payload.decode(): 280.0},
+    )
+    monkeypatch.setattr(
+        pull, "slice_extent", lambda payload, scratch, box=None: "51.40,55.40,-10.50,-6.00"
     )
     monkeypatch.setattr(pull.time, "sleep", lambda _seconds: None)
 
@@ -84,34 +96,134 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
 
 
 def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
-    work, blocked = pull.plan(None, ["ireland"])
+    work, cities, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
-    assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration"}
-    # IMERG has no Harmony coverage; T2M stays on its committed Giovanni series.
-    assert {variable for variable, _region, _reason in blocked} == {"precipitation", "t2m"}
+    assert routed == {"aerosol", "soil_moisture_0_5", "evapotranspiration", "precipitation"}
+    assert cities == []
+    # T2M stays on its committed Giovanni series rather than being overwritten.
+    assert {variable for variable, _region, _reason in blocked} == {"t2m"}
     assert all(reason for _v, _r, reason in blocked)
 
 
+def _slice(tmp_path: Path, lat: list[float], lon: list[float], values: list[list[float]]) -> bytes:
+    """One monthly netCDF slice, the shape Harmony returns."""
+    import numpy as np
+    import xarray as xr
+
+    dataset = xr.Dataset(
+        {"T2M": (("time", "lat", "lon"), np.array([values], dtype="float32"))},
+        coords={"time": [np.datetime64("2001-01-01")], "lat": lat, "lon": lon},
+    )
+    path = tmp_path / "slice.nc"
+    dataset.to_netcdf(path, engine="netcdf4")
+    payload = path.read_bytes()
+    path.unlink()
+    return payload
+
+
+def test_centre_mask_drops_edge_cells_whose_centre_is_outside_the_box() -> None:
+    import numpy as np
+
+    lat = np.array([51.5, 52.5, 55.5])
+    lon = np.array([-10.0, -8.0])
+    inside = pull.centre_mask(lat, lon, (-10.5, 51.4, -6.0, 55.4))
+    assert inside is not None
+    assert inside[:, 0].tolist() == [True, True, False]
+    assert pull.centre_mask(lat, lon, None) is None
+
+
+def test_month_means_averages_only_cells_inside_the_box(tmp_path: Path) -> None:
+    import math
+
+    payload = _slice(
+        tmp_path, [51.5, 52.5, 55.5], [-10.0, -8.0], [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    )
+    box = (-10.5, 51.4, -6.0, 55.4)
+
+    narrow = _REAL_MONTH_MEANS(payload, "T2M", tmp_path, box=box)["2001-01"]
+    w1, w2 = math.cos(math.radians(51.5)), math.cos(math.radians(52.5))
+    assert narrow == pytest.approx((w1 * (1 + 2) + w2 * (3 + 4)) / (2 * w1 + 2 * w2))
+
+    wide = _REAL_MONTH_MEANS(payload, "T2M", tmp_path)["2001-01"]
+    assert wide > narrow  # the outside cell is warmer, so leaving it in lifts the mean
+
+
+def test_slice_extent_reports_the_cells_that_were_actually_averaged(tmp_path: Path) -> None:
+    payload = _slice(
+        tmp_path, [51.5, 52.5, 55.5], [-10.0, -8.0], [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    )
+    assert _REAL_SLICE_EXTENT(payload, tmp_path, box=(-10.5, 51.4, -6.0, 55.4)) == (
+        "-10.00,51.50,-8.00,52.50"
+    )
+
+
+def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
+    first = _series()
+    first.months = {"2001-01": 280.0}
+    first.extent = "51.40,55.40,-10.50,-6.00"
+    first.save()
+
+    resumed = _series()
+    resumed.load()
+    assert resumed.extent == "51.40,55.40,-10.50,-6.00"
+
+
+def test_precipitation_is_a_harmony_route_to_merra2_prectotcorr() -> None:
+    """The long record uses MERRA-2 bias-corrected precipitation through Harmony."""
+    work, cities, blocked = pull.plan(["precipitation"], ["ireland"])
+    assert not blocked
+    route = work[0][2]
+    assert route is pull.HARMONY_ROUTES["precipitation"]
+    assert route.collection == "C1276812868-GES_DISC"
+    assert route.field == "PRECTOTCORR"
+    assert route.unit == "kg m-2 s-1"
+    assert route.access_route == pull.HARMONY_ACCESS
+
+
+def test_regional_mean_weights_cells_by_the_cosine_of_latitude() -> None:
+    field = pd.DataFrame({"lat": [0.5, 60.5], "lon": [0.5, 0.5], "value": [10.0, 20.0]})
+    mean = pull.regional_mean(field, (0.0, 0.0, 1.0, 61.0))
+    low = math.cos(math.radians(0.5))
+    high = math.cos(math.radians(60.5))
+    assert mean == pytest.approx((10.0 * low + 20.0 * high) / (low + high))
+    # a plain mean would be 15.0; the tropical cell must count for more
+    assert mean < 14.0
+
+
+def test_regional_mean_refuses_a_month_that_is_mostly_empty() -> None:
+    field = pd.DataFrame({"lat": [0.5, 60.5], "lon": [0.5, 0.5], "value": [float("nan"), 20.0]})
+    assert pull.regional_mean(field, (0.0, 0.0, 1.0, 61.0)) is None
+
+
+def test_the_csv_records_which_route_produced_it() -> None:
+    series = _series()
+    series.months = {"2001-01": 50.0}
+    pull.write_csv(series, pull.IMERG_ROUTE)
+    meta = json.loads((pull.RAW / "t2m_ireland.meta.json").read_text(encoding="utf-8"))
+    assert meta["access_route"].startswith("NASA GES DISC direct")
+
+
 def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
-    work, blocked = pull.plan(["t2m"], ["ireland"])
+    work, cities, blocked = pull.plan(["t2m"], ["ireland"])
     assert work == []
+    assert cities == []
     assert blocked[0][0] == "t2m"
     assert "Giovanni" in blocked[0][2]
 
-    work_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
+    work_no2, cities_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
     assert work_no2 == []
-    assert blocked_no2[0][0] == "no2"
+    assert blocked_no2 == []
+    assert cities_no2 == ["dublin_no2"]
 
 
 def test_plan_is_the_doc_11_lineup_and_not_the_cartesian_product() -> None:
     """27 series: five rows over five regions, plus NO2 for Dublin and Delhi only."""
-    work, blocked = pull.plan(None, None)
-    assert len(work) + len(blocked) == 27
+    work, cities, blocked = pull.plan(None, None)
+    assert len(work) + len(cities) + len(blocked) == 27
     assert {region for _spec, region, _route in work} >= {"ireland", "us_southwest"}
     assert not {region for _spec, region, _route in work} & set(pull.NO2_REGIONS)
-    assert {region for variable, region, _reason in blocked if variable == "no2"} == set(
-        pull.NO2_REGIONS
-    )
+    assert set(cities) == set(pull.NO2_REGIONS)
+    assert not {region for variable, region, _reason in blocked if variable == "no2"}
 
 
 def test_plan_rejects_an_unknown_region() -> None:
@@ -266,6 +378,49 @@ def test_build_is_handed_the_registry_labels(monkeypatch: pytest.MonkeyPatch) ->
     assert "job-9" in str(captured["permalink"])
 
 
+def test_build_is_handed_the_footprint_as_analyzable_region(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_build(csv_path: Path, **kwargs: object) -> tuple[Path, Path]:
+        captured.update(kwargs)
+        return Path("out.parquet"), Path("provenance.json")
+
+    monkeypatch.setattr(pull.build_module, "build", fake_build)
+    series = _series()
+    series.months = {"2001-01": 280.0}
+    series.extent = "-10.50,51.50,-6.50,55.00"
+    csv_path = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
+
+    pull.build_series(series, pull.HARMONY_ROUTES["t2m"], csv_path, Path("processed"))
+
+    assert captured["analyzable_region"] == "-10.50,51.50,-6.50,55.00"
+
+
+def test_a_stale_s_n_w_e_extent_is_rebuilt_before_the_build(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The old checkpoint wrote S,N,W,E; the build must not pass that through."""
+    captured: dict[str, object] = {}
+
+    def fake_build(csv_path: Path, **kwargs: object) -> tuple[Path, Path]:
+        captured.update(kwargs)
+        return Path("out.parquet"), Path("provenance.json")
+
+    monkeypatch.setattr(pull.build_module, "build", fake_build)
+    series = _series()
+    series.months = {"2001-01": 280.0}
+    series.extent = "51.50,55.00,-10.50,-6.50"
+    csv_path = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
+
+    pull.build_series(series, pull.HARMONY_ROUTES["t2m"], csv_path, Path("processed"))
+
+    passed = str(captured["analyzable_region"])
+    assert pull.parse_extent(passed) is not None
+    assert passed == pull.grid_extent(series.box)
+
+
 def test_dry_run_prints_the_plan_and_never_needs_a_token(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -273,5 +428,34 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     assert pull.main(["--all", "--dry-run"]) == pull.EXIT_OK
     output = capsys.readouterr().out
     assert "aerosol/ireland <- Harmony" in output
-    assert "precipitation/ireland <- BLOCKED" in output
+    assert "no2/dublin_no2 <- OPeNDAP" in output
+    assert "precipitation/ireland <- Harmony" in output
     assert "t2m/ireland <- BLOCKED" in output
+
+
+def test_grid_extent_reproduces_the_centre_in_box_footprint() -> None:
+    """The deterministic fallback must agree with what a payload would have measured."""
+    gldas = {"step": (0.25, 0.25), "first_centre": (-89.875, -179.875)}
+    assert pull.grid_extent((-10.0, 36.0, 3.5, 44.0), **gldas) == "-9.88,36.12,3.38,43.88"
+    assert pull.grid_extent((68.0, 22.0, 78.0, 32.0), **gldas) == "68.12,22.12,77.88,31.88"
+    # MERRA-2: latitudes on whole and half degrees, longitudes on multiples of 0.625
+    assert pull.grid_extent((-10.5, 51.4, -6.0, 55.4)) == "-10.00,51.50,-6.25,55.00"
+
+
+def test_an_extent_in_the_wrong_order_is_refused() -> None:
+    """S,N,W,E from the old bug is not a W,S,E,N footprint and must not pass."""
+    assert pull.parse_extent("-6.38,53.38,-6.12,53.38") is not None
+    assert pull.parse_extent("53.38,53.38,-6.38,-6.12") is None
+    assert pull.parse_extent("") is None
+    assert pull.parse_extent("1,2,3") is None
+
+
+def test_harmony_t2m_is_allowed_only_for_the_two_new_regions() -> None:
+    """Kevin's exception on NAS-64: new regions yes, the committed three no."""
+    work, _cities, blocked = pull.plan(["t2m"], ["iberia"])
+    assert [spec.variable_id for spec, _region, _route in work] == ["t2m"]
+    assert blocked == []
+
+    work_old, _cities_old, blocked_old = pull.plan(["t2m"], ["ireland"])
+    assert work_old == []
+    assert blocked_old and blocked_old[0][0] == "t2m"

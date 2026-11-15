@@ -1,0 +1,12 @@
+{
+  "type": "Feature",
+  "properties": {
+    "region_id": "nw_south_asia",
+    "source": "TerraLens project study box",
+    "licence": "OpenStreetMap contributors / ODbL 1.0"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[68, 22], [80, 22], [80, 32], [68, 32], [68, 22]]]
+  }
+}

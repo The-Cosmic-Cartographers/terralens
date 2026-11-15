@@ -49,15 +49,15 @@ No network is used at import or analysis time.
 ```python
 import terralens as tl
 
-tl.list_regions()          # ['iberia', 'ireland', 'nw_south_asia', 'sahel', 'us_southwest']
+tl.list_regions()  # ['iberia', 'ireland', 'nw_south_asia', 'sahel', 'us_southwest']
 
 ie = tl.ireland
-print(ie.info())           # box, area, and which variables are available
+print(ie.info())  # box, area, and which variables are available
 
-ie.summary()               # one row per variable: per-decade change, p, direction
+ie.summary()  # one row per variable: per-decade change, p, direction
 trend = ie.temperature.trend()
-trend                      # Air temperature (2 m): Warming +0.21 °C/decade, p<0.001, 1981-2025
-trend.to_csv()             # or .to_dict(), .to_json(), .plot()
+trend  # Air temperature (2 m): Warming +0.21 °C/decade, p<0.001, 1981-2025
+trend.to_csv()  # or .to_dict(), .to_json(), .plot()
 
 tl.compare("ireland", "sahel", variables=["temperature"]).table
 ```
@@ -124,10 +124,10 @@ results = [
 ]
 adjusted = tl.adjust_bh(results)
 
-adjusted[0].p_value            # raw p
-adjusted[0].adjusted_p_value   # BH q-value
-adjusted[0].family_size        # 5
-adjusted[0].verdict            # recomputed from q
+adjusted[0].p_value  # raw p
+adjusted[0].adjusted_p_value  # BH q-value
+adjusted[0].family_size  # 5
+adjusted[0].verdict  # recomputed from q
 ```
 
 The caller defines the family. `adjust_bh` preserves input order and leaves
@@ -144,10 +144,10 @@ project's pull pipeline.
 | variable | product | version | window |
 | --- | --- | --- | --- |
 | 2 m air temperature | MERRA-2 M2TMNXSLV | 5.12.4 | 1981–2025 |
-| soil moisture 0–10 cm | GLDAS-2.1 Noah | 2.1 | 2000–2025 |
-| evapotranspiration | GLDAS-2.1 Noah | 2.1 | 2000–2025 |
-| precipitation | GPM IMERG Final (V07B reprocessed) | V07B | 2001–2024 |
-| aerosol optical thickness | MERRA-2 M2TMNXAER | 5.12.4 | 2003–2025 |
+| soil moisture 0–5 cm | MERRA-2 M2TMNXLND (SFMC) | 5.12.4 | 1980–2025 |
+| evapotranspiration | MERRA-2 M2TMNXLND (EVLAND) | 5.12.4 | 1980–2025 |
+| precipitation (bias-corrected model output) | MERRA-2 M2TMNXFLX (PRECTOTCORR) | 5.12.4 | 1980–2025 |
+| aerosol optical thickness | MERRA-2 M2TMNXAER | 5.12.4 | 1980–2025 |
 
 Access routes (Giovanni area averaging or Harmony subsetting) are recorded per
 series in the processed data; `TrendResult.citation` names the product and
@@ -165,6 +165,10 @@ version that produced the number.
   and compare families, so an app verdict can be more conservative. Use
   `tl.adjust_bh(results)` to adjust an explicit family; every unadjusted
   `TrendResult` carries this caveat in `warnings`.
+- **Model output, not measurements.** Every series is MERRA-2 reanalysis, the same
+  record as the app. Soil moisture is the 0–5 cm layer, precipitation is
+  bias-corrected model output (not the IMERG satellite estimate), and the land
+  fields are not weighted by land fraction.
 - **No causation.** The package reports association over time, not causes.
 - **POC coverage.** Five regions and five variables ship here; further variables
   are one subclass each.

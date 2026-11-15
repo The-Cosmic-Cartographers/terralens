@@ -36,7 +36,8 @@ import pandas as pd
 
 from analysis import stats as tl
 from analysis import windows as tw
-from terralens._meta import ANNUAL_AGG, LABELS, PRODUCT_TYPE
+from pipeline.regions import APP_REGIONS
+from terralens._meta import ANNUAL_AGG, LABELS, PRODUCT_TYPE, SLOPE_BASE_UNIT
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = REPO_ROOT / "data" / "processed"
@@ -46,7 +47,7 @@ RESULTS = REPO_ROOT / "data" / "results"
 # catalogue does not carry it yet).
 DEFINITIONS: dict[str, str] = {
     "t2m": "How warm the air is at about head height",
-    "soil_moisture_0_10": "How much water is held in the top layer of soil",
+    "soil_moisture_0_5": "How much water is held in the top layer of soil",
     "evapotranspiration": "Water leaving the land through plants and evaporation",
     "precipitation": "How much rain and snow falls",
     "aerosol": "How much dust and smoke is in the air",
@@ -116,7 +117,7 @@ def trend_payload(
         "series_used": "anomaly",
         "trend_direction": "withheld" if withheld else row["trend_direction"],
         "sen_slope_per_year": None if withheld else row["sen_slope_per_year"],
-        "unit_per_year": f"{unit}/yr",
+        "unit_per_year": f"{SLOPE_BASE_UNIT.get(meta['variable_id'], unit)}/yr",
         "confidence_interval_95": None if withheld else tuple(row["confidence_interval_95"]),
         "p_value": None if withheld else row["p_value"],
         "adjusted_p_value": None if withheld else row["adjusted_p_value"],
@@ -367,7 +368,8 @@ def _rank_key(row: dict[str, Any]):
 
 
 def regions_with_data() -> list[str]:
-    return sorted({path.stem for path in PROCESSED.glob("*/*.parquet")})
+    on_disk = {path.stem for path in PROCESSED.glob("*/*.parquet")}
+    return [region for region in APP_REGIONS if region in on_disk]
 
 
 def main(argv: Iterable[str] | None = None) -> int:

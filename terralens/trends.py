@@ -138,8 +138,7 @@ class TrendResult:
             "unit": self.unit,
             "per_decade": self.per_decade,
             "slope_per_year": self.slope_per_year,
-            "confidence_interval_95": list(self.confidence_interval_95 or ())
-            or None,
+            "confidence_interval_95": list(self.confidence_interval_95 or ()) or None,
             "p_value": self.p_value,
             "adjusted_p_value": self.adjusted_p_value,
             "n_obs": self.n_obs,

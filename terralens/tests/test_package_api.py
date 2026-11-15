@@ -50,3 +50,10 @@ def test_region_summary_has_one_row_per_available_variable():
     assert list(summary.columns)[:4] == ["variable", "dataset", "per_decade", "unit"]
     assert len(summary) == len(tl.ireland.available_variables()) >= 5
     assert summary["per_decade"].notna().all()
+
+
+def test_precipitation_slope_unit_matches_the_app_label():
+    """The Sen slope is fitted to annual totals, so it is not "mm/month"."""
+    trend = tl.ireland.precipitation.trend()
+    assert trend.unit == "mm (annual total)"
+    assert tl.ireland.temperature.trend().unit == "°C"

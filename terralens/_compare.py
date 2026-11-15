@@ -39,9 +39,7 @@ class Comparison:
     table: pd.DataFrame
     ranking: pd.DataFrame
     notes: tuple[str, ...]
-    _trends: dict[str, tuple[TrendResult, TrendResult]] = field(
-        default_factory=dict, repr=False
-    )
+    _trends: dict[str, tuple[TrendResult, TrendResult]] = field(default_factory=dict, repr=False)
 
     def __str__(self) -> str:
         lines = []
@@ -105,9 +103,11 @@ def compare(
     aliases = (
         [_resolve_alias(name) for name in variables]
         if variables is not None
-        else [alias for alias in VARIABLE_CLASSES if all(
-            (first.variables[alias], second.variables[alias])
-        )]
+        else [
+            alias
+            for alias in VARIABLE_CLASSES
+            if all((first.variables[alias], second.variables[alias]))
+        ]
     )
 
     rows: list[dict[str, object]] = []
@@ -116,11 +116,7 @@ def compare(
     skipped: list[str] = []
 
     for alias in aliases:
-        missing = [
-            region.region_id
-            for region in (first, second)
-            if not region.variables[alias]
-        ]
+        missing = [region.region_id for region in (first, second) if not region.variables[alias]]
         if missing:
             if requested:
                 raise ValueError(f"{alias!r} has no processed series for {', '.join(missing)}")
@@ -162,9 +158,7 @@ def compare(
         trends[alias] = (trend_a, trend_b)
 
     if not rows:
-        raise ValueError(
-            f"{first.region_id} and {second.region_id} share no variable with data"
-        )
+        raise ValueError(f"{first.region_id} and {second.region_id} share no variable with data")
     if skipped:
         notes.append(f"Skipped (no series or no verdict): {', '.join(skipped)}.")
     notes.append(UNADJUSTED_NOTE)

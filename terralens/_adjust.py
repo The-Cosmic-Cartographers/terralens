@@ -26,13 +26,8 @@ def adjust_bh(results: Iterable[TrendResult]) -> list[TrendResult]:
     if family_size < 2:
         return items
 
-    q_values = _stats.benjamini_hochberg_adjusted(
-        [item.p_value for _, item in tested]
-    )
-    q_by_index = {
-        index: float(q)
-        for (index, _), q in zip(tested, q_values, strict=True)
-    }
+    q_values = _stats.benjamini_hochberg_adjusted([item.p_value for _, item in tested])
+    q_by_index = {index: float(q) for (index, _), q in zip(tested, q_values, strict=True)}
 
     adjusted: list[TrendResult] = []
     for index, item in enumerate(items):

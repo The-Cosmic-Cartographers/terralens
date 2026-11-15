@@ -1,18 +1,243 @@
+/*
+  TerraLens design system: tokens and base styles.
+  The rules behind these values are in DESIGN.md. Components in App.css read
+  only these tokens; a raw colour, size or shadow there is a bug.
+*/
+
+/* ---------- Light theme (default) ---------- */
 :root {
-  --heading: Inter, ui-sans-serif, system-ui, sans-serif;
-  --mono: 'SFMono-Regular', Consolas, monospace;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* Neutrals */
+  --canvas: #eef2f5;
+  --surface: #ffffff;
+  --surface-sunken: #f4f7f9;
+  --surface-hover: #eaf0f5;
+  --line: #dae2e8;
+  --line-strong: #b5c4d0;
+  --ink: #14212d;
+  --ink-2: #3a4d5e;
+  --muted: #536677;
+
+  /* Accent: action, selection, links, focus */
+  --accent: #1462a6;
+  --accent-hover: #0f5089;
+  --accent-ink: #ffffff;
+  --accent-soft: #e5eef8;
+  --accent-text: #1462a6;
+  --focus: #1462a6;
+
+  /* Status: real states only, always paired with text */
+  --ok: #1c6b48;
+  --ok-soft: #e3f3ea;
+  --ok-line: #9fcfb5;
+  --warn: #7a5200;
+  --warn-soft: #fcf3d9;
+  --warn-line: #dfbd63;
+  --danger: #b42a22;
+  --danger-soft: #fcebe9;
+  --danger-line: #e5a39d;
+  --dot-ok: #2e9a60;
+  --dot-warn: #d08a1c;
+  --dot-danger: #d6453b;
+  --dot-off: #8a9bab;
+
+  /* Data */
+  --chart-line: #1462a6;
+  --chart-trend: #b45309;
+  --chart-band: #1462a6;
+  --chart-grid: #dae2e8;
+  --chart-axis: #536677;
+
+  /* Structure: the navy sidebar */
+  --sidebar-bg: #0b1f33;
+  --sidebar-line: #1f3851;
+  --sidebar-hover: #12304b;
+  --sidebar-active: #173a5c;
+  --sidebar-ink: #f2f6fa;
+  --sidebar-ink-2: #c3d0dc;
+  --sidebar-muted: #93a8bc;
+  --sidebar-accent: #8cc4f2;
+
+  /* Elevation: only for things that float over content */
+  --shadow-pop: 0 12px 32px rgb(11 31 51 / 0.16), 0 2px 6px rgb(11 31 51 / 0.08);
+
+  /* Type */
+  --font-sans: 'Public Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-body: 15px;
+  --text-lg: 17px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --leading-tight: 1.2;
+  --leading: 1.55;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* Shape */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-full: 999px;
+
+  /* Motion: every animation has a job, listed in DESIGN.md */
+  --duration: 140ms;
+  --duration-enter: 280ms;
+  --duration-draw: 900ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --topbar-height: 52px;
+  --gutter: 28px;
+
+  color-scheme: light;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
+/* ---------- Dark theme ---------- */
+/* Neutral graphite: no hue in the surfaces, text or sidebar. Blue survives
+   only as the accent, so in the dark it points at actions and selections.
+   App.jsx mirrors the chosen theme onto <html data-theme>, so the page body,
+   scrollbars and native controls follow it too. */
+:root[data-theme='dark'],
+.theme-dark {
+  --canvas: #111112;
+  --surface: #19191b;
+  --surface-sunken: #141415;
+  --surface-hover: #222225;
+  --line: #2b2b2e;
+  --line-strong: #404044;
+  --ink: #ededee;
+  --ink-2: #c4c4c8;
+  --muted: #9b9ba1;
+
+  --accent: #6aa8e0;
+  --accent-hover: #86b9e8;
+  --accent-ink: #0b0b0c;
+  --accent-soft: #1f2833;
+  --accent-text: #8cbce8;
+  --focus: #8cbce8;
+
+  --ok: #7fcfa3;
+  --ok-soft: #16251d;
+  --ok-line: #2f5a42;
+  --warn: #ecc472;
+  --warn-soft: #29230f;
+  --warn-line: #6e5a26;
+  --danger: #f0938c;
+  --danger-soft: #2e1817;
+  --danger-line: #74322d;
+
+  --chart-line: #6aa8e0;
+  --chart-trend: #ecb45e;
+  --chart-band: #6aa8e0;
+  --chart-grid: #2b2b2e;
+  --chart-axis: #9b9ba1;
+
+  --sidebar-bg: #0c0c0d;
+  --sidebar-line: #252528;
+  --sidebar-hover: #1a1a1c;
+  --sidebar-active: #242427;
+  --sidebar-ink: #ededee;
+  --sidebar-ink-2: #c4c4c8;
+  --sidebar-muted: #9b9ba1;
+  --sidebar-accent: #8cbce8;
+
+  --shadow-pop: 0 12px 32px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.3);
+
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   min-width: 320px;
   margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: var(--leading);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+a {
+  color: var(--accent-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+/* Reduced motion: every animation jumps to its end state once. Loaders that
+   loop get a static form in App.css, so nothing flickers. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

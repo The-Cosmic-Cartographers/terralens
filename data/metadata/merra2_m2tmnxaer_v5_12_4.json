@@ -1,0 +1,10 @@
+{
+  "methodology": "MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER), version 5.12.4, accessed through NASA Harmony (GES DISC subset) as an area-averaged monthly time series, converted from 1 to 1. Whole calendar years only. Trends are computed afterwards by the analysis module (seasonal Mann-Kendall with Sen's slope); this file describes the data only.",
+  "limitations": [
+    "Each value is an average over the region's box, so it hides what happens inside the box.",
+    "Giovanni snaps the requested box to the product's grid; the region it actually analysed is recorded in the provenance.",
+    "MERRA-2 is a model reconstruction constrained by observations, not a direct measurement. Changes in what it assimilates can create artificial steps in a record.",
+    "Months with no value are kept as empty rows, never filled in."
+  ],
+  "attribution": "MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER). NASA Goddard Earth Sciences Data and Information Services Center (GES DISC), accessed through NASA Harmony (GES DISC subset) on 2026-11-15."
+}

@@ -10,6 +10,7 @@ a trend, and the uncertainty — without downloading anything."
 **0:10 — Regions.**
 ```python
 import terralens as tl
+
 tl.list_regions()
 ```
 "Five POC regions. `tl.ireland` is lazy: nothing is read until I ask for data."
@@ -59,13 +60,13 @@ two numbers can disagree without either being wrong."
 Change per decade from each region's committed series. Units differ by column,
 so compare down a column, never across rows.
 
-| region | temperature (°C) | soil moisture (kg/m²) | evapotranspiration (mm/day) | precipitation (mm/month) | aerosol (AOD) |
+| region | temperature (°C) | soil moisture (m³/m³) | evapotranspiration (mm/day) | precipitation (mm annual total) | aerosol (AOD) |
 | --- | --- | --- | --- | --- | --- |
-| iberia | +0.23* | -0.64* | +0.01 | -15.14 | 0.00 |
-| ireland | +0.21* | -0.37* | +0.04 | +52.21 | 0.00 |
-| nw_south_asia | -0.02 | +0.87* | +0.22* | +85.51* | +0.01 |
-| sahel | +0.17* | +0.07 | +0.08* | +28.06 | -0.03* |
-| us_southwest | +0.46* | -0.55 | -0.03 | -11.71 | 0.00* |
+| iberia | +0.25* | +0.0003 | +0.02 | +5.31 | -0.009* |
+| ireland | +0.21* | +0.0010 | +0.02* | +18.21 | -0.010* |
+| nw_south_asia | -0.02 | +0.0100* | +0.11* | +66.32* | +0.043* |
+| sahel | +0.17* | +0.0022 | +0.04 | +20.66 | -0.011* |
+| us_southwest | +0.46* | -0.0057* | -0.05* | -23.23* | -0.007* |
 
 `*` marks p < 0.05 for that single series. These p-values are unadjusted
 (family size 1); the app's Lineup applies Benjamini–Hochberg, so a starred row

@@ -1,4 +1,4 @@
-"""Soil moisture, 0-10 cm (GLDAS-2.1 Noah)."""
+"""Soil moisture, 0-5 cm (MERRA-2 M2TMNXLND SFMC)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from .base import Variable
 
 
 class SoilMoisture(Variable):
-    """Water held in the top soil layer, in kg/m2 (equivalent to mm of water)."""
+    """Volumetric water in the top 5 cm of soil, in m3/m3 (model output)."""
 
-    variable_id = "soil_moisture_0_10"
+    variable_id = "soil_moisture_0_5"
     alias = "soil_moisture"

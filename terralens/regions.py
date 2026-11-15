@@ -174,8 +174,7 @@ class Region:
         too_short = self.bbox.height < 2 * lat_resolution
         warn = cells < MIN_CELLS or too_narrow or too_short
         detail = (
-            f"{cells} cell(s) at {spec.spatial_resolution} "
-            f"(~{lon_cells} across, ~{lat_cells} down)"
+            f"{cells} cell(s) at {spec.spatial_resolution} (~{lon_cells} across, ~{lat_cells} down)"
         )
         if warn:
             detail += (

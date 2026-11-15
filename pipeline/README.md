@@ -25,13 +25,41 @@ It plans per variable, pulls what a route can serve, writes `data/raw/<variable>
 | -- | -- | -- |
 | T2M | **Giovanni only** (kept) | the committed series is a Giovanni export; Harmony can subset `M2TMNXSLV` but would overwrite the same raw file, so the pull refuses this row and says so |
 | aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
-| soil moisture 0–10 | Harmony | GLDAS-2.1 `GLDAS_NOAH025_M` (`C1342986036-GES_DISC`), field `SoilMoi0_10cm_inst` |
-| evapotranspiration | Harmony | same GLDAS collection, field `Evap_tavg` |
-| precipitation | **Giovanni only** | Harmony registers no coverage for `GPM_3IMERGM`; export the CSV in ≤13-year windows |
-| NO₂ | **no verified route** | `OMNO2d` exists in CMR but no field name has been proven from this pipeline |
+| soil moisture 0–5 | Harmony | MERRA-2 `M2TMNXLND` (`C1276812856-GES_DISC`), field `SFMC` (volumetric, m³/m³) |
+| evapotranspiration | Harmony | same land collection, field `EVLAND` (kg m⁻² s⁻¹, stored as mm/day) |
+| precipitation | Harmony | MERRA-2 `M2TMNXFLX` (`C1276812868-GES_DISC`), field `PRECTOTCORR` (bias-corrected, kg m⁻² s⁻¹, stored as mm/month) |
+| NO₂ | **OPeNDAP daily granule subset** | `OMNO2d` V004 (`C3333493715-GES_DISC`), field `ColumnAmountNO2TropCloudScreened`, one subset per city per day from `pipeline.no2` |
 
 A blocked series is reported by name and exit code, never filled with a substitute or a different
 product. `--dry-run` shows which is which before anything runs.
+
+### Why the long record is MERRA-2 throughout
+
+A 40-year record needs one product that starts in 1980. GLDAS-2.1 starts in 2000 and IMERG Final in mid-2000, so the soil moisture, evapotranspiration, precipitation and aerosol rows come from MERRA-2 (1980–2025); T2M keeps its verified Giovanni series (1981–2025). The replaced series are in `data/archive/`. The cost: soil moisture is the 0–5 cm layer, precipitation and land evaporation are model output, and the land fields are not weighted by land fraction (`FRLAND`).
+
+### The footprint rule
+
+Harmony returns every cell that **intersects** the requested box, while Giovanni analyses only cells
+whose **centre** lies inside it. Averaging the intersecting set pulls a regional mean towards the
+surrounding climate — on T2M Ireland that was 0.88 °C at worst. `month_means` therefore masks to
+centre-in-box before averaging, and `slice_extent` records the extent of the cells that were
+actually averaged in `provenance.json` (`analyzable_region`), which is usually one cell narrower
+than the requested box on each side. With the mask, a Harmony pull reproduces the Giovanni T2M
+series to 0.0005 °C (RMS 0.0003 °C).
+
+### The NO₂ route
+
+OMNO2d is a *daily* product: one cloud-screened retrieval per day, absent where the sky was not
+clear. It therefore cannot be a monthly subset, and the other routes do not serve V004 at all —
+Harmony rejects the variable name (`Coverages were not found`), Giovanni's time-series API knows the
+product only as V003, its Simple Subset Wizard answers `dataSetNotConfigured`, the S3 direct-access
+role is not authorised on the protected bucket, and no-auth/HTTP-Basic both bounce to Earthdata Login.
+
+`pipeline.no2` uses the granule-level OPeNDAP service instead: one request per city per day returns
+the box's cells as a NetCDF subset, 1–3 kB against the 11 MB global granule, with no redirect hop.
+The daily values go through `pipeline.omi`, so a month needs **10 clear days** and carries its
+`n_valid_days`; below that the month is kept as a null row with its count. The 34 days of known Aura
+outages in 2005–2025 have no granule at all and are reported as gaps, never as failed downloads.
 
 ### What makes it survive this network
 
@@ -71,7 +99,11 @@ At ~2 min per series, the 22 Harmony slices in the plan — soil moisture, evapo
 aerosol over five regions — come to roughly **45 minutes**, which is over the 30-minute target.
 That is why resuming is the default design rather than an extra: `--time-limit 1800` stops at a
 chunk boundary and the next run continues from the checkpoints. T2M is not in that count (it stays
-on Giovanni), and precipitation and NO₂ are refused rather than pulled.
+on Giovanni) and precipitation is refused rather than pulled.
+
+NO₂ is additive to that budget: 15,272 city-days over 2005–2025 at roughly 15 subsets per second
+is about 17 minutes for both cities, and its checkpoint is per day, so `--time-limit` stops it just
+as cleanly.
 
 **Today's block, and why the command still behaved:** every GES DISC read returned
 `403 EULA Acceptance Failure` (`data.gesdisc.earthdata.nasa.gov`), which is also what broke
@@ -86,3 +118,27 @@ subsetter cannot read the granule's DMR++
 alone (`…​.dmr.xml`) returns 200, so the collection and our token are fine. Until OPeNDAP
 serves those granule sidecars again, Harmony and direct OPeNDAP `.dods` both fail; the pull
 reports it per series and the rerun resumes.
+
+## Checking the processed data (NAS-41)
+
+`python -m pipeline.qa` reads every folder in `data/processed/` and checks it against
+`pipeline/registry.py` and its own `provenance.json`:
+
+- contract columns, with anything outside the contract reported as a warning;
+- the unit stored in the file equals the registry's output unit, and the provenance
+  `output_unit` and `version` agree with the registry;
+- every month of the registered window is present exactly once;
+- the provenance period matches the file, and `requested_box` parses as W,S,E,N inside
+  valid coordinates (a box that differs from `pipeline/regions.json` is a warning);
+- the sha256 of the export the series was built from matches the hash in provenance. A file
+  with the recorded name but different bytes is an error (it is a different pull); an export
+  that is simply absent is a warning, because `data/raw` is not committed and the recorded
+  export may live elsewhere. A provenance with no hash at all is an error;
+- provenance regions and parquet files are one-to-one, and an empty permalink is only a
+  warning (the two Ireland GLDAS pulls never logged a job id).
+
+`python -m pipeline.qa --regenerate` additionally rebuilds each series from its raw CSV into
+a temporary directory and compares values and timestamps row by row.
+
+Exit codes: `0` clean (warnings allowed), `1` errors found, `2` errors found while
+regenerating.

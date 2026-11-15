@@ -78,10 +78,9 @@ class Variable:
                 ).fillna(1.0)
             else:
                 frame["coverage_fraction"] = 1.0
-            self._frame = (
-                frame.sort_values("date")
-                .reset_index(drop=True)[["date", "value", "coverage_fraction"]]
-            )
+            self._frame = frame.sort_values("date").reset_index(drop=True)[
+                ["date", "value", "coverage_fraction"]
+            ]
         return self._frame.copy()
 
     def _annual_aggregate(self) -> str:
@@ -112,7 +111,7 @@ class Variable:
         same function that builds the app's results.
         """
         from .. import _stats
-        from .._meta import ANNUAL_AGG, PRODUCT_TYPE
+        from .._meta import ANNUAL_AGG, PRODUCT_TYPE, SLOPE_BASE_UNIT
 
         frame = self.load()
         rows = [
@@ -127,9 +126,7 @@ class Variable:
             )
         ]
         aggregate = (
-            ANNUAL_AGG.get(self.variable_id, "mean")
-            if self.annual_agg is None
-            else self.annual_agg
+            ANNUAL_AGG.get(self.variable_id, "mean") if self.annual_agg is None else self.annual_agg
         )
         payload = _stats.analyze_series(
             rows,
@@ -137,7 +134,9 @@ class Variable:
             variable_id=self.variable_id,
             region_id=self.region.region_id,
             unit=self.units,
-            unit_per_year=f"{self.units}/yr",
+            # The slope is fitted to the annual aggregate, so a summed variable's slope
+            # is an annual total per year, the same label the app shows.
+            unit_per_year=f"{SLOPE_BASE_UNIT.get(self.variable_id, self.units)}/yr",
             product_type=PRODUCT_TYPE.get(self.variable_id, "reanalysis"),
             window=(self.spec.start_year, self.spec.end_year),
             annual_agg=aggregate,

@@ -1,5 +1,15 @@
 # TestPyPI report — `terralens-earth` 0.1.2
 
+> **Update, repo version 0.1.3 (not uploaded).** The bundled series and the
+> variable registry now follow the app's long record: MERRA-2 for all five
+> variables, 1980–2025 (1981–2025 for air temperature), with soil moisture at
+> 0–5 cm and precipitation as bias-corrected model output. The precipitation
+> slope unit is now "mm (annual total)", as in the app. The `0.1.2` build
+> described below still carries the earlier GLDAS and IMERG series, so its
+> numbers differ from the app for four of the five variables. To publish 0.1.3,
+> build, upload, re-run the install check below, and move the README install
+> pin from `0.1.2` to `0.1.3`.
+
 Date: 2026-11-15
 Status: **published to TestPyPI and verified by installing from the index.**
 

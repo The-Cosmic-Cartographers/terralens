@@ -8,6 +8,7 @@ import pytest
 
 import terralens as tl
 from terralens import _registry as registry
+from terralens._meta import SLOPE_BASE_UNIT
 from terralens.regions import CellCoverage, Region
 from terralens.variables import VARIABLE_CLASSES
 
@@ -63,8 +64,10 @@ def test_each_remaining_variable_trends(alias, region_id):
     variable = getattr(tl.region(region_id), alias)
     trend = variable.trend()
 
-    spec = registry.VARIABLES[VARIABLE_CLASSES[alias].variable_id]
-    assert trend.unit == spec.output_unit
+    variable_id = VARIABLE_CLASSES[alias].variable_id
+    spec = registry.VARIABLES[variable_id]
+    # A summed variable's slope is an annual total per year, not its monthly unit.
+    assert trend.unit == SLOPE_BASE_UNIT.get(variable_id, spec.output_unit)
     assert trend.period == (spec.start_year, spec.end_year)
     assert trend.per_decade is not None
     assert len(variable.load()) > 200

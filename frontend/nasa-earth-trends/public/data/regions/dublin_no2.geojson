@@ -1,0 +1,35 @@
+{
+    "type": "Feature",
+    "properties": {
+        "region_id": "dublin_no2",
+        "source": "TerraLens comparison city box",
+        "licence": "OpenStreetMap contributors / ODbL 1.0"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -6.5,
+                    53.1
+                ],
+                [
+                    -6,
+                    53.1
+                ],
+                [
+                    -6,
+                    53.5
+                ],
+                [
+                    -6.5,
+                    53.5
+                ],
+                [
+                    -6.5,
+                    53.1
+                ]
+            ]
+        ]
+    }
+}
