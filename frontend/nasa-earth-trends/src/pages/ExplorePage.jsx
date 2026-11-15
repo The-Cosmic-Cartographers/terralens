@@ -88,7 +88,15 @@ function ExplorePage() {
   const visibleRows = selectedVariableId
     ? rows.filter((row) => row.variable_id === selectedVariableId)
     : rows
+  const selectedDatasetId = rows.find((row) => row.variable_id === selectedVariableId)?.dataset_id
+    || items.find((item) => item.variable_id === selectedVariableId)?.dataset_id
+    || guide.find((item) => item.variableId === selectedVariableId)?.datasetId
   const ready = items.filter((item) => item.status === 'ready').length
+  const detailHref = (variableId, datasetId) => {
+    const params = new URLSearchParams({ region: regionId })
+    if (datasetId) params.set('dataset', datasetId)
+    return `/explore/${variableId}?${params.toString()}`
+  }
 
   return (
     <div className="page">
@@ -130,7 +138,7 @@ function ExplorePage() {
             />
           </div>
           {selectedVariableId && (
-            <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={`/explore/${selectedVariableId}?region=${regionId}`}>Open its detail view.</Link></p>
+            <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={detailHref(selectedVariableId, selectedDatasetId)}>Open its detail view.</Link></p>
           )}
           {isWindowed && !lineupLoading && !windowPending && (
             <p className="filter-note">
@@ -167,7 +175,7 @@ function ExplorePage() {
                 key={variable.variableId}
                 variable={variable}
                 index={index}
-                href={`/explore/${variable.variableId}?region=${regionId}`}
+                href={detailHref(variable.variableId, variable.datasetId)}
               />
             ))}
           </div>

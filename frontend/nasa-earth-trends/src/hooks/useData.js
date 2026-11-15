@@ -11,13 +11,16 @@ export function useData(resource, params = {}) {
       : { data: cached, loading: false, error: null }
   })
   const paramsKey = JSON.stringify(params)
+  const hasMissingParams = Object.values(params ?? {}).some(
+    (value) => value === undefined || value === null || value === '',
+  )
 
   useEffect(() => {
     let active = true
     const loader = dataClient[resource]
     const requestParams = JSON.parse(paramsKey)
 
-    if (Object.values(requestParams).some((value) => value == null || value === '')) {
+    if (hasMissingParams) {
       Promise.resolve().then(() => {
         if (active) setState({ data: null, loading: false, error: null })
       })
@@ -74,7 +77,7 @@ export function useData(resource, params = {}) {
     return () => {
       active = false
     }
-  }, [resource, paramsKey])
+  }, [resource, paramsKey, hasMissingParams])
 
   return {
     ...state,
