@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
+
 import SourceLink from './SourceLink.jsx'
 import { datasetSourceUrl } from '../data/sources.js'
 
-function VariableCard({ variable, index }) {
+function VariableCard({ variable, index, href }) {
   return (
     <article className="variable-card">
       <div className="variable-card-topline">
@@ -20,6 +22,11 @@ function VariableCard({ variable, index }) {
       <div className="variable-card-footer">
         <SourceLink href={datasetSourceUrl(variable.datasetId)}>{variable.source}</SourceLink>
         <span className="awaiting-result">Result supplied by analysis</span>
+        {href && (
+          <Link className="lineup-availability" to={href}>
+            Open detail view →
+          </Link>
+        )}
       </div>
     </article>
   )

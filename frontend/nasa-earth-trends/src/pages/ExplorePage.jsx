@@ -148,10 +148,12 @@ function ExplorePage() {
         <Panel className="span-12" title="Variable guide">
           <div className="lineup-grid">
             {guide.map((variable, index) => (
-              <div className="lineup-link-card" key={variable.variableId}>
-                <VariableCard variable={variable} index={index} />
-                <Link className="lineup-availability" to={`/explore/${variable.variableId}?region=${regionId}`}>Open detail view →</Link>
-              </div>
+              <VariableCard
+                key={variable.variableId}
+                variable={variable}
+                index={index}
+                href={`/explore/${variable.variableId}?region=${regionId}`}
+              />
             ))}
           </div>
         </Panel>
