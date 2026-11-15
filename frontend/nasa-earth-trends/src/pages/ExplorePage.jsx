@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import DatasetTable from '../components/DatasetTable.jsx'
+import DropdownMenu from '../components/DropdownMenu.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import KpiTile from '../components/KpiTile.jsx'
@@ -107,23 +108,20 @@ function ExplorePage() {
         <Panel className="span-12" title="Regional Lineup" flush>
           <div className="lineup-toolbar">
             <p>Choose a study region to inspect its ranked variables.</p>
-            <label>
-              <span className="sr-only">Study region</span>
-              <select
-                value={regionId}
-                onChange={(event) => {
-                  setRegionId(event.target.value)
-                  setSearchParams({
-                    region: event.target.value,
-                    ...(selectedVariableId ? { variable: selectedVariableId } : {}),
-                    ...(requestedStart ? { start: requestedStart } : {}),
-                    ...(requestedEnd ? { end: requestedEnd } : {}),
-                  })
-                }}
-              >
-                {regions.map((region) => <option key={region.id} value={region.id}>{region.name}</option>)}
-              </select>
-            </label>
+            <DropdownMenu
+              label="Study region"
+              value={regionId}
+              options={regions.map((region) => ({ value: region.id, label: region.name }))}
+              onChange={(nextRegionId) => {
+                setRegionId(nextRegionId)
+                setSearchParams({
+                  region: nextRegionId,
+                  ...(selectedVariableId ? { variable: selectedVariableId } : {}),
+                  ...(requestedStart ? { start: requestedStart } : {}),
+                  ...(requestedEnd ? { end: requestedEnd } : {}),
+                })
+              }}
+            />
           </div>
           {selectedVariableId && (
             <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={`/explore/${selectedVariableId}?region=${regionId}`}>Open its detail view.</Link></p>
