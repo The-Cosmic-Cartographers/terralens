@@ -1,0 +1,145 @@
+{
+  "dataset_id": "gldas_noah025_m21_soilmoi0_10",
+  "product": "GLDAS-2.1 Noah monthly soil moisture, 0-10 cm (GLDAS_NOAH025_M)",
+  "version": "2.1",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/7149b820-ccfc-4f9d-b5ae-25a1022ddd1f",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "SoilMoi0_10cm_inst",
+  "scale_factor": 1.0,
+  "native_unit": "kg m-2",
+  "output_unit": "kg/m2",
+  "spatial_resolution": "0.25\u00b0",
+  "period_start": "2000-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "NASA Harmony subset, cosine-latitude mean over cells whose centre lies inside the box",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, subset through Harmony; cells kept only where their centre is inside",
+  "transformations": [
+    "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+    "unit unchanged (kg m-2)",
+    "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+    "clipped to the registered window 2000-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -10.0,36.0,3.5,44.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/31f71ee5-f3f6-4a44-bc95-ef5c79d65cf4",
+      "source_csv": "soil_moisture_0_10_iberia.csv",
+      "source_csv_sha256": "1f7d2394fb505b21ebdd8163ab9f9425e429340b9a0021573779c134601a85b8",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (kg m-2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -10.5,51.4,-6.0,55.4: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/871e7014-3347-4b85-846e-920eeaa41d5c",
+      "source_csv": "soil_moisture_0_10_ireland.csv",
+      "source_csv_sha256": "e216299af28582e979c30b56d2f62b74ca0821f6b0fd2e0662f904e9dd03c80d",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (kg m-2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside 68.0,22.0,78.0,32.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/7149b820-ccfc-4f9d-b5ae-25a1022ddd1f",
+      "source_csv": "soil_moisture_0_10_nw_south_asia.csv",
+      "source_csv_sha256": "f9a643c50c0e1d1d0d12d1cc8ee829594f6c0385e6d23cd082dbcf129a88057a",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (kg m-2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside 0.0,12.0,20.0,18.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/e511e148-e87e-4ed3-9774-12b59e2963c2",
+      "source_csv": "soil_moisture_0_10_sahel.csv",
+      "source_csv_sha256": "04152a332ce5a29d1f7b2785f2d6fb5154d3abae6e5c49d554a46593207e7864",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (kg m-2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -115.0,31.0,-105.0,38.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "SoilMoi0_10cm_inst",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/3545b2e6-69e2-4ca9-8837-096dafeb6500",
+      "source_csv": "soil_moisture_0_10_us_southwest.csv",
+      "source_csv_sha256": "2b16e07302accc87578e071b0572baa4c6496d7268398193c6e8e71f6728744e",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (kg m-2)",
+        "CSV declared unit 'kg m-2' matched the expected 'kg m-2'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

@@ -318,7 +318,7 @@
         "sen_slope_per_year": 0.003789,
         "unit_per_year": "mm/day/yr",
         "confidence_interval_95": [
-          -0.001662,
+          -0.001663,
           0.008454
         ],
         "p_value": 0.134925,

@@ -1,0 +1,145 @@
+{
+  "dataset_id": "gpm_3imergm_v07b",
+  "product": "GPM IMERG Final monthly precipitation, V07B reprocessed run (GPM_3IMERGM)",
+  "version": "V07B",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/e0b63496-d53e-4b4f-a183-fb61e507b57d",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "precipitation",
+  "scale_factor": 1.0,
+  "native_unit": "mm/hr",
+  "output_unit": "mm/month",
+  "spatial_resolution": "0.1\u00b0",
+  "period_start": "2001-01-01",
+  "period_end": "2024-12-01",
+  "qa_rules": [
+    "NASA Harmony subset, cosine-latitude mean over cells whose centre lies inside the box",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, subset through Harmony; cells kept only where their centre is inside",
+  "transformations": [
+    "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+    "unit conversion mm/hr -> mm/month",
+    "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+    "clipped to the registered window 2001-01 to 2024-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "centre-in-box cells at 0.1\u00b0 inside -10.5,51.4,-6.0,55.4: edge cells contribute only if their centre is inside",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/393635db-a3d5-4007-90da-e2022456dc1a",
+      "source_csv": "precipitation_ireland.csv",
+      "source_csv_sha256": "c44a843cd345e51fd1268ce753a1abb96b44bb530258dc914d838f865eef8ee7",
+      "observations": 288,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion mm/hr -> mm/month",
+        "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "centre-in-box cells at 0.1\u00b0 inside 68.0,22.0,78.0,32.0: edge cells contribute only if their centre is inside",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/ba2713f8-c42e-432e-bd35-26ead4c0ea13",
+      "source_csv": "precipitation_nw_south_asia.csv",
+      "source_csv_sha256": "f76cc2abdacbdd0b7ff4f3fd7d80ebccc84ddedca63fdace039da0f5cdfc29d7",
+      "observations": 288,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion mm/hr -> mm/month",
+        "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "centre-in-box cells at 0.1\u00b0 inside 0.0,12.0,20.0,18.0: edge cells contribute only if their centre is inside",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/17c82b4a-791f-49c5-9429-84c7986f2aa0",
+      "source_csv": "precipitation_sahel.csv",
+      "source_csv_sha256": "f84259432258e5d4eb45ac9ab62cf664004777a3a4d61c82ce214c31cc8422d6",
+      "observations": 288,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion mm/hr -> mm/month",
+        "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "centre-in-box cells at 0.1\u00b0 inside -115.0,31.0,-105.0,38.0: edge cells contribute only if their centre is inside",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/8e5fca26-649b-4459-b402-0755a482bd77",
+      "source_csv": "precipitation_us_southwest.csv",
+      "source_csv_sha256": "5d47e1fe5b8602982e5b52981d0f78c11e488ec2d1d6409d9fb248af606ffd64",
+      "observations": 288,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion mm/hr -> mm/month",
+        "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "centre-in-box cells at 0.1\u00b0 inside -10.0,36.0,3.5,44.0: edge cells contribute only if their centre is inside",
+      "period_start": "2001-01-01",
+      "period_end": "2024-12-01",
+      "giovanni_variable_id": "precipitation",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/e0b63496-d53e-4b4f-a183-fb61e507b57d",
+      "source_csv": "precipitation_iberia.csv",
+      "source_csv_sha256": "c2679bbc0a1175485fcadb1c9754417e7d99b5ee7c5b5df72c4c90e67499f070",
+      "observations": 288,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion mm/hr -> mm/month",
+        "CSV declared unit 'mm/hr' matched the expected 'mm/hr'",
+        "clipped to the registered window 2001-01 to 2024-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

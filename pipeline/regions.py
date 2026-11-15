@@ -1,4 +1,4 @@
-"""Region boxes for the Lineup, loaded from ``pipeline/regions.json``."""
+"""Region boxes for the Lineup, loaded from the package's bundled metadata."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-REGIONS_PATH = Path(__file__).with_name("regions.json")
+REGIONS_PATH = Path(__file__).resolve().parents[1] / "terralens" / "_data" / "regions.json"
 
 
 def load_regions(path: str | Path | None = None) -> dict[str, dict[str, Any]]:

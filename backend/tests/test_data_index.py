@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from pipeline.regions import load_regions
 from pipeline.registry import VARIABLES
 from scripts.build_data_index import build
 
@@ -28,28 +29,47 @@ def test_every_dataset_id_in_the_registry_is_unique():
     assert len(set(ids)) == len(ids)
 
 
+def _pulled_dataset_ids(processed: Path) -> set[str]:
+    """Datasets the builder should mark ready: series plus provenance on disk."""
+    return {
+        spec.dataset_id
+        for spec in VARIABLES.values()
+        if (processed / spec.dataset_id / "provenance.json").is_file()
+        and list((processed / spec.dataset_id).glob("*.parquet"))
+    }
+
+
 def test_catalogue_marks_pulled_datasets_ready_and_the_rest_coming_soon(index):
-    client, _ = index
+    client, out = index
     items = {i["dataset_id"]: i["status"] for i in client.get("/api/v1/catalogue").json()}
+    expected_ready = _pulled_dataset_ids(out / "processed")
+
+    assert {dataset for dataset, status in items.items() if status == "ready"} == expected_ready
+    assert set(items) == {spec.dataset_id for spec in VARIABLES.values()}
     assert items["merra2_m2tmnxslv"] == "ready"
-    assert {v for k, v in items.items() if k != "merra2_m2tmnxslv"} == {"coming_soon"}
-    assert len(items) == len(VARIABLES)
 
 
 def test_regions_are_only_those_with_a_series(index):
-    client, _ = index
+    client, out = index
     ids = [r["region_id"] for r in client.get("/api/v1/regions").json()]
-    assert ids == ["ireland", "sahel", "us_southwest"]
+    expected = {path.stem for path in (out / "processed").glob("*/*.parquet")}
+
+    # The builder sorts by the registry's region order, so compare both ways.
+    assert ids == [region_id for region_id in load_regions() if region_id in expected]
+    assert set(ids) == expected
 
 
 def test_real_series_and_metadata_are_served(index):
-    client, _ = index
+    client, out = index
     series = client.get("/api/v1/regions/sahel/series", params={"dataset_id": "merra2_m2tmnxslv"})
     assert series.status_code == 200
     assert len(series.json()["rows"]) == 540
     meta = client.get("/api/v1/metadata", params={"dataset_id": "merra2_m2tmnxslv"})
     assert meta.status_code == 200
-    assert set(meta.json()["provenance"]["regions"]) == {"ireland", "sahel", "us_southwest"}
+    expected = {
+        path.stem for path in (out / "processed" / "merra2_m2tmnxslv").glob("*.parquet")
+    }
+    assert set(meta.json()["provenance"]["regions"]) == expected
 
 
 def test_data_version_is_not_sample(index):

@@ -36,6 +36,7 @@ import pandas as pd
 
 from analysis import stats as tl
 from analysis import windows as tw
+from terralens._meta import ANNUAL_AGG, LABELS, PRODUCT_TYPE
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = REPO_ROOT / "data" / "processed"
@@ -51,19 +52,6 @@ DEFINITIONS: dict[str, str] = {
     "aerosol": "How much dust and smoke is in the air",
     "no2": "Nitrogen dioxide from traffic, industry and fires",
 }
-
-PRODUCT_TYPE: dict[str, str] = {
-    "t2m": "reanalysis",
-    "aerosol": "reanalysis",
-    "soil_moisture_0_10": "land_model",
-    "evapotranspiration": "land_model",
-    "precipitation": "satellite",
-    "no2": "satellite",
-}
-
-# Precipitation is a monthly total, so its annual aggregate is a sum; every
-# other row is a state, so the annual mean is the right aggregate.
-ANNUAL_AGG: dict[str, str] = {"precipitation": "sum"}
 
 BASELINE = (1991, 2020)
 MIN_WINDOW_YEARS = 10
@@ -376,16 +364,6 @@ def _rank_key(row: dict[str, Any]):
     p = row.get("adjusted_p_value")
     effect = row.get("effect_size_swings") or 0.0
     return (1 if p is None else 0, p if p is not None else 1.0, -effect)
-
-
-LABELS: dict[str, str] = {
-    "t2m": "Air temperature (2 m)",
-    "soil_moisture_0_10": "Soil moisture (0-10 cm)",
-    "evapotranspiration": "Evapotranspiration",
-    "precipitation": "Precipitation",
-    "aerosol": "Aerosol optical depth",
-    "no2": "NO2 column (troposphere)",
-}
 
 
 def regions_with_data() -> list[str]:

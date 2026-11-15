@@ -1,0 +1,145 @@
+{
+  "dataset_id": "merra2_m2tmnxaer_v5_12_4",
+  "product": "MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER)",
+  "version": "5.12.4",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/a0f95fa8-92d1-4f00-841b-5f4b43819215",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "TOTEXTTAU",
+  "scale_factor": 1.0,
+  "native_unit": "1",
+  "output_unit": "1",
+  "spatial_resolution": "0.5\u00b0 x 0.625\u00b0",
+  "period_start": "2003-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "NASA Harmony subset, cosine-latitude mean over cells whose centre lies inside the box",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, subset through Harmony; cells kept only where their centre is inside",
+  "transformations": [
+    "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+    "unit unchanged (1)",
+    "CSV declared unit '1' matched the expected '1'",
+    "clipped to the registered window 2003-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "centre-in-box cells at 0.5\u00b0 x 0.625\u00b0 inside -10.5,51.4,-6.0,55.4: edge cells contribute only if their centre is inside",
+      "period_start": "2003-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "TOTEXTTAU",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/1dad2bb7-3a11-450b-91fa-6e1388134178",
+      "source_csv": "aerosol_ireland.csv",
+      "source_csv_sha256": "ea351f29cc296b79eb699797cbfa90299fabdf8d4a128880f0a4d7c9a049d3b7",
+      "observations": 276,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (1)",
+        "CSV declared unit '1' matched the expected '1'",
+        "clipped to the registered window 2003-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "centre-in-box cells at 0.5\u00b0 x 0.625\u00b0 inside 0.0,12.0,20.0,18.0: edge cells contribute only if their centre is inside",
+      "period_start": "2003-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "TOTEXTTAU",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/8ef9cf1a-dfae-49d1-804d-9a031a7bf2c0",
+      "source_csv": "aerosol_sahel.csv",
+      "source_csv_sha256": "fdb52da3cb1cd262d78852bd8cd9519d316075137c6b5cf7912be73a9c1c4e00",
+      "observations": 276,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (1)",
+        "CSV declared unit '1' matched the expected '1'",
+        "clipped to the registered window 2003-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "centre-in-box cells at 0.5\u00b0 x 0.625\u00b0 inside -115.0,31.0,-105.0,38.0: edge cells contribute only if their centre is inside",
+      "period_start": "2003-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "TOTEXTTAU",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/ddee0554-fca3-4fd0-ae6d-cae1f2c12edc",
+      "source_csv": "aerosol_us_southwest.csv",
+      "source_csv_sha256": "5a705d97f4e328cd2a166f331879410544fe1fc37dfa4c519fe4ff440b264653",
+      "observations": 276,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (1)",
+        "CSV declared unit '1' matched the expected '1'",
+        "clipped to the registered window 2003-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "centre-in-box cells at 0.5\u00b0 x 0.625\u00b0 inside -10.0,36.0,3.5,44.0: edge cells contribute only if their centre is inside",
+      "period_start": "2003-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "TOTEXTTAU",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/b71de42e-9aa2-4ff5-9cba-14056a436207",
+      "source_csv": "aerosol_iberia.csv",
+      "source_csv_sha256": "14f602ba89e2365df1f832457019043ab34d58e3238df7550b864ac497214ced",
+      "observations": 276,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (1)",
+        "CSV declared unit '1' matched the expected '1'",
+        "clipped to the registered window 2003-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "centre-in-box cells at 0.5\u00b0 x 0.625\u00b0 inside 68.0,22.0,78.0,32.0: edge cells contribute only if their centre is inside",
+      "period_start": "2003-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "TOTEXTTAU",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/a0f95fa8-92d1-4f00-841b-5f4b43819215",
+      "source_csv": "aerosol_nw_south_asia.csv",
+      "source_csv_sha256": "0555e306820041f0cfdf0accdbab753b921ea33de97107010dc0feb9c4129af8",
+      "observations": 276,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit unchanged (1)",
+        "CSV declared unit '1' matched the expected '1'",
+        "clipped to the registered window 2003-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}

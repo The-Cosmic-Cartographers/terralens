@@ -1,0 +1,145 @@
+{
+  "dataset_id": "gldas_noah025_m21_evap",
+  "product": "GLDAS-2.1 Noah monthly evapotranspiration (GLDAS_NOAH025_M)",
+  "version": "2.1",
+  "doi_or_url": "https://harmony.earthdata.nasa.gov/jobs/ae40c330-a257-4c02-b7e2-3756506b82c0",
+  "access_date": "2026-11-14",
+  "access_route": "NASA Harmony (GES DISC subset)",
+  "variable_field": "Evap_tavg",
+  "scale_factor": 1.0,
+  "native_unit": "kg m-2 s-1",
+  "output_unit": "mm/day",
+  "spatial_resolution": "0.25\u00b0",
+  "period_start": "2000-01-01",
+  "period_end": "2025-12-01",
+  "qa_rules": [
+    "NASA Harmony subset, cosine-latitude mean over cells whose centre lies inside the box",
+    "no mixing of product versions inside one series",
+    "registered variable window, whole calendar years",
+    "missing months kept as null rows",
+    "CSV declared unit must match the expected native unit"
+  ],
+  "region_source": "Linear doc 11 \u00a73 box, subset through Harmony; cells kept only where their centre is inside",
+  "transformations": [
+    "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+    "unit conversion kg m-2 s-1 -> mm/day",
+    "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+    "clipped to the registered window 2000-01 to 2025-12",
+    "missing months kept as null rows (0 in this series)",
+    "series covers the full registered window",
+    "mapped to the doc 04 processed-series columns",
+    "anomaly left null: climatology and anomalies belong to analysis/"
+  ],
+  "regions": {
+    "ireland": {
+      "region_id": "ireland",
+      "requested_box": "-10.5,51.4,-6.0,55.4",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -10.5,51.4,-6.0,55.4: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/36c3eb49-5c8c-4f50-afbb-865d0c6f97dd",
+      "source_csv": "evapotranspiration_ireland.csv",
+      "source_csv_sha256": "24351df44ae23d0558af7af1026b9e6f3f125b6c421715c2e0cb47ca2be46d02",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "iberia": {
+      "region_id": "iberia",
+      "requested_box": "-10.0,36.0,3.5,44.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -10.0,36.0,3.5,44.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/2c715aed-940b-4d7b-b88d-0c02ab4588be",
+      "source_csv": "evapotranspiration_iberia.csv",
+      "source_csv_sha256": "3171b8f7a1f44ec37b5529a8814c7137fa5c7c0be15eeb76e53b28b59880b515",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "nw_south_asia": {
+      "region_id": "nw_south_asia",
+      "requested_box": "68.0,22.0,78.0,32.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside 68.0,22.0,78.0,32.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/ae40c330-a257-4c02-b7e2-3756506b82c0",
+      "source_csv": "evapotranspiration_nw_south_asia.csv",
+      "source_csv_sha256": "77795df1447cabacea7b3905bebbda9482f0885f58d50a49dd54065e23950a30",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "sahel": {
+      "region_id": "sahel",
+      "requested_box": "0.0,12.0,20.0,18.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside 0.0,12.0,20.0,18.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/cea219f4-1601-49ba-9b2f-46d7deee2f69",
+      "source_csv": "evapotranspiration_sahel.csv",
+      "source_csv_sha256": "c0f88c8ffcad891f99fe215f20ade66b18751467b7808971b36098d3b4b6d9ea",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    },
+    "us_southwest": {
+      "region_id": "us_southwest",
+      "requested_box": "-115.0,31.0,-105.0,38.0",
+      "analyzable_region": "centre-in-box cells at 0.25\u00b0 inside -115.0,31.0,-105.0,38.0: edge cells contribute only if their centre is inside",
+      "period_start": "2000-01-01",
+      "period_end": "2025-12-01",
+      "giovanni_variable_id": "Evap_tavg",
+      "permalink": "https://harmony.earthdata.nasa.gov/jobs/0091d681-3eb3-4432-86c0-e240a4608562",
+      "source_csv": "evapotranspiration_us_southwest.csv",
+      "source_csv_sha256": "e5797de4577de48b9c4f345e9c2b10771e232785cb12e969e0d7efef66fd31da",
+      "observations": 312,
+      "transformations": [
+        "Harmony NetCDF monthly slice, area mean over centre-in-box cells",
+        "unit conversion kg m-2 s-1 -> mm/day",
+        "CSV declared unit 'kg m-2 s-1' matched the expected 'kg m-2 s-1'",
+        "clipped to the registered window 2000-01 to 2025-12",
+        "missing months kept as null rows (0 in this series)",
+        "series covers the full registered window",
+        "mapped to the doc 04 processed-series columns",
+        "anomaly left null: climatology and anomalies belong to analysis/"
+      ]
+    }
+  }
+}
