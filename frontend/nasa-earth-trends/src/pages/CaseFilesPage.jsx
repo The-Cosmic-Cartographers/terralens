@@ -10,6 +10,7 @@ import SourceLink from '../components/SourceLink.jsx'
 import VerdictBadge from '../components/VerdictBadge.jsx'
 import { datasetSourceUrl } from '../data/sources.js'
 import { useData } from '../hooks/useData.js'
+import { formatIntervalPerDecade, formatP } from '../utils/format.js'
 
 const DATASET_ID = 'merra2_m2tmnxslv'
 
@@ -51,7 +52,7 @@ function formatSlope(result) {
 }
 
 function formatInterval(result) {
-  return result?.confidence_interval_95?.map((value) => Number(value).toFixed(2)).join(' to ') || '—'
+  return formatIntervalPerDecade(result?.confidence_interval_95)
 }
 
 function ResultSummary({ result }) {
@@ -67,7 +68,7 @@ function ResultSummary({ result }) {
     <div className="case-evidence">
       <div><span>Rate</span><strong>{formatSlope(result)}</strong></div>
       <div><span>95% interval</span><strong>{formatInterval(result)}</strong></div>
-      <div><span>Adjusted p</span><strong>{result.adjusted_p_value ?? '—'}</strong></div>
+      <div><span>Adjusted p</span><strong>{formatP(result.adjusted_p_value)}</strong></div>
         <div><span>Period</span><strong>{result.period_start ? `${result.period_start} – ${result.period_end}` : `${result.start} – ${result.end}`}</strong></div>
       <VerdictBadge verdict={result.verdict} />
     </div>
