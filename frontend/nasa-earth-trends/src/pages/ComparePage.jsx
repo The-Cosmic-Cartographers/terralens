@@ -65,8 +65,10 @@ function CompareCard({ result }) {
 }
 
 function ComparePage() {
-  const [datasetId, setDatasetId] = useState('merra2_m2tmnxslv')
-  const [pairIndex, setPairIndex] = useState(2)
+  // Open on a pair that really moves in opposite directions: US Southwest
+  // precipitation falls while NW South Asia's rises over the same 1980-2025 record.
+  const [datasetId, setDatasetId] = useState('merra2_m2tmnxflx_prectotcorr_v5_12_4')
+  const [pairIndex, setPairIndex] = useState(4)
   const { data: catalogue, loading: catalogueLoading } = useData('catalogue')
   const { data, loading, error } = useData('compare', { datasetId })
   const [leftId, rightId] = pairs[pairIndex]
