@@ -10,7 +10,7 @@ TerraLens describes what the data shows over the period measured. It makes no fo
 
 > **Status:** under development during the hackathon (14–15 Nov 2026). Real data for five variables (air temperature, soil moisture, evapotranspiration, precipitation, aerosol) across Ireland, Sahel and US Southwest is processed, tested and served as a static snapshot with the web app on top. Every verdict stays provisional until the scientific sign-off.
 >
-> **Live (Cloudflare Pages):** https://terralens-7bo.pages.dev
+> **Live (Cloudflare Pages):** https://terralens.pages.dev
 
 ## What you can do with it
 

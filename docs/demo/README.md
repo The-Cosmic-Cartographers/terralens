@@ -1,6 +1,6 @@
 # Demo kit (NAS-53)
 
-Screenshots of the live app (https://terralens-7bo.pages.dev), taken 15 Nov 2026 with headless Chrome, for the 30-second video, the 7-slide fallback and the submission form. The script and shot list are in Linear doc 15.
+Screenshots of the live app (https://terralens.pages.dev), taken 15 Nov 2026 with headless Chrome, for the 30-second video, the 7-slide fallback and the submission form. The script and shot list are in Linear doc 15.
 
 | File | What it shows |
 | -- | -- |
