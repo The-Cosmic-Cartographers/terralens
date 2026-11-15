@@ -9,6 +9,8 @@ import {
   YAxis,
 } from 'recharts'
 
+import { formatChartValue } from '../../utils/format.js'
+
 function median(values) {
   const sorted = [...values].sort((a, b) => a - b)
   const mid = Math.floor(sorted.length / 2)
@@ -19,7 +21,12 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
   // The supplied Sen slope is per year and the points are monthly. Draw the line
   // slope * years + intercept, with the intercept the median of (value - slope * years),
   // which is the Sen line's own definition; nothing is re-tested here.
-  const slope = trend?.sen_slope_per_year == null ? null : Number(trend.sen_slope_per_year)
+  // For a summed variable (precipitation) the file's slope is a change in the annual
+  // total per year; the plotted points are monthly values, so one month moves by 1/12.
+  const perMonthShare = String(trend?.unit_per_year || '').includes('annual total') ? 12 : 1
+  const slope = trend?.sen_slope_per_year == null
+    ? null
+    : Number(trend.sen_slope_per_year) / perMonthShare
   const valid = data
     .map((point, index) => ({ index, value: point[dataKey] }))
     .filter((point) => point.value != null && Number.isFinite(Number(point.value)))
@@ -33,6 +40,15 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
       ? null
       : intercept + slope * (index / 12),
   }))
+
+  // Ticks sit on whole years (multiples of 5 for a long record) so the axis never
+  // rounds the last December up to the following year.
+  const times = chartData.map((point) => point.t).filter((value) => Number.isFinite(value))
+  const first = Math.min(...times)
+  const last = Math.max(...times)
+  const step = last - first > 25 ? 5 : 2
+  const ticks = []
+  for (let year = Math.ceil(first / step) * step; year <= last; year += step) ticks.push(year)
 
   if (!chartData.length) {
     return (
@@ -51,9 +67,9 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             dataKey="t"
             type="number"
             domain={['dataMin', 'dataMax']}
+            ticks={ticks}
             tickFormatter={(value) => String(Math.round(value))}
             allowDecimals={false}
-            tickCount={9}
             tick={{ fill: 'var(--chart-axis)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
@@ -65,6 +81,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             width={42}
           />
           <Tooltip
+            formatter={(value, name) => [formatChartValue(value), name]}
             labelFormatter={(value) => {
               const year = Math.floor(value + 1e-6)
               const month = Math.round((value - year) * 12) + 1
@@ -77,8 +94,8 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               color: 'var(--text)',
             }}
           />
-          <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} />
-          <Area dataKey="ciLow" stroke="none" fill="var(--surface)" fillOpacity={1} />
+          <Area dataKey="ciHigh" stroke="none" fill="var(--chart-band)" fillOpacity={0.35} isAnimationActive={false} />
+          <Area dataKey="ciLow" stroke="none" fill="var(--surface)" fillOpacity={1} isAnimationActive={false} />
           <Line
             type="monotone"
             dataKey={dataKey}
@@ -87,6 +104,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
             strokeWidth={2.5}
             dot={false}
             connectNulls={false}
+            isAnimationActive={false}
           />
           {trend?.sen_slope_per_year != null && (
             <Line
@@ -98,6 +116,7 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
               strokeDasharray="6 4"
               dot={false}
               connectNulls={false}
+              isAnimationActive={false}
             />
           )}
         </LineChart>

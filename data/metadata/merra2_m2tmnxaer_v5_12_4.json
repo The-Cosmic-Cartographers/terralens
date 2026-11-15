@@ -6,5 +6,5 @@
     "MERRA-2 is a model reconstruction constrained by observations, not a direct measurement. Changes in what it assimilates can create artificial steps in a record.",
     "Months with no value are kept as empty rows, never filled in."
   ],
-  "attribution": "MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER). NASA Goddard Earth Sciences Data and Information Services Center (GES DISC), accessed through NASA Harmony (GES DISC subset) on 2026-11-14."
+  "attribution": "MERRA-2 total aerosol extinction AOT at 550 nm (M2TMNXAER). NASA Goddard Earth Sciences Data and Information Services Center (GES DISC), accessed through NASA Harmony (GES DISC subset) on 2026-11-15."
 }

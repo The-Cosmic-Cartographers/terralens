@@ -24,11 +24,21 @@ from pipeline.registry import VARIABLES
 
 LABELS = {
     "t2m": "Air temperature (2 m)",
-    "soil_moisture_0_10": "Soil moisture (0-10 cm)",
+    "soil_moisture_0_5": "Soil moisture (0-5 cm)",
     "evapotranspiration": "Evapotranspiration",
     "precipitation": "Precipitation",
     "aerosol": "Aerosol optical depth",
     "no2": "NO2 column (troposphere)",
+}
+
+# Soil moisture and land evaporation are land-only fields: a coastal cell counts in full
+# although part of it is sea, because the regional mean is not weighted by land fraction.
+LAND_LIMITATIONS = {
+    variable: [
+        "This is a land-surface field averaged over the box's grid cells without weighting "
+        "by land fraction (MERRA-2 FRLAND), so coastal cells count in full."
+    ]
+    for variable in ("soil_moisture_0_5", "evapotranspiration")
 }
 
 LIMITATIONS = [
@@ -105,7 +115,7 @@ def build(processed: Path, out: Path) -> list[str]:
                 "Trends are computed afterwards by the analysis module (seasonal Mann-Kendall "
                 "with Sen's slope); this file describes the data only."
             ),
-            "limitations": LIMITATIONS,
+            "limitations": LIMITATIONS + LAND_LIMITATIONS.get(spec.variable_id, []),
             "attribution": (
                 f"{provenance.product}. NASA Goddard Earth Sciences Data and Information Services "
                 f"Center (GES DISC), accessed through {provenance.access_route} on "

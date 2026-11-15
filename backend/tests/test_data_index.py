@@ -51,7 +51,7 @@ def test_a_dataset_is_ready_only_when_it_covers_every_app_region(index):
 
 
 def test_regions_are_exactly_the_app_regions(index):
-    """Extra regions or city pairs on disk (Iberia, the NO2 cities) never reach the app."""
+    """Extra regions or city pairs on disk (the NO2 cities) never reach the app."""
     client, _ = index
     ids = [r["region_id"] for r in client.get("/api/v1/regions").json()]
     assert ids == list(APP_REGIONS)
@@ -76,7 +76,7 @@ def test_an_extra_region_on_disk_does_not_change_the_output(tmp_path):
     processed = tmp_path / "processed"
     shutil.copytree(PROCESSED, processed)
     dataset = processed / "merra2_m2tmnxslv"
-    shutil.copy(dataset / "ireland.parquet", dataset / "iberia.parquet")
+    shutil.copy(dataset / "ireland.parquet", dataset / "atlantis.parquet")
     build(processed, extra)
     for name in ("regions.json", "catalogue.json"):
         assert (base / name).read_bytes() == (extra / name).read_bytes()

@@ -54,7 +54,7 @@ function RegionExplorer() {
         <dl className="kv">
           <div>
             <dt>Investigation window</dt>
-            <dd>1981–2025</dd>
+            <dd>1980–2025</dd>
           </div>
           <div>
             <dt>Region id</dt>

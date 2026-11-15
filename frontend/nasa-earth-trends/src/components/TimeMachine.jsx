@@ -5,7 +5,7 @@ import ErrorState from './ErrorState.jsx'
 import LoadingState from './LoadingState.jsx'
 import VerdictBadge from './VerdictBadge.jsx'
 import { useData } from '../hooks/useData.js'
-import { formatP, formatSigned } from '../utils/format.js'
+import { formatP, formatSlope } from '../utils/format.js'
 
 function TimeMachine({ regionId, datasetId, headline = null }) {
   const { data, loading, error } = useData('windows', { regionId, datasetId })
@@ -90,7 +90,7 @@ function TimeMachine({ regionId, datasetId, headline = null }) {
         <div className="window-result">
           <div><span>Selected window</span><strong>{shown.start} — {shown.end}</strong></div>
           <VerdictBadge verdict={shown.verdict} />
-          <div><span>Sen slope / year</span><strong>{formatSigned(shown.sen_slope_per_year, 3)}</strong></div>
+          <div><span>Sen slope / year</span><strong>{formatSlope(shown.sen_slope_per_year)}</strong></div>
           <div><span>{isFullPeriod ? 'Adjusted p-value' : 'Window p-value'}</span><strong>{formatP(shown.adjusted_p_value)}</strong></div>
         </div>
       ) : (

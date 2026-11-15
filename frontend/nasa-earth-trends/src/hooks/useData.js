@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 import { dataClient } from '../services/dataClient.js'
 
 export function useData(resource, params = {}) {
-  const [state, setState] = useState({
-    data: null,
-    loading: true,
-    error: null,
+  const [state, setState] = useState(() => {
+    const cached = dataClient.peek(resource, params)
+
+    return cached === undefined
+      ? { data: null, loading: true, error: null }
+      : { data: cached, loading: false, error: null }
   })
   const paramsKey = JSON.stringify(params)
 
@@ -40,6 +42,22 @@ export function useData(resource, params = {}) {
         active = false
       }
     }
+
+    // A visited page renders from the cache without a loading state at all.
+    const cached = dataClient.peek(resource, requestParams)
+    if (cached !== undefined) {
+      Promise.resolve().then(() => {
+        if (active) setState({ data: cached, loading: false, error: null })
+      })
+
+      return () => {
+        active = false
+      }
+    }
+
+    Promise.resolve().then(() => {
+      if (active) setState({ data: null, loading: true, error: null })
+    })
 
     loader(requestParams)
       .then((data) => {

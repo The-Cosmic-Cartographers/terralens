@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import DropdownMenu from '../components/DropdownMenu.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import LoadingState from '../components/LoadingState.jsx'
@@ -11,11 +12,13 @@ import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
 import { formatIntervalPerDecade, formatP, formatSigned } from '../utils/format.js'
 
-// Pairs among the three app regions (decision D26).
+// The paired regions of the Opposite Trends view (doc 11 and NAS-34); every region is an app region.
 const pairs = [
-  ['ireland', 'sahel'],
-  ['sahel', 'us_southwest'],
+  ['ireland', 'iberia'],
+  ['sahel', 'iberia'],
   ['us_southwest', 'ireland'],
+  ['sahel', 'nw_south_asia'],
+  ['us_southwest', 'nw_south_asia'],
 ]
 
 const labels = {
@@ -88,22 +91,31 @@ function ComparePage() {
       <div className="grid">
         <Panel className="span-12" title="Choose the comparison">
           <div className="compare-controls">
-            <label>
+            <div className="field">
               <span>Variable / dataset</span>
-              <select value={datasetId} onChange={(event) => setDatasetId(event.target.value)} disabled={catalogueLoading}>
-                {(catalogue || [{ dataset_id: 'merra2_m2tmnxslv', label: 'Air temperature (2 m)' }]).map((item) => (
-                  <option value={item.dataset_id} key={item.dataset_id}>{item.label || item.dataset_id}</option>
-                ))}
-              </select>
-            </label>
-            <label>
+              <DropdownMenu
+                label="Variable / dataset"
+                value={datasetId}
+                disabled={catalogueLoading}
+                options={(catalogue || [{ dataset_id: 'merra2_m2tmnxslv', label: 'Air temperature (2 m)' }]).map((item) => ({
+                  value: item.dataset_id,
+                  label: item.label || item.dataset_id,
+                }))}
+                onChange={setDatasetId}
+              />
+            </div>
+            <div className="field">
               <span>Paired regions</span>
-              <select value={pairIndex} onChange={(event) => setPairIndex(Number(event.target.value))}>
-                {pairs.map(([first, second], index) => (
-                  <option value={index} key={`${first}-${second}`}>{regionName(first)} ↔ {regionName(second)}</option>
-                ))}
-              </select>
-            </label>
+              <DropdownMenu
+                label="Paired regions"
+                value={pairIndex}
+                options={pairs.map(([first, second], index) => ({
+                  value: index,
+                  label: `${regionName(first)} ↔ ${regionName(second)}`,
+                }))}
+                onChange={(nextIndex) => setPairIndex(Number(nextIndex))}
+              />
+            </div>
           </div>
           {data?.period_note && <p className="period-note">{data.period_note}</p>}
         </Panel>

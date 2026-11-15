@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import DatasetTable from '../components/DatasetTable.jsx'
+import DropdownMenu from '../components/DropdownMenu.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import KpiTile from '../components/KpiTile.jsx'
@@ -17,6 +18,7 @@ import { useData } from '../hooks/useData.js'
 const guide = [
   {
     name: 'Air temperature',
+    datasetId: 'merra2_m2tmnxslv',
     unit: '°C',
     glyph: 'T°',
     source: 'MERRA-2 reanalysis',
@@ -26,33 +28,37 @@ const guide = [
   },
   {
     name: 'Soil moisture',
-    unit: 'kg/m²',
+    datasetId: 'merra2_m2tmnxlnd_sfmc_v5_12_4',
+    unit: 'm³/m³',
     glyph: '≈',
-    source: 'GLDAS land model',
+    source: 'MERRA-2 model reanalysis',
     description: 'The amount of water held in the upper layer of soil.',
     significance: 'Connects rainfall to ecosystems, agriculture, evaporation, and drought.',
-    variableId: 'soil_moisture_0_10',
+    variableId: 'soil_moisture_0_5',
   },
   {
     name: 'Precipitation',
+    datasetId: 'merra2_m2tmnxflx_prectotcorr_v5_12_4',
     unit: 'mm/month',
     glyph: '∇',
-    source: 'GPM IMERG satellite estimate',
+    source: 'MERRA-2 model reanalysis (bias-corrected)',
     description: 'Rain and other water arriving at the surface.',
     significance: 'Helps describe water availability and the balance between wet and dry seasons.',
     variableId: 'precipitation',
   },
   {
     name: 'Evapotranspiration',
+    datasetId: 'merra2_m2tmnxlnd_evland_v5_12_4',
     unit: 'mm/day',
     glyph: '↑',
-    source: 'GLDAS land model',
+    source: 'MERRA-2 model reanalysis (land)',
     description: 'Water moving back to the atmosphere from land and plants.',
     significance: 'Shows how heat, vegetation, and available water interact.',
     variableId: 'evapotranspiration',
   },
   {
     name: 'Aerosol optical depth',
+    datasetId: 'merra2_m2tmnxaer_v5_12_4',
     unit: 'unitless',
     glyph: '◉',
     source: 'MERRA-2 reanalysis',
@@ -65,7 +71,7 @@ const guide = [
 function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [regionId, setRegionId] = useState(searchParams.get('region') || regions[0].id)
-  const { data: catalogue, loading: catalogueLoading, error: catalogueError, mode } = useData('catalogue')
+  const { data: catalogue, loading: catalogueLoading, error: catalogueError } = useData('catalogue')
   const { data: lineup, loading: lineupLoading, error: lineupError } = useData('lineup', { regionId })
   const items = catalogue ?? []
   const rows = lineup?.rows ?? []
@@ -82,9 +88,8 @@ function ExplorePage() {
       <div className="page-title">
         <div>
           <h1>The Lineup</h1>
-          <p>Ranked environmental signals across the selected region, using supplied results from 1981–2025.</p>
+          <p>Ranked environmental signals across the selected region, using supplied results from 1980–2025 (each row shows its own period).</p>
         </div>
-        <span className="chip">{mode === 'static' ? 'Static snapshot' : 'Live API'}</span>
       </div>
 
       <SampleDataWarning />
@@ -92,8 +97,7 @@ function ExplorePage() {
       <div className="kpi-row">
         <KpiTile label="In catalogue" value={catalogue ? items.length : '—'} note="Datasets listed" />
         <KpiTile label="Ready" value={catalogue ? ready : '—'} note="Results available" tone="blue" />
-        <KpiTile label="Coming soon" value={catalogue ? items.length - ready : '—'} note="Pull or analysis pending" />
-        <KpiTile label="Window" value="1981–2025" note="Monthly series" />
+        <KpiTile label="Window" value="1980–2025" note="Monthly series" />
       </div>
 
       {(catalogueLoading || lineupLoading) && <LoadingState label="Loading supplied environmental results" />}
@@ -104,23 +108,20 @@ function ExplorePage() {
         <Panel className="span-12" title="Regional Lineup" flush>
           <div className="lineup-toolbar">
             <p>Choose a study region to inspect its ranked variables.</p>
-            <label>
-              <span className="sr-only">Study region</span>
-              <select
-                value={regionId}
-                onChange={(event) => {
-                  setRegionId(event.target.value)
-                  setSearchParams({
-                    region: event.target.value,
-                    ...(selectedVariableId ? { variable: selectedVariableId } : {}),
-                    ...(requestedStart ? { start: requestedStart } : {}),
-                    ...(requestedEnd ? { end: requestedEnd } : {}),
-                  })
-                }}
-              >
-                {regions.map((region) => <option key={region.id} value={region.id}>{region.name}</option>)}
-              </select>
-            </label>
+            <DropdownMenu
+              label="Study region"
+              value={regionId}
+              options={regions.map((region) => ({ value: region.id, label: region.name }))}
+              onChange={(nextRegionId) => {
+                setRegionId(nextRegionId)
+                setSearchParams({
+                  region: nextRegionId,
+                  ...(selectedVariableId ? { variable: selectedVariableId } : {}),
+                  ...(requestedStart ? { start: requestedStart } : {}),
+                  ...(requestedEnd ? { end: requestedEnd } : {}),
+                })
+              }}
+            />
           </div>
           {selectedVariableId && (
             <p className="filter-note">Showing the requested signal when the selected region has a supplied result. {requestedStart && requestedEnd ? `Requested window: ${requestedStart}–${requestedEnd}. ` : ''}<Link to={`/explore/${selectedVariableId}?region=${regionId}`}>Open its detail view.</Link></p>
@@ -147,10 +148,12 @@ function ExplorePage() {
         <Panel className="span-12" title="Variable guide">
           <div className="lineup-grid">
             {guide.map((variable, index) => (
-              <Link className="lineup-link-card" to={`/explore/${variable.variableId}?region=${regionId}`} key={variable.variableId}>
-                <VariableCard variable={variable} index={index} />
-                <span className="lineup-availability">Open detail view</span>
-              </Link>
+              <VariableCard
+                key={variable.variableId}
+                variable={variable}
+                index={index}
+                href={`/explore/${variable.variableId}?region=${regionId}`}
+              />
             ))}
           </div>
         </Panel>

@@ -61,7 +61,7 @@ One line each, shown beside the pill.
 
 ## 6. Project page — "Honest limits"
 
-> * **Reanalysis is not observation.** MERRA-2 and GLDAS combine a model with assimilated observations; changes in what is assimilated can create artificial steps, aerosol most of all. Satellite rows (IMERG precipitation, OMI NO₂) sit beside model rows for that reason, and every row carries a badge.
+> * **Reanalysis is not observation.** Every Lineup row comes from MERRA-2, which combines a model with assimilated observations; changes in what is assimilated can create artificial steps, aerosol most of all. Precipitation and land evaporation are model output, not measurements; the OMI NO₂ comparison is the one satellite row, and every row carries a badge.
 > * **Box averages hide internal variation.** A trend for "Iberia" is not a trend for every valley in Iberia.
 > * **Every result is period-specific.** Each row prints its own window; the Time Machine shows how much the answer depends on it.
 > * **"No clear trend" is not "no change".** It means this record cannot demonstrate one.

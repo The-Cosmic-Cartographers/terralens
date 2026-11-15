@@ -1,5 +1,10 @@
-export { default as CaseFilesPage } from './CaseFilesPage.jsx'
-export { default as ComparePage } from './ComparePage.jsx'
-export { default as ExplorePage } from './ExplorePage.jsx'
-export { default as HomePage } from './HomePage.jsx'
-export { default as VariableDetailPage } from './VariableDetailPage.jsx'
+import { lazy } from 'react'
+
+// Each page is loaded on demand: the overview pulls in MapLibre, the detail
+// view pulls in Recharts, and neither weighs down the first paint.
+export const HomePage = lazy(() => import('./HomePage.jsx'))
+export const SummaryPage = lazy(() => import('./SummaryPage.jsx'))
+export const ExplorePage = lazy(() => import('./ExplorePage.jsx'))
+export const VariableDetailPage = lazy(() => import('./VariableDetailPage.jsx'))
+export const ComparePage = lazy(() => import('./ComparePage.jsx'))
+export const CaseFilesPage = lazy(() => import('./CaseFilesPage.jsx'))
