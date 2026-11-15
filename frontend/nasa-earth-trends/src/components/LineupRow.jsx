@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import { formatSlope } from '../utils/format.js'
 import ProductBadge from './ProductBadge.jsx'
 import Sparkline from './Sparkline.jsx'
 import VerdictBadge from './VerdictBadge.jsx'
@@ -22,7 +23,7 @@ function LineupRow({ row, rank }) {
       </span>
       <Sparkline values={row.sparkline} />
       <span className="lineup-slope">
-        {slope == null ? '—' : slope.toFixed(3)}
+        {slope == null ? '—' : formatSlope(slope)}
         <small>{trend.unit_per_year?.replace('/yr', '/decade') || 'per decade'}</small>
       </span>
       <span className="lineup-verdict">

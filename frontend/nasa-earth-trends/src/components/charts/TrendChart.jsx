@@ -21,7 +21,12 @@ function TrendChart({ data = [], trend = null, dataKey = 'value' }) {
   // The supplied Sen slope is per year and the points are monthly. Draw the line
   // slope * years + intercept, with the intercept the median of (value - slope * years),
   // which is the Sen line's own definition; nothing is re-tested here.
-  const slope = trend?.sen_slope_per_year == null ? null : Number(trend.sen_slope_per_year)
+  // For a summed variable (precipitation) the file's slope is a change in the annual
+  // total per year; the plotted points are monthly values, so one month moves by 1/12.
+  const perMonthShare = String(trend?.unit_per_year || '').includes('annual total') ? 12 : 1
+  const slope = trend?.sen_slope_per_year == null
+    ? null
+    : Number(trend.sen_slope_per_year) / perMonthShare
   const valid = data
     .map((point, index) => ({ index, value: point[dataKey] }))
     .filter((point) => point.value != null && Number.isFinite(Number(point.value)))
