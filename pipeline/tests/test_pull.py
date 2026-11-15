@@ -98,7 +98,7 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
 def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
     work, cities, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
-    assert routed == {"aerosol", "soil_moisture_0_10", "evapotranspiration", "precipitation"}
+    assert routed == {"aerosol", "soil_moisture_0_5", "evapotranspiration", "precipitation"}
     assert cities == []
     # T2M stays on its committed Giovanni series rather than being overwritten.
     assert {variable for variable, _region, _reason in blocked} == {"t2m"}
@@ -168,15 +168,16 @@ def test_the_checkpoint_keeps_the_footprint_across_runs() -> None:
     assert resumed.extent == "51.40,55.40,-10.50,-6.00"
 
 
-def test_precipitation_is_a_real_route_and_not_a_blocked_row() -> None:
-    """IMERG is pulled from GES DISC directly, since Harmony has no coverage for it."""
+def test_precipitation_is_a_harmony_route_to_merra2_prectotcorr() -> None:
+    """The long record uses MERRA-2 bias-corrected precipitation through Harmony."""
     work, cities, blocked = pull.plan(["precipitation"], ["ireland"])
     assert not blocked
     route = work[0][2]
-    assert route is pull.IMERG_ROUTE
-    assert route.collection == "C2723754851-GES_DISC"
-    assert route.unit == "mm/month"
-    assert route.access_route.startswith("NASA GES DISC direct")
+    assert route is pull.HARMONY_ROUTES["precipitation"]
+    assert route.collection == "C1276812868-GES_DISC"
+    assert route.field == "PRECTOTCORR"
+    assert route.unit == "kg m-2 s-1"
+    assert route.access_route == pull.HARMONY_ACCESS
 
 
 def test_regional_mean_weights_cells_by_the_cosine_of_latitude() -> None:
@@ -428,14 +429,17 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     output = capsys.readouterr().out
     assert "aerosol/ireland <- Harmony" in output
     assert "no2/dublin_no2 <- OPeNDAP" in output
-    assert "precipitation/ireland <- GES DISC direct" in output
+    assert "precipitation/ireland <- Harmony" in output
     assert "t2m/ireland <- BLOCKED" in output
 
 
 def test_grid_extent_reproduces_the_centre_in_box_footprint() -> None:
     """The deterministic fallback must agree with what a payload would have measured."""
-    assert pull.grid_extent((-10.0, 36.0, 3.5, 44.0)) == "-9.88,36.12,3.38,43.88"
-    assert pull.grid_extent((68.0, 22.0, 78.0, 32.0)) == "68.12,22.12,77.88,31.88"
+    gldas = {"step": (0.25, 0.25), "first_centre": (-89.875, -179.875)}
+    assert pull.grid_extent((-10.0, 36.0, 3.5, 44.0), **gldas) == "-9.88,36.12,3.38,43.88"
+    assert pull.grid_extent((68.0, 22.0, 78.0, 32.0), **gldas) == "68.12,22.12,77.88,31.88"
+    # MERRA-2: latitudes on whole and half degrees, longitudes on multiples of 0.625
+    assert pull.grid_extent((-10.5, 51.4, -6.0, 55.4)) == "-10.00,51.50,-6.25,55.00"
 
 
 def test_an_extent_in_the_wrong_order_is_refused() -> None:

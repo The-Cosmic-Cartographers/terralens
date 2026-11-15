@@ -4,9 +4,9 @@ Three worked examples, each built from output that exists in `data/results/` tod
 number below is copied from the JSON named beside it; nothing is estimated, rounded up, or
 filled in from a paper.
 
-**Provisional.** The Lineup holds only air temperature, so each region's correction covers one
-test and the adjusted p-values below equal the raw ones. They will change when the other four
-variables join the correction. The three verdicts should hold (the p-values are far below
+**Provisional.** The adjusted p-values below come from the five-variable Lineup: each region's
+correction covers five tests, and a Time Machine window is corrected across the five variables'
+same window. The three verdicts held when the other variables joined (the p-values are far below
 0.05), but every number here must be re-read from the files on Sunday (D16) before it is used
 on the project page.
 
@@ -17,12 +17,14 @@ than the verdict.
 Substitutions and limits, stated up front:
 
 - The ticket's candidate pairs (Ireland vs Iberia, wet vs dry) need precipitation, soil
-  moisture or evapotranspiration. Those series do not exist yet, so all three cases use
-  air temperature, the only variable with real output.
+  moisture or evapotranspiration. Those series now exist for all five regions (MERRA-2,
+  1980–2025, NAS-77), but the three cases below were drafted on air temperature, the series
+  verified against Giovanni, and keep to it.
 - The Dublin–Delhi pollution pair needs OMI NO2, which has no data (NAS-27). That case is
   replaced by the Sahel record-shape case below.
-- "No clear trend" is covered by Case 2, which uses the window output rather than a Lineup
-  row, because all three Lineup rows are significant.
+- "No clear trend" is covered by Case 2, which uses the window output; the air temperature
+  Lineup rows are all significant. Rows for other variables (for example soil moisture and
+  precipitation in Ireland) also show no clear trend, but they are not used here.
 
 ---
 
@@ -41,7 +43,7 @@ Substitutions and limits, stated up front:
 | Place | Rate | 95% interval | Adjusted p | Period | Verdict |
 |---|---|---|---|---|---|
 | US Southwest | +0.46 °C per decade | +0.33 to +0.59 | 5.4 × 10⁻¹¹ | 1981-01 – 2025-12 | significant |
-| Ireland | +0.21 °C per decade | +0.12 to +0.31 | 7.6 × 10⁻⁵ | 1981-01 – 2025-12 | significant |
+| Ireland | +0.21 °C per decade | +0.12 to +0.31 | 3.8 × 10⁻⁵ | 1981-01 – 2025-12 | significant |
 | Sahel | +0.17 °C per decade | +0.04 to +0.29 | 2.5 × 10⁻³ | 1981-01 – 2025-12 | significant |
 
 Ireland's interval (+0.12 to +0.31) and the Sahel's (+0.04 to +0.29) overlap, so the two are
@@ -75,8 +77,8 @@ places — same variable, same window, same method, same correction family per r
 
 | Window | Rate | 95% interval | Adjusted p | Verdict |
 |---|---|---|---|---|
-| 1981 – 2025 | +0.21 °C per decade | +0.12 to +0.31 | 7.6 × 10⁻⁵ | significant |
-| 1986 – 2015 | +0.14 °C per decade | −0.05 to +0.35 | 0.18 | no clear trend |
+| 1981 – 2025 | +0.21 °C per decade | +0.12 to +0.31 | 3.8 × 10⁻⁵ | significant |
+| 1986 – 2015 | +0.14 °C per decade | −0.05 to +0.35 | 0.45 | no clear trend |
 
 Source: `data/results/windows/merra2_m2tmnxslv/ireland.json` (30-year windows) and
 `data/results/lineup/ireland.json`.

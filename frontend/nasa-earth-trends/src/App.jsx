@@ -185,10 +185,8 @@ function App() {
             {' ('}
             <a className="source-link" href="https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/" target="_blank" rel="noreferrer noopener">MERRA-2</a>
             {', '}
-            <a className="source-link" href="https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH025_M_2.1/summary" target="_blank" rel="noreferrer noopener">GLDAS</a>
+            <a className="source-link" href="https://disc.gsfc.nasa.gov/datasets/OMNO2D_004/summary" target="_blank" rel="noreferrer noopener">OMI</a>
             {'), '}
-            <a className="source-link" href="https://gpm.nasa.gov/data/imerg" target="_blank" rel="noreferrer noopener">GPM IMERG</a>
-            {', '}
             <a className="source-link" href="https://www.earthdata.nasa.gov" target="_blank" rel="noreferrer noopener">Earthdata</a>
           </span>
           <span>Evidence over assumptions. No forecasts, no causes.</span>

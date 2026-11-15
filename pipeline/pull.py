@@ -90,11 +90,23 @@ class Route:
 HARMONY_ROUTES: dict[str, Route] = {
     "t2m": Route("C1276812859-GES_DISC", "T2M", "K", "MERRA-2 M2TMNXSLV 5.12.4"),
     "aerosol": Route("C1276812866-GES_DISC", "TOTEXTTAU", "1", "MERRA-2 M2TMNXAER 5.12.4"),
-    "soil_moisture_0_10": Route(
-        "C1342986036-GES_DISC", "SoilMoi0_10cm_inst", "kg m-2", "GLDAS_NOAH025_M 2.1"
+    "soil_moisture_0_5": Route(
+        "C1276812856-GES_DISC",
+        "SFMC",
+        "m3/m3",
+        "MERRA-2 M2TMNXLND 5.12.4; volumetric 0-5 cm surface-layer soil moisture",
     ),
     "evapotranspiration": Route(
-        "C1342986036-GES_DISC", "Evap_tavg", "kg m-2 s-1", "GLDAS_NOAH025_M 2.1"
+        "C1276812856-GES_DISC",
+        "EVLAND",
+        "kg m-2 s-1",
+        "MERRA-2 M2TMNXLND 5.12.4; land evapotranspiration",
+    ),
+    "precipitation": Route(
+        "C1276812868-GES_DISC",
+        "PRECTOTCORR",
+        "kg m-2 s-1",
+        "MERRA-2 M2TMNXFLX 5.12.4; bias-corrected total precipitation",
     ),
 }
 
@@ -297,24 +309,36 @@ def centre_mask(
     return ((lat >= south) & (lat <= north))[:, None] & ((lon >= west) & (lon <= east))[None, :]
 
 
-def grid_extent(box: tuple[float, float, float, float], step: float = 0.25) -> str:
-    """The W,S,E,N extent of the 0.25 degree cell centres inside the box.
+# The long record is MERRA-2 throughout (0.5 degree latitude, 0.625 degree longitude).
+# Cell centres sit on -90 + 0.5 * i and -180 + 0.625 * j.
+MERRA2_STEP = (0.5, 0.625)
+MERRA2_FIRST_CENTRE = (-90.0, -180.0)
+
+
+def grid_extent(
+    box: tuple[float, float, float, float],
+    step: tuple[float, float] = MERRA2_STEP,
+    first_centre: tuple[float, float] = MERRA2_FIRST_CENTRE,
+) -> str:
+    """The W,S,E,N extent of the grid cell centres inside the box.
 
     Deterministic, so a series that finished from a checkpoint still gets the same
     footprint the payload path would have measured (NAS-64 review: the build must
-    not depend on a payload being present in this run).
+    not depend on a payload being present in this run). The default grid is MERRA-2's;
+    pass the step and first centre for any other grid, never assume one.
     """
     west, south, east, north = box
-    first_centre = -90.0 + step / 2
-    lat0 = math.ceil((south - first_centre) / step - 1e-9)
-    lat1 = math.floor((north - first_centre) / step + 1e-9)
-    lon0 = math.ceil((west + 180.0 - step / 2) / step - 1e-9)
-    lon1 = math.floor((east + 180.0 - step / 2) / step + 1e-9)
+    step_lat, step_lon = step
+    lat_first, lon_first = first_centre
+    lat0 = math.ceil((south - lat_first) / step_lat - 1e-9)
+    lat1 = math.floor((north - lat_first) / step_lat + 1e-9)
+    lon0 = math.ceil((west - lon_first) / step_lon - 1e-9)
+    lon1 = math.floor((east - lon_first) / step_lon + 1e-9)
     if lat0 > lat1 or lon0 > lon1:
-        raise ValueError(f"box {box} contains no {step} degree cell centre")
+        raise ValueError(f"box {box} contains no cell centre of the {step} degree grid")
     return (
-        f"{lon0 * step - 180.0 + step / 2:.2f},{first_centre + lat0 * step:.2f},"
-        f"{lon1 * step - 180.0 + step / 2:.2f},{first_centre + lat1 * step:.2f}"
+        f"{lon_first + lon0 * step_lon:.2f},{lat_first + lat0 * step_lat:.2f},"
+        f"{lon_first + lon1 * step_lon:.2f},{lat_first + lat1 * step_lat:.2f}"
     )
 
 

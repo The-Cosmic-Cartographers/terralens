@@ -28,30 +28,30 @@ const guide = [
   },
   {
     name: 'Soil moisture',
-    datasetId: 'gldas_noah025_m21_soilmoi0_10',
-    unit: 'kg/m²',
+    datasetId: 'merra2_m2tmnxlnd_sfmc_v5_12_4',
+    unit: 'm³/m³',
     glyph: '≈',
-    source: 'GLDAS land model',
+    source: 'MERRA-2 model reanalysis',
     description: 'The amount of water held in the upper layer of soil.',
     significance: 'Connects rainfall to ecosystems, agriculture, evaporation, and drought.',
-    variableId: 'soil_moisture_0_10',
+    variableId: 'soil_moisture_0_5',
   },
   {
     name: 'Precipitation',
-    datasetId: 'gpm_3imergm_v07b',
+    datasetId: 'merra2_m2tmnxflx_prectotcorr_v5_12_4',
     unit: 'mm/month',
     glyph: '∇',
-    source: 'GPM IMERG satellite estimate',
+    source: 'MERRA-2 model reanalysis (bias-corrected)',
     description: 'Rain and other water arriving at the surface.',
     significance: 'Helps describe water availability and the balance between wet and dry seasons.',
     variableId: 'precipitation',
   },
   {
     name: 'Evapotranspiration',
-    datasetId: 'gldas_noah025_m21_evap',
+    datasetId: 'merra2_m2tmnxlnd_evland_v5_12_4',
     unit: 'mm/day',
     glyph: '↑',
-    source: 'GLDAS land model',
+    source: 'MERRA-2 model reanalysis (land)',
     description: 'Water moving back to the atmosphere from land and plants.',
     significance: 'Shows how heat, vegetation, and available water interact.',
     variableId: 'evapotranspiration',
@@ -88,7 +88,7 @@ function ExplorePage() {
       <div className="page-title">
         <div>
           <h1>The Lineup</h1>
-          <p>Ranked environmental signals across the selected region, using supplied results from 1981–2025.</p>
+          <p>Ranked environmental signals across the selected region, using supplied results from 1980–2025 (each row shows its own period).</p>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ function ExplorePage() {
       <div className="kpi-row">
         <KpiTile label="In catalogue" value={catalogue ? items.length : '—'} note="Datasets listed" />
         <KpiTile label="Ready" value={catalogue ? ready : '—'} note="Results available" tone="blue" />
-        <KpiTile label="Window" value="1981–2025" note="Monthly series" />
+        <KpiTile label="Window" value="1980–2025" note="Monthly series" />
       </div>
 
       {(catalogueLoading || lineupLoading) && <LoadingState label="Loading supplied environmental results" />}

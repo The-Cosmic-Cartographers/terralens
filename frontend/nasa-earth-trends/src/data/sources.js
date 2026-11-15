@@ -9,6 +9,22 @@ export const datasetSources = {
     label: 'MERRA-2 aerosol diagnostics (M2TMNXAER)',
     url: 'https://disc.gsfc.nasa.gov/datasets/M2TMNXAER_5.12.4/summary',
   },
+  merra2_m2tmnxlnd_sfmc_v5_12_4: {
+    label: 'MERRA-2 land surface diagnostics (M2TMNXLND)',
+    url: 'https://disc.gsfc.nasa.gov/datasets/M2TMNXLND_5.12.4/summary',
+  },
+  merra2_m2tmnxlnd_evland_v5_12_4: {
+    label: 'MERRA-2 land surface diagnostics (M2TMNXLND)',
+    url: 'https://disc.gsfc.nasa.gov/datasets/M2TMNXLND_5.12.4/summary',
+  },
+  merra2_m2tmnxflx_prectotcorr_v5_12_4: {
+    label: 'MERRA-2 surface flux diagnostics (M2TMNXFLX)',
+    url: 'https://disc.gsfc.nasa.gov/datasets/M2TMNXFLX_5.12.4/summary',
+  },
+  omi_omno2d_v004: {
+    label: 'OMI tropospheric NO2 column (OMNO2D)',
+    url: 'https://disc.gsfc.nasa.gov/datasets/OMNO2D_004/summary',
+  },
   gldas_noah025_m21_soilmoi0_10: {
     label: 'GLDAS Noah 2.1 land surface model (GLDAS_NOAH025_M_2.1)',
     url: 'https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH025_M_2.1/summary',

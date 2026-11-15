@@ -14,7 +14,7 @@ import { regions } from '../data/regionOptions.js'
 import { provenanceUrl } from '../data/sources.js'
 import { useData } from '../hooks/useData.js'
 import { useWindow } from '../state/window.js'
-import { formatP, formatSigned } from '../utils/format.js'
+import { formatP, formatSlope, methodLabel, verdictLabel } from '../utils/format.js'
 
 const fallbackDataset = {
   t2m: {
@@ -71,7 +71,7 @@ function VariableDetailPage() {
 
       <div className="page-title">
         <div>
-          <h1>{dataset?.label || variableId?.replaceAll('_', ' ')}</h1>
+          <h1 className="keep-case">{dataset?.label || variableId?.replaceAll('_', ' ')}</h1>
           <p>{region.name} · {trend?.period_start || dataset?.period_start || 'Period pending'} to {trend?.period_end || dataset?.period_end || 'period pending'}</p>
         </div>
         <ProductBadge type={trend?.product_type || dataset?.product_type || 'reanalysis'} />
@@ -97,9 +97,9 @@ function VariableDetailPage() {
 
         <Panel className="span-4" title="Evidence record">
           <dl className="kv">
-            <div><dt>Variable</dt><dd className="num">{variableId}</dd></div>
+            <div><dt>Variable</dt><dd>{dataset?.label || variableId}</dd></div>
             <div><dt>Unit</dt><dd>{trend?.unit_per_year?.replace('/yr', '') || series?.unit || dataset?.unit || 'Pending'}</dd></div>
-            <div><dt>Trend method</dt><dd>{trend?.method || 'Supplied by analysis'}</dd></div>
+            <div><dt>Trend method</dt><dd>{methodLabel(trend?.method)}</dd></div>
             <div><dt>Coverage</dt><dd>{trend?.mean_coverage_fraction == null ? 'Pending' : `${(trend.mean_coverage_fraction * 100).toFixed(1)}%`}</dd></div>
             <div>
               <dt>Source</dt>
@@ -115,9 +115,9 @@ function VariableDetailPage() {
         <Panel className="span-12" title="Trend result" flush>
           {trend ? (
             <div className="evidence-grid">
-              <div><span>Verdict</span><strong>{trend.verdict || 'Not supplied'}</strong></div>
-              <div><span>Sen slope / year</span><strong>{formatSigned(trend.sen_slope_per_year, 3)}</strong></div>
-              <div><span>95% confidence interval</span><strong>{trend.confidence_interval_95?.map((value) => formatSigned(value, 3)).join(' to ') || '—'}</strong></div>
+              <div><span>Verdict</span><strong>{verdictLabel(trend.verdict)}</strong></div>
+              <div><span>Sen slope / year</span><strong>{formatSlope(trend.sen_slope_per_year)}</strong></div>
+              <div><span>95% confidence interval</span><strong>{trend.confidence_interval_95?.map((value) => formatSlope(value, trend.sen_slope_per_year)).join(' to ') || '—'}</strong></div>
               <div><span>Adjusted p-value</span><strong>{formatP(trend.adjusted_p_value)}</strong></div>
               <div><span>Observations</span><strong>{trend.observation_count ?? '—'}</strong></div>
             </div>
