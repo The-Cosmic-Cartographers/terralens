@@ -18,6 +18,7 @@ const pairs = [
   ['sahel', 'iberia'],
   ['us_southwest', 'ireland'],
   ['sahel', 'nw_south_asia'],
+  ['us_southwest', 'nw_south_asia'],
 ]
 
 const labels = {
