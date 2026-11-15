@@ -133,7 +133,7 @@ function App() {
                 {theme === 'dark' ? 'Dark mode' : 'Light mode'}
               </span>
             </button>
-            <span className="chip">Window 1981–2025</span>
+            <span className="chip">Window 1980–2025</span>
             <span className="chip">Precomputed results</span>
           </div>
         </header>
@@ -143,7 +143,7 @@ function App() {
         </main>
 
         <footer className="workspace-foot">
-          <span>Data: NASA GES DISC (MERRA-2, GLDAS), GPM IMERG, Earthdata</span>
+          <span>Data: NASA GES DISC (MERRA-2, OMI), Earthdata</span>
           <span>Evidence over assumptions. No forecasts, no causes.</span>
         </footer>
       </div>

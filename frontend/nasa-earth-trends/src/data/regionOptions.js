@@ -1,4 +1,4 @@
-// The three study regions in the current snapshot (decision D26).
+// The five study regions in the current snapshot (decision D26).
 // Boxes match data/regions.json; centre and zoom only frame the map.
 const allRegions = [
   {
@@ -45,5 +45,5 @@ const allRegions = [
 
 // The app shows the three snapshot regions only (decision D26); the others stay
 // defined here for when more regions are exported.
-const APP_REGION_IDS = ['ireland', 'sahel', 'us_southwest']
+const APP_REGION_IDS = ['ireland', 'sahel', 'us_southwest', 'iberia', 'nw_south_asia']
 export const regions = allRegions.filter((region) => APP_REGION_IDS.includes(region.id))
