@@ -3,27 +3,26 @@
 The routes are not interchangeable, so this module decides per variable instead
 of per run:
 
-* **Harmony** (GES DISC subsetting) for MERRA-2 aerosol and for GLDAS soil
-  moisture and evapotranspiration. It returns one netCDF per month; the area mean
-  is computed here and every parsed month is checkpointed, so a reset connection
-  or a killed runner resumes instead of starting over.
-* **T2M stays on Giovanni.** Harmony can subset M2TMNXSLV, but its output would
-  land on the same `data/raw/t2m_<region>.csv` the published series came from, so
-  the pull refuses that row instead of silently replacing a Giovanni source.
+* **Harmony** (GES DISC subsetting) for all five MVP MERRA-2 rows. It returns one
+  netCDF per month; the area mean is computed here and every parsed month is
+  checkpointed, so a reset connection or killed runner resumes instead of
+  starting over. Raw filenames include the access route, so a Harmony pull
+  cannot overwrite an older Giovanni export.
 * **GES DISC direct** is the route for IMERG, which Harmony does not serve: the
-  monthly HDF5 is downloaded whole and reduced to a 1-degree field here: no
-  coverage is registered for the collection, so a Harmony job is rejected before
-  it starts. The pull refuses to invent a substitute and reports the series as
-  blocked instead.
+  monthly HDF5 is downloaded whole and reduced to a 1-degree field here. This is
+  retained as a legacy route; the current precipitation row selects MERRA-2
+  PRECTOTCORR through Harmony for its 1980–2025 record.
 * **OMI NO2** is daily, not monthly, and has no working Harmony/Giovanni route for
   V004. It is pulled by `pipeline.no2`, one granule-level OPeNDAP subset per city
   per day, and the daily series is reduced to months with the D22 rule.
 
-Credentials come from `EARTHDATA_TOKEN` only. The token is never printed, never
-written to a checkpoint, and never reaches `provenance.json`.
+Credentials come from `EARTHDATA_TOKEN` or `EARTH_DATA_API`, either in the process
+environment or a local `--env-file`. The token is never printed, never written to
+a checkpoint, and never reaches `provenance.json`.
 
 Usage:
     EARTHDATA_TOKEN=... uv run python -m pipeline.pull --all
+    uv run python -m pipeline.pull --all --env-file .env
     uv run python -m pipeline.pull --variable-id aerosol --region-id ireland
     uv run python -m pipeline.pull --all --dry-run
 
@@ -110,21 +109,6 @@ HARMONY_ROUTES: dict[str, Route] = {
     ),
 }
 
-# Rows whose committed series must not be replaced by a Harmony subset. T2M is
-# here because a Harmony run would overwrite data/raw/t2m_<region>.csv, the file
-# the published Giovanni series came from (NAS-60 review, Kevin).
-GIOVANNI_ONLY: dict[str, str] = {
-    "t2m": (
-        "the committed T2M series is a Giovanni export; a Harmony subset must not "
-        "overwrite data/raw/t2m_<region>.csv, so this row stays on Giovanni"
-    ),
-}
-
-# The exception Kevin allowed on NAS-64: the clash above is about the three committed
-# files, not the product. For regions with no committed T2M yet, Harmony is fine and
-# provenance records the Harmony route rather than claiming Giovanni.
-HARMONY_T2M_REGIONS = frozenset({"iberia", "nw_south_asia"})
-
 # IMERG has no Harmony coverage and its OPeNDAP endpoints answer 410/404, so the
 # monthly HDF5 files are fetched straight from GES DISC (303 -> presigned URL) and
 # reduced to a 1-degree field, from which each region box is averaged.
@@ -137,8 +121,7 @@ IMERG_ROUTE = Route(
     permalink="https://data.gesdisc.earthdata.nasa.gov/data/GPM_L3/GPM_3IMERGM.07/",
 )
 
-# Every row has a route now: Harmony for MERRA-2/GLDAS, GES DISC direct for IMERG,
-# and the OPeNDAP subsetter for NO2. Kept as the place a future blocker is named.
+# Kept as the place a future blocker is named.
 NO_ROUTE: dict[str, str] = {}
 
 
@@ -152,13 +135,15 @@ class Series:
     months: dict[str, float] = field(default_factory=dict)
     jobs: list[str] = field(default_factory=list)
     extent: str | None = None
+    checkpoint_dir: Path | None = None
 
     @property
     def label(self) -> str:
         return f"{self.variable.variable_id}/{self.region_id}"
 
     def checkpoint(self) -> Path:
-        return CHECKPOINTS / f"{self.variable.dataset_id}_{self.region_id}.json"
+        root = self.checkpoint_dir or CHECKPOINTS
+        return root / f"{self.variable.dataset_id}_{self.region_id}.json"
 
     def load(self) -> None:
         """Resume from the checkpoint, which stores months only — never a token."""
@@ -444,11 +429,15 @@ def month_means(
         path.unlink(missing_ok=True)
 
 
-def write_csv(series: Series, route: Route) -> Path:
+def write_csv(series: Series, route: Route, raw_dir: Path | None = None) -> Path:
     """Write the pipeline's raw CSV shape, which `pipeline.build` already parses."""
     rows = [f"{month},{series.months[month]:.6g}" for month in sorted(series.months)]
     west, south, east, north = series.box
-    out = RAW / f"{series.variable.variable_id}_{series.region_id}.csv"
+    output_dir = raw_dir or RAW
+    output_dir.mkdir(parents=True, exist_ok=True)
+    route_slug = "harmony" if route.access_route == HARMONY_ACCESS else "gesdisc"
+    stem = f"{series.variable.variable_id}_{series.region_id}_{route_slug}"
+    out = output_dir / f"{stem}.csv"
     source_line = (
         f"# NASA Harmony subset of {route.collection} ({route.field}), area mean"
         if route.access_route == HARMONY_ACCESS
@@ -462,7 +451,7 @@ def write_csv(series: Series, route: Route) -> Path:
         "Month,Mean",
     ]
     out.write_text("\n".join(header + rows) + "\n", encoding="utf-8")
-    (RAW / f"{series.variable.variable_id}_{series.region_id}.meta.json").write_text(
+    (output_dir / f"{stem}.meta.json").write_text(
         json.dumps(
             {
                 "variable": series.variable.variable_id,
@@ -821,11 +810,6 @@ def plan(
             if variable_id == "no2":
                 cities.append(region_id)
                 continue
-            if variable_id in GIOVANNI_ONLY and not (
-                variable_id == "t2m" and region_id in HARMONY_T2M_REGIONS
-            ):
-                blocked.append((variable_id, region_id, GIOVANNI_ONLY[variable_id]))
-                continue
             route = HARMONY_ROUTES.get(variable_id)
             if route is None and variable_id == "precipitation":
                 route = IMERG_ROUTE
@@ -836,14 +820,37 @@ def plan(
     return work, cities, blocked
 
 
-def token_from_environment(env: dict[str, str] | None = None) -> str:
-    """Read the Earthdata token, failing with instructions rather than a blank request."""
-    value = (env or os.environ).get(TOKEN_ENV, "").strip()
+def read_env_file(path: Path) -> dict[str, str]:
+    """Read simple KEY=VALUE entries without evaluating shell code."""
+    values: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, separator, value = line.partition("=")
+        if not separator or not key.strip():
+            continue
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+            value = value[1:-1]
+        values[key.strip()] = value
+    return values
+
+
+def token_from_environment(
+    env: dict[str, str] | None = None, env_file: Path | None = None
+) -> str:
+    """Read the Earthdata token without evaluating or printing credential values."""
+    values = read_env_file(env_file) if env_file else {}
+    values.update(os.environ if env is None else env)
+    candidates = [values.get(key, "").strip() for key in (TOKEN_ENV, "EARTH_DATA_API")]
+    value = next((candidate for candidate in candidates if candidate), "")
     if not value:
         raise MissingCredentials(
-            f"{TOKEN_ENV} is not set. Export an Earthdata bearer token before running "
-            f"(on CI it belongs in a repository secret of that name); the token is never "
-            f"read from a file or printed."
+            f"Set {TOKEN_ENV} (or EARTH_DATA_API) in the environment or provide "
+            f"--env-file with an Earthdata bearer token; the token is never printed."
         )
     return value
 
@@ -857,6 +864,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--attempts", type=int, default=4, help="download attempts per slice")
     parser.add_argument("--rounds", type=int, default=2, help="extra passes over missing months")
     parser.add_argument("--time-limit", type=float, default=1800.0, help="seconds; 0 disables")
+    parser.add_argument("--env-file", type=Path, help="local KEY=VALUE credential file")
     parser.add_argument("--raw", type=Path, default=RAW)
     parser.add_argument("--out", type=Path, default=PROCESSED)
     parser.add_argument("--no-build", action="store_true", help="pull only, skip data/processed")
@@ -886,8 +894,8 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_OK
 
     try:
-        token = token_from_environment()
-    except MissingCredentials as error:
+        token = token_from_environment(env_file=args.env_file)
+    except (MissingCredentials, OSError) as error:
         print(error)
         return EXIT_CONFIG
     source = HarmonySource(token=token, attempts=args.attempts)
@@ -911,6 +919,7 @@ def main(argv: list[str] | None = None) -> int:
                     float(regions_by_id[region_id]["east"]),
                     float(regions_by_id[region_id]["north"]),
                 ),
+                checkpoint_dir=args.raw / ".pull",
             )
             for spec, region_id, _route in precip_work
         ]
@@ -929,7 +938,7 @@ def main(argv: list[str] | None = None) -> int:
             if series.missing():
                 failures.append(f"{series.label}: {len(series.missing())} months missing")
                 continue
-            csv_path = write_csv(series, IMERG_ROUTE)
+            csv_path = write_csv(series, IMERG_ROUTE, args.raw)
             if not args.no_build:
                 build_series(series, IMERG_ROUTE, csv_path, args.out)
             print(f"  {series.label}: {len(series.months)} months -> {csv_path}")
@@ -947,6 +956,7 @@ def main(argv: list[str] | None = None) -> int:
                 float(region["east"]),
                 float(region["north"]),
             ),
+            checkpoint_dir=args.raw / ".pull",
         )
         print(f"== {series.label}")
         try:
@@ -962,7 +972,7 @@ def main(argv: list[str] | None = None) -> int:
             if series.missing():
                 failures.append(f"{series.label}: {len(series.missing())} months missing")
                 continue
-            csv_path = write_csv(series, route)
+            csv_path = write_csv(series, route, args.raw)
             if not args.no_build:
                 build_series(series, route, csv_path, args.out)
             print(f"  {series.label}: {len(series.months)} months -> {csv_path}")

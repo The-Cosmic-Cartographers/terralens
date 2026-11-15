@@ -3,12 +3,13 @@
 The registry lives in the package because the library needs it and the wheel must
 not install a top-level ``pipeline`` package; ``pipeline.registry`` re-exports it.
 
-These are the source definitions for the five MVP rows, with NO2 retained for a
-later route decision. Provenance records the product and field actually used.
+These are the source definitions for the five MVP rows, plus a separate NO2
+city-only row. Provenance records the product and field actually used.
 
 The window fields are D21 (doc 10): whole calendar years, fixed per variable so
 two regions of the same row can never be compared over different periods. The
-five MVP rows now use the same MERRA-2 monthly window, 1980–2025.
+five MVP rows use MERRA-2 monthly records: T2M covers 1981–2025 and the other
+four rows cover 1980–2025.
 """
 
 from __future__ import annotations

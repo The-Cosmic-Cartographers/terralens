@@ -39,7 +39,7 @@ One line each, shown beside the pill.
 
 ## 4. Project page — "How the numbers are made"
 
-> Each variable is averaged over the region's box to give one value per month. We remove the seasonal cycle by subtracting each calendar month's normal, using 1991–2020 where the record allows and the full record where it does not (GLDAS starts in 2000, IMERG in 2001).
+> Each variable is averaged over the region's box to give one value per month. The five MVP variables use MERRA-2 monthly records, beginning in 1981 for air temperature and 1980 for the other four. We remove the seasonal cycle by subtracting each calendar month's normal, using 1991–2020 where the record allows and the full record where it does not.
 >
 > The trend test is the seasonal Mann–Kendall test, which does not assume the data follow a bell curve and is not thrown by a single extreme month. We correct its variance for serial correlation with the Hamed–Rao method. The size of the trend is Sen's slope — the median of all pairwise slopes — with a 95% confidence interval, and we also express it as a multiple of the normal year-to-year swing so a statistically clear but tiny change is not mistaken for a large one.
 >

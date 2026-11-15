@@ -1,11 +1,11 @@
 # pipeline/
 
-**Owner: Parth.** Retrieval and regional aggregation: raw NASA series (Giovanni area-averaged CSV, or GES DISC subsets) become one clean monthly series per place and variable.
+**Owner: Parth.** Retrieval and regional aggregation: NASA GES DISC subsets become one clean monthly series per place and variable.
 
 - Writes `data/processed/<dataset_id>/<region_id>.parquet` and `provenance.json` next to it (schema in Linear doc 04).
 - Raw downloads go in `data/raw/` and are never committed.
 - Every series carries units, coverage and the product/version it came from. Convert units here (K to °C, kg m-2 s-1 to mm/day) and cut every series at 2025-12-31.
-- Giovanni snaps boxes to the grid and reports an "analyzable region": record it in `provenance.json`.
+- Harmony subsets the requested box; the pipeline applies the centre-in-box footprint and records the cells averaged in `provenance.json`.
 - Tests go next to the code as `test_*.py`.
 
 ## One command: `pipeline.pull` (NAS-60)
@@ -13,17 +13,18 @@
 ```bash
 export EARTHDATA_TOKEN=...                      # never written to disk, logs or provenance
 uv run python -m pipeline.pull --all              # every series, then build
+uv run python -m pipeline.pull --all --env-file .env  # local KEY=VALUE credentials
 uv run python -m pipeline.pull --variable-id aerosol --region-id ireland
 uv run python -m pipeline.pull --all --dry-run    # print the plan, no token needed
 ```
 
-It plans per variable, pulls what a route can serve, writes `data/raw/<variable>_<region>.csv`, then calls `pipeline.build` so `data/processed/` is ready without a second command.
+It plans per variable, pulls what a route can serve, writes `data/raw/<variable>_<region>_<route>.csv`, then calls `pipeline.build` so `data/processed/` is ready without a second command. Harmony files use the `harmony` suffix, preserving any older Giovanni export. Credentials may be named `EARTHDATA_TOKEN` or `EARTH_DATA_API`; values from the process environment take precedence over the optional env file.
 
 ### Routes, and why they are not interchangeable
 
 | Variable | Route | Products |
 | -- | -- | -- |
-| T2M | **Giovanni only** (kept) | the committed series is a Giovanni export; Harmony can subset `M2TMNXSLV` but would overwrite the same raw file, so the pull refuses this row and says so |
+| T2M | Harmony | MERRA-2 `M2TMNXSLV` (`C1276812859-GES_DISC`), field `T2M` |
 | aerosol | Harmony | MERRA-2 `M2TMNXAER` (`C1276812866-GES_DISC`), field `TOTEXTTAU` |
 | soil moisture 0–5 | Harmony | MERRA-2 `M2TMNXLND` (`C1276812856-GES_DISC`), field `SFMC` (volumetric, m³/m³) |
 | evapotranspiration | Harmony | same land collection, field `EVLAND` (kg m⁻² s⁻¹, stored as mm/day) |
@@ -35,17 +36,14 @@ product. `--dry-run` shows which is which before anything runs.
 
 ### Why the long record is MERRA-2 throughout
 
-A 40-year record needs one product that starts in 1980. GLDAS-2.1 starts in 2000 and IMERG Final in mid-2000, so the soil moisture, evapotranspiration, precipitation and aerosol rows come from MERRA-2 (1980–2025); T2M keeps its verified Giovanni series (1981–2025). The replaced series are in `data/archive/`. The cost: soil moisture is the 0–5 cm layer, precipitation and land evaporation are model output, and the land fields are not weighted by land fraction (`FRLAND`).
+All five MVP rows use MERRA-2 through Harmony. Soil moisture, evapotranspiration, precipitation and aerosol cover 1980–2025; the verified air-temperature record covers 1981–2025 (45 calendar years). The older series are retained in `data/archive/`. The cost: soil moisture is the 0–5 cm layer, precipitation and land evaporation are model output, and the land fields are not weighted by land fraction (`FRLAND`).
 
 ### The footprint rule
 
-Harmony returns every cell that **intersects** the requested box, while Giovanni analyses only cells
-whose **centre** lies inside it. Averaging the intersecting set pulls a regional mean towards the
-surrounding climate — on T2M Ireland that was 0.88 °C at worst. `month_means` therefore masks to
-centre-in-box before averaging, and `slice_extent` records the extent of the cells that were
-actually averaged in `provenance.json` (`analyzable_region`), which is usually one cell narrower
-than the requested box on each side. With the mask, a Harmony pull reproduces the Giovanni T2M
-series to 0.0005 °C (RMS 0.0003 °C).
+Harmony returns every cell that **intersects** the requested box. `month_means` masks to cells
+whose **centre** lies inside it before averaging, and `slice_extent` records the extent of the
+cells actually averaged in `provenance.json` (`analyzable_region`). On the prior T2M comparison,
+this footprint reproduced the Giovanni series to 0.0005 °C (RMS 0.0003 °C).
 
 ### The NO₂ route
 
@@ -73,9 +71,9 @@ outages in 2005–2025 have no granule at all and are reported as gaps, never as
 
 Harmony jobs that end `failed`/`canceled` are retried in a later round; if the whole service is out,
 the run stops with the job status in the message and the checkpoint keeps every month already
-parsed. Rerun the same command later — nothing is re-downloaded. For IMERG, use the Giovanni
-windowed route (13 years per request) and drop the CSV in `data/raw/` as
-`precipitation_<region>.csv`; `pipeline.build` reads both routes identically.
+parsed. Rerun the same command later — nothing is re-downloaded. The five MVP rows stay on their
+registered MERRA-2 products; the puller reports failures instead of substituting IMERG or another
+dataset.
 
 ### Measured (2026-11-14, this machine, home connection)
 
@@ -95,11 +93,11 @@ New runtime dependencies: `requests` (the keep-alive sessions), `harmony-py` (jo
 and `netcdf4` (the engine behind `xarray`, which was already a dependency). No browser, no
 Selenium, nothing installed at run time.
 
-At ~2 min per series, the 22 Harmony slices in the plan — soil moisture, evapotranspiration and
-aerosol over five regions — come to roughly **45 minutes**, which is over the 30-minute target.
+At ~2 min per series, the 25 Harmony slices in the plan — all five MVP rows over five regions —
+come to roughly **50 minutes**, which is over the 30-minute target.
 That is why resuming is the default design rather than an extra: `--time-limit 1800` stops at a
-chunk boundary and the next run continues from the checkpoints. T2M is not in that count (it stays
-on Giovanni) and precipitation is refused rather than pulled.
+chunk boundary and the next run continues from the checkpoints. NO₂ is not in that count; its daily
+OPeNDAP route is separate.
 
 NO₂ is additive to that budget: 15,272 city-days over 2005–2025 at roughly 15 subsets per second
 is about 17 minutes for both cities, and its checkpoint is per day, so `--time-limit` stops it just

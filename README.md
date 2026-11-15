@@ -26,7 +26,7 @@ Five regions, chosen in contrasting pairs, plus two city boxes for air quality:
 
 Ireland · Iberia · Sahel (West Africa) · NW South Asia (Thar–Indus) · US Southwest (Colorado Basin) · Dublin and Delhi NCR (NO₂ only)
 
-Each region is scanned for these variables, all through NASA Giovanni:
+Each region is scanned for these five MERRA-2 variables through NASA Harmony (GES DISC). The city-only NO₂ row is pulled separately from OMI granules:
 
 | Variable | Product | Type |
 | -- | -- | -- |
@@ -50,12 +50,12 @@ Each variable is analysed over whole calendar years ending at the last complete 
 7. **Time Machine.** The same test is run for every window of at least ten whole years, so the slider only reads precomputed results.
 8. **Would more years help?** For a trend that is not significant, we estimate how many years of record a trend of that size would need to be detected (Weatherhead et al., 1998). This is a statement about evidence, not a forecast.
 
-Limits worth knowing: MERRA-2 is a model reconstruction constrained by observations, so changes in what it assimilates can create artificial steps, aerosol most of all. Satellite rows (IMERG, OMI) are shown beside model rows for that reason. A box average hides what happens inside the box. Statistics cannot say why a trend happened, and the app does not try.
+Limits worth knowing: MERRA-2 is a model reconstruction constrained by observations, so changes in what it assimilates can create artificial steps, aerosol most of all. The city-only OMI NO₂ row is a satellite retrieval alongside the five model rows. A box average hides what happens inside the box. Statistics cannot say why a trend happened, and the app does not try.
 
 ## How it works
 
 ```
-NASA data (Giovanni / GES DISC)
+NASA data (GES DISC / Harmony and OMI OPeNDAP)
    -> pipeline/   clean monthly series per place and variable
    -> analysis/   trends, corrected p-values, verdicts, Time Machine windows
    -> backend/    FastAPI (development) and a static JSON export
@@ -107,12 +107,12 @@ Copy `.env.example` to `.env` for local settings. Never commit credentials. NASA
 
 ## Data and attribution
 
-All data comes from NASA through [Giovanni](https://giovanni.gsfc.nasa.gov/), part of the NASA GES DISC archive:
+The five MVP variables use MERRA-2 monthly products from NASA GES DISC via Harmony. City NO₂ uses the OMI OMNO2d collection through its granule-level OPeNDAP subsetter:
 
 - MERRA-2 monthly reanalysis, v5.12.4 (NASA Global Modeling and Assimilation Office)
 - OMI OMNO2d NO₂ tropospheric column, v004 (NASA, Aura OMI)
 
-Each processed series has a `provenance.json` recording the product, version, region box, Giovanni's analysed region, access date and every transformation. The full reference list, with citations and access dates, is completed from those files before submission.
+Each processed series has a `provenance.json` recording the product, version, region box, cells actually averaged, access route, access date and every transformation. The full reference list, with citations and access dates, is completed from those files before submission.
 
 Method references: Weatherhead et al. (1998), *Factors affecting the detection of trends: statistical considerations and applications to environmental data*, J. Geophys. Res. 103(D14); Wilks (2016), Bull. Amer. Meteor. Soc. (false-discovery-rate control, for the optional trend map); the NASA SeaWiFS chlorophyll time-series paper listed among the challenge resources.
 

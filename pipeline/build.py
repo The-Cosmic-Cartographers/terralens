@@ -1,6 +1,6 @@
-"""Build analysis-ready monthly series from Giovanni exports (Linear NAS-7).
+"""Build analysis-ready monthly series from NASA source CSVs (Linear NAS-7).
 
-Reads one Giovanni area-averaged CSV, checks its declared unit against the
+Reads one area-averaged CSV, checks its declared unit against the
 registry, converts units, clips to the variable's registered window, and writes:
 
     data/processed/<dataset_id>/<region_id>.parquet   (Linear doc 04 §1 columns)
@@ -11,7 +11,7 @@ and dropping the whole year around it would quietly shorten the record; only the
 statistics layer decides what a missing month means.
 
 Usage:
-    uv run python -m pipeline.build data/raw/t2m_ireland.csv \\
+    uv run python -m pipeline.build data/raw/t2m_ireland_harmony.csv \\
         --variable-id t2m --region-id ireland --analyzable-region "..."
 """
 
@@ -48,8 +48,8 @@ CONTRACT_COLUMNS = [
 ]
 
 COVERAGE_NOTE = (
-    "Giovanni area-averaged series: per-cell QA counts are not reported, so the coverage "
-    "columns are null until a gridded subset supplies them"
+    "Area-averaged series: per-cell QA counts are not reported, so the coverage columns "
+    "are null until a gridded subset supplies them"
 )
 
 
@@ -260,7 +260,7 @@ def build(
     )
 
     transformations = [
-        "Giovanni comment/header block skipped",
+        "source metadata and header rows skipped",
         f"unit conversion {native_unit} -> {output_unit}"
         if canonical_unit(native_unit) != canonical_unit(output_unit)
         else f"unit unchanged ({native_unit})",
@@ -339,8 +339,8 @@ def build(
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Giovanni CSV -> contract-ready monthly series")
-    parser.add_argument("csv", type=Path, help="Giovanni area-averaged CSV export")
+    parser = argparse.ArgumentParser(description="NASA source CSV -> contract-ready monthly series")
+    parser.add_argument("csv", type=Path, help="area-averaged NASA source CSV")
     parser.add_argument("--variable-id", required=True, help=f"one of: {', '.join(VARIABLES)}")
     parser.add_argument("--region-id", required=True, help="region_id from pipeline/regions.json")
     parser.add_argument("--dataset-id", default=None)

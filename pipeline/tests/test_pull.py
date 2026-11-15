@@ -95,14 +95,18 @@ def test_chunks_cover_the_window_in_whole_five_year_steps() -> None:
     assert list(pull.chunks(2000, 2011)) == [(2000, 2004), (2005, 2009), (2010, 2011)]
 
 
-def test_plan_routes_every_variable_it_can_and_names_the_ones_it_cannot() -> None:
+def test_plan_routes_all_five_mvp_variables_without_blocking_rows() -> None:
     work, cities, blocked = pull.plan(None, ["ireland"])
     routed = {spec.variable_id for spec, _region, _route in work}
-    assert routed == {"aerosol", "soil_moisture_0_5", "evapotranspiration", "precipitation"}
+    assert routed == {
+        "t2m",
+        "aerosol",
+        "soil_moisture_0_5",
+        "evapotranspiration",
+        "precipitation",
+    }
     assert cities == []
-    # T2M stays on its committed Giovanni series rather than being overwritten.
-    assert {variable for variable, _region, _reason in blocked} == {"t2m"}
-    assert all(reason for _v, _r, reason in blocked)
+    assert blocked == []
 
 
 def _slice(tmp_path: Path, lat: list[float], lon: list[float], values: list[list[float]]) -> bytes:
@@ -198,17 +202,25 @@ def test_regional_mean_refuses_a_month_that_is_mostly_empty() -> None:
 def test_the_csv_records_which_route_produced_it() -> None:
     series = _series()
     series.months = {"2001-01": 50.0}
-    pull.write_csv(series, pull.IMERG_ROUTE)
-    meta = json.loads((pull.RAW / "t2m_ireland.meta.json").read_text(encoding="utf-8"))
+    path = pull.write_csv(series, pull.IMERG_ROUTE)
+    meta = json.loads(path.with_suffix(".meta.json").read_text(encoding="utf-8"))
     assert meta["access_route"].startswith("NASA GES DISC direct")
 
 
-def test_t2m_is_refused_rather_than_overwriting_the_giovanni_series() -> None:
+def test_t2m_uses_harmony_and_preserves_the_giovanni_raw_export() -> None:
     work, cities, blocked = pull.plan(["t2m"], ["ireland"])
-    assert work == []
+    assert len(work) == 1
+    assert work[0][2] is pull.HARMONY_ROUTES["t2m"]
     assert cities == []
-    assert blocked[0][0] == "t2m"
-    assert "Giovanni" in blocked[0][2]
+    assert blocked == []
+
+    old_export = pull.RAW / "t2m_ireland.csv"
+    old_export.write_text("Giovanni source", encoding="utf-8")
+    series = _series()
+    series.months = {"2001-01": 280.0}
+    new_export = pull.write_csv(series, pull.HARMONY_ROUTES["t2m"])
+    assert new_export.name == "t2m_ireland_harmony.csv"
+    assert old_export.read_text(encoding="utf-8") == "Giovanni source"
 
     work_no2, cities_no2, blocked_no2 = pull.plan(["no2"], ["dublin_no2"])
     assert work_no2 == []
@@ -220,6 +232,8 @@ def test_plan_is_the_doc_11_lineup_and_not_the_cartesian_product() -> None:
     """27 series: five rows over five regions, plus NO2 for Dublin and Delhi only."""
     work, cities, blocked = pull.plan(None, None)
     assert len(work) + len(cities) + len(blocked) == 27
+    assert len(work) == 25
+    assert blocked == []
     assert {region for _spec, region, _route in work} >= {"ireland", "us_southwest"}
     assert not {region for _spec, region, _route in work} & set(pull.NO2_REGIONS)
     assert set(cities) == set(pull.NO2_REGIONS)
@@ -430,7 +444,21 @@ def test_dry_run_prints_the_plan_and_never_needs_a_token(
     assert "aerosol/ireland <- Harmony" in output
     assert "no2/dublin_no2 <- OPeNDAP" in output
     assert "precipitation/ireland <- Harmony" in output
-    assert "t2m/ireland <- BLOCKED" in output
+    assert "t2m/ireland <- Harmony" in output
+    assert "t2m/ireland <- BLOCKED" not in output
+
+
+def test_token_can_be_read_from_env_file_and_environment_overrides_it(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text('EARTH_DATA_API="from-file"\n', encoding="utf-8")
+
+    assert pull.token_from_environment(env={}, env_file=env_file) == "from-file"
+    assert (
+        pull.token_from_environment(
+            env={pull.TOKEN_ENV: "from-environment"}, env_file=env_file
+        )
+        == "from-environment"
+    )
 
 
 def test_grid_extent_reproduces_the_centre_in_box_footprint() -> None:
@@ -450,12 +478,11 @@ def test_an_extent_in_the_wrong_order_is_refused() -> None:
     assert pull.parse_extent("1,2,3") is None
 
 
-def test_harmony_t2m_is_allowed_only_for_the_two_new_regions() -> None:
-    """Kevin's exception on NAS-64: new regions yes, the committed three no."""
-    work, _cities, blocked = pull.plan(["t2m"], ["iberia"])
-    assert [spec.variable_id for spec, _region, _route in work] == ["t2m"]
+def test_harmony_t2m_is_available_for_every_region() -> None:
+    work, cities, blocked = pull.plan(["t2m"], None)
+    climate_regions = set(pull.load_regions()) - set(pull.NO2_REGIONS)
+    assert len(work) == len(climate_regions)
+    assert {region_id for _spec, region_id, _route in work} == climate_regions
+    assert all(route is pull.HARMONY_ROUTES["t2m"] for _spec, _region, route in work)
+    assert cities == []
     assert blocked == []
-
-    work_old, _cities_old, blocked_old = pull.plan(["t2m"], ["ireland"])
-    assert work_old == []
-    assert blocked_old and blocked_old[0][0] == "t2m"
