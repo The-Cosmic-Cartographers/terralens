@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import ErrorState from '../components/ErrorState.jsx'
@@ -7,6 +8,7 @@ import SampleDataWarning from '../components/SampleDataWarning.jsx'
 import VerdictBadge from '../components/VerdictBadge.jsx'
 import { regions } from '../data/regionOptions.js'
 import { useData } from '../hooks/useData.js'
+import { useWindowedLineups } from '../hooks/useWindowedLineups.js'
 import { formatSlope, verdictLabel } from '../utils/format.js'
 
 const variables = [
@@ -27,7 +29,8 @@ function listNames(names) {
 }
 
 function trendFor(lineup, variableId) {
-  return lineup?.rows?.find((row) => row.variable_id === variableId)?.trend
+  const row = lineup?.rows?.find((item) => item.variable_id === variableId)
+  return row?.window_unavailable ? undefined : row?.trend
 }
 
 function unitPerDecade(trend) {
@@ -108,14 +111,20 @@ function SummaryPage() {
   const { data: nwSouthAsia, loading: nwLoading, error: nwError } = useData('lineup', { regionId: 'nw_south_asia' })
   const { data: usSouthwest, loading: usLoading, error: usError } = useData('lineup', { regionId: 'us_southwest' })
 
+  const loadedLineups = useMemo(
+    () => [ireland, iberia, sahel, nwSouthAsia, usSouthwest],
+    [ireland, iberia, sahel, nwSouthAsia, usSouthwest],
+  )
+  const { lineups: windowedList, pending: windowPending, startYear, endYear } = useWindowedLineups(loadedLineups)
   const lineups = {
-    ireland,
-    iberia,
-    sahel,
-    nw_south_asia: nwSouthAsia,
-    us_southwest: usSouthwest,
+    ireland: windowedList[0],
+    iberia: windowedList[1],
+    sahel: windowedList[2],
+    nw_south_asia: windowedList[3],
+    us_southwest: windowedList[4],
   }
-  const loading = irelandLoading || iberiaLoading || sahelLoading || nwLoading || usLoading
+  const isWindowed = windowedList.some((lineup) => lineup?.windowed)
+  const loading = irelandLoading || iberiaLoading || sahelLoading || nwLoading || usLoading || windowPending
   const error = irelandError || iberiaError || sahelError || nwError || usError
 
   const labels = variables.reduce((map, variable) => {
@@ -222,7 +231,7 @@ function SummaryPage() {
                                 <span className="summary-slope">{slopePerDecade(trend)}</span>
                               </Link>
                             ) : (
-                              <span className="summary-slope">Not supplied</span>
+                              <span className="summary-slope">{isWindowed ? 'Not offered' : 'Not supplied'}</span>
                             )}
                           </td>
                         )
@@ -233,8 +242,12 @@ function SummaryPage() {
               </table>
             </div>
             <p className="summary-footnote">
-              Slopes are Sen&rsquo;s slope per decade for the supplied record (1981&ndash;2025 for
-              air temperature, 1980&ndash;2025 for the other signals). Verdicts use the
+              {isWindowed
+                ? <>Slopes are Sen&rsquo;s slope per decade for the window {startYear}&ndash;{endYear} (air
+                  temperature starts in 1981), read from the supplied precomputed windows. </>
+                : <>Slopes are Sen&rsquo;s slope per decade for the supplied record (1981&ndash;2025 for
+                  air temperature, 1980&ndash;2025 for the other signals). </>}
+              Verdicts use the
               Benjamini&ndash;Hochberg adjusted p-value; &ldquo;no clear trend&rdquo; means the test
               could not separate a trend from noise, not that nothing changed.
             </p>

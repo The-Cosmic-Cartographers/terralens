@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { useData } from '../hooks/useData.js'
+import { MIN_WINDOW_YEARS } from '../utils/windows.js'
 import { FALLBACK_WINDOW, WindowContext } from './window.js'
 
 const STORAGE_KEY = 'terralens-window-end'
@@ -37,8 +38,18 @@ function WindowProvider({ children }) {
 
     const start = Math.min(...starts)
     const end = Math.max(...ends)
-    return end > start ? { start, end } : FALLBACK_WINDOW
+
+    // A window must be long enough for every row that has results, so the latest
+    // record start sets how early the end year can go (D6: at least ten years).
+    const readyStarts = (catalogue ?? [])
+      .filter((item) => item.status === 'ready')
+      .map((item) => yearOf(item.period_start))
+      .filter(Boolean)
+    const latestStart = readyStarts.length ? Math.max(...readyStarts) : start
+
+    return end > start ? { start, end, latestStart } : FALLBACK_WINDOW
   }, [catalogue])
+  const minEndYear = Math.min(bounds.end, bounds.latestStart + MIN_WINDOW_YEARS - 1)
 
   // The URL wins over the stored preference: a shared link should open on the
   // range it names, and back/forward should restore it without a write.
@@ -47,12 +58,12 @@ function WindowProvider({ children }) {
   const [chosenEnd, setChosenEnd] = useState(readStoredYear)
 
   const endYear = urlEnd == null
-    ? clamp(chosenEnd ?? bounds.end, bounds.start, bounds.end)
-    : clamp(urlEnd, bounds.start, bounds.end)
-  const startYear = clamp(requestedStart ?? bounds.start, bounds.start, endYear)
+    ? clamp(chosenEnd ?? bounds.end, minEndYear, bounds.end)
+    : clamp(urlEnd, minEndYear, bounds.end)
+  const startYear = clamp(requestedStart ?? bounds.start, bounds.start, endYear - MIN_WINDOW_YEARS + 1)
 
   const setEndYear = useCallback((year) => {
-    const next = clamp(Number(year), bounds.start, bounds.end)
+    const next = clamp(Number(year), minEndYear, bounds.end)
     setChosenEnd(next)
 
     setSearchParams((params) => {
@@ -62,11 +73,11 @@ function WindowProvider({ children }) {
       // A requested start later than the chosen end would leave the plot empty,
       // so that request is dropped and the record's own start applies again.
       const requested = yearOf(updated.get('start'))
-      if (requested != null && requested >= next) updated.delete('start')
+      if (requested != null && requested > next - MIN_WINDOW_YEARS + 1) updated.delete('start')
 
       return updated
     }, { replace: true })
-  }, [bounds.start, bounds.end, setSearchParams, setChosenEnd])
+  }, [minEndYear, bounds.end, setSearchParams, setChosenEnd])
 
   // Whatever the range ends up being, the next visit without a URL keeps it.
   useEffect(() => {
@@ -83,9 +94,10 @@ function WindowProvider({ children }) {
       endYear,
       minYear: bounds.start,
       maxYear: bounds.end,
+      minEndYear,
       setEndYear,
     }),
-    [startYear, bounds.start, bounds.end, endYear, setEndYear],
+    [startYear, bounds.start, bounds.end, minEndYear, endYear, setEndYear],
   )
 
   return <WindowContext.Provider value={value}>{children}</WindowContext.Provider>

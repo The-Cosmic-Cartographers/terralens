@@ -95,7 +95,7 @@ def test_real_series_and_metadata_are_served(index):
 def test_data_version_is_not_sample(index):
     client, _ = index
     version = client.get("/health").json()["data_version"]
-    assert version.startswith("giovanni-") and "SAMPLE" not in version
+    assert version.startswith("terralens-") and "SAMPLE" not in version
 
 
 def test_the_output_is_reproducible(tmp_path):

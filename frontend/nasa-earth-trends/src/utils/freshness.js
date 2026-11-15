@@ -1,6 +1,6 @@
 const DAY_MS = 86400000
 
-// The exported version carries its build date: giovanni-2026-11-14.
+// The exported version carries its build date: terralens-2026-11-14.
 export function snapshotDateFrom(version) {
   const match = typeof version === 'string' ? version.match(/(\d{4}-\d{2}-\d{2})/) : null
   if (!match) return null
